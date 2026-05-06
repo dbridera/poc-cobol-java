@@ -1,0 +1,6 @@
+ERR CUST=0000000000 RC=10 customer number is zero                                                                                   
+ERR CUST=4444444444 RC=10 vehicle value is zero                                                                                     
+ERR CUST=5555555555 RC=10 engine cc is zero                                                                                         
+ERR CUST=6666666666 RC=99 unknown request id                                                                                        
+OK  CUST=7777777777 POL=0000000001 PREM=000700
+SUMMARY processed=000005 inserted=000001 rejected=000004

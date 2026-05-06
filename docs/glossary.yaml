@@ -1,0 +1,105 @@
+# Translation glossary — lightweight, repo-local "RAG" for COBOL → Java
+#
+# Purpose: Every Claude session that does translation should consult this file
+# so naming and idiom mappings stay consistent across modules.
+# Grow this file as new modules teach us new patterns. Keep entries terse.
+
+version: 0.1
+
+naming:
+  # Internal "Named" conventions placeholder — replace with real rules when known.
+  java_packages:
+    base: "com.example.poc"     # TODO: replace with bank's actual base package
+    pattern: "<base>.<domain>.<module>"
+  java_classes:
+    entity_suffix: "Entity"
+    repository_suffix: "Repository"
+    service_suffix: "Service"
+    dto_suffix: "Dto"
+  cobol_program_to_class: "PascalCase, drop trailing 'PROG'/'BAT' suffixes"
+  cobol_paragraph_to_method: "camelCase, preserve verbs (e.g., '2000-CALC-INTEREST' -> calculateInterest)"
+
+numerics:
+  policy: "All COBOL numerics map to java.math.BigDecimal. Never double/float/int for money."
+  scale_rule: "scale = digits to the right of V; for PIC 9(7)V99 -> scale 2"
+  default_rounding: "RoundingMode.HALF_UP"
+  default_rounding_note: |
+    COBOL `ROUNDED` (with no explicit MODE clause) is "round-to-nearest, ties away from zero"
+    a.k.a. HALF_AWAY_FROM_ZERO. For NON-NEGATIVE values this is the same as Java's HALF_UP.
+    For signed values, Java needs `RoundingMode.HALF_UP` AFTER applying abs() then re-attaching
+    sign, OR the dedicated `HALF_DOWN`-with-sign-flip pattern. **Empirically verified on
+    add-motor-policy module zero** (record 2: 512.50 -> 513, not 512).
+    If a paragraph uses `ROUNDED MODE IS NEAREST-EVEN`, then Java must use HALF_EVEN instead.
+    Always grep COBOL source for "ROUNDED MODE" before assuming the default.
+  signed_handling: "PIC S9(...) -> BigDecimal can be negative; preserve sign byte interpretation"
+  on_size_error: "Wrap in try/catch ArithmeticException -> SizeErrorException"
+  on_size_error_note: |
+    Verified on module zero (record 6 of 03-numeric-boundaries): 999999 accidents * 50
+    overflows PIC 9(6)V99. The COBOL program sets RC=11 and rejects. Java must do the same:
+    catch the arithmetic exception in the SAME paragraph (not at top of MAIN), and report
+    the same return code with the same error string. Generic "throw RuntimeException" loses
+    the granular RC.
+
+idioms:
+  EVALUATE_TRUE:
+    java: "switch expression with boolean cases, or rule chain when conditions are complex"
+  PERFORM_THRU:
+    java: "preserve fall-through by calling each paragraph-method in order; do NOT collapse"
+    note: "fall-through is often load-bearing in banking code"
+  PERFORM_VARYING:
+    java: "for loop with explicit BigDecimal counter when counter is numeric"
+  REDEFINES:
+    java: "two view classes over the same byte[] OR sealed interface with explicit converter"
+    note: "never silently treat the two views as the same type"
+  OCCURS_DEPENDING_ON:
+    java: "List<T> whose size is bound to the depending field; validate at construction"
+  level_88:
+    java: "boolean predicate method named after the 88 (e.g., 88 IS-VALID-CUSTOMER -> isValidCustomer())"
+  IF_ELSE_chain:
+    java: "early return when guard-style; nested else-if when truly mutually exclusive"
+
+data_layer:
+  copybook_record:
+    target: "DTO / value object (record class in Java 21)"
+    rule: "one DTO per copybook; field names in camelCase mirroring COBOL data names"
+  copybook_db_row:
+    target: "JPA @Entity"
+    rule: "table name = COBOL table or VSAM file name (snake_case)"
+  vsam_ksds:
+    target: "Postgres table; primary key = VSAM key fields"
+  vsam_esds:
+    target: "Postgres table with surrogate auto PK + insertion-order timestamp"
+  vsam_rrds:
+    target: "Postgres table with relative_record_no integer column"
+  db2_cursor:
+    target: "Spring Data Stream<T> or paginated findAllByX"
+  file_status:
+    target: "typed exception or Result/Optional return; never silently ignored"
+
+control_flow:
+  go_to:
+    rule: "GO TO is rare in well-structured COBOL; if encountered, refactor to method calls but document the original target paragraph in a traceability comment"
+  exit_program:
+    java: "return; from the entry method"
+  stop_run:
+    java: "in batch mode -> System.exit(0); in service mode -> normal return"
+
+testing:
+  golden_master:
+    rule: "Every paragraph must be exercised by ≥1 input fixture before translation is considered done"
+  numeric_property_tests:
+    library: "jqwik"
+    rule: "For any paragraph touching arithmetic, generate property-based tests around boundaries (max PIC, min PIC, zero, negative if signed)"
+  boundary_fixtures:
+    must_include:
+      - "max value of every PIC numeric field"
+      - "min (or 0) value of every PIC numeric field"
+      - "all-spaces / low-values / high-values for every PIC X field"
+      - "boundary of OCCURS DEPENDING ON (0, 1, max)"
+
+forbidden:
+  - "double or float for any COBOL numeric"
+  - "silent rounding without explicit RoundingMode"
+  - "removing 'dead' COBOL paragraphs without proof they are unreachable from any entry point"
+  - "merging REDEFINES views into a single type without a converter"
+  - "skipping golden-master diff before declaring a module done"

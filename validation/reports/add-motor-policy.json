@@ -1,0 +1,17 @@
+[
+  {
+    "fixture": "01-happy-small",
+    "module": "add-motor-policy",
+    "diffs": []
+  },
+  {
+    "fixture": "02-validation-errors",
+    "module": "add-motor-policy",
+    "diffs": []
+  },
+  {
+    "fixture": "03-numeric-boundaries",
+    "module": "add-motor-policy",
+    "diffs": []
+  }
+]

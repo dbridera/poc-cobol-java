@@ -1,0 +1,60 @@
+{
+  "name": "01-happy-small",
+  "description": "Three valid motor policy adds spanning the four CC brackets and zero/some accidents.",
+  "records": [
+    {
+      "request_id": "01AMOT",
+      "customer_num": 1234567890,
+      "policy_num": 0,
+      "issue_date": "2025-01-15",
+      "expiry_date": "2026-01-15",
+      "broker_id": 100,
+      "brokers_ref": "BR-A001",
+      "payment": 100,
+      "make": "TOYOTA",
+      "model": "YARIS",
+      "value": 12000,
+      "regnumber": "ABC1234",
+      "colour": "RED",
+      "cc": 998,
+      "manufactured": "2022",
+      "accidents": 0
+    },
+    {
+      "request_id": "01AMOT",
+      "customer_num": 2222222222,
+      "policy_num": 0,
+      "issue_date": "2025-02-01",
+      "expiry_date": "2026-02-01",
+      "broker_id": 100,
+      "brokers_ref": "BR-A002",
+      "payment": 250,
+      "make": "VOLKSWAGEN",
+      "model": "GOLF",
+      "value": 22500,
+      "regnumber": "XYZ7890",
+      "colour": "BLUE",
+      "cc": 1500,
+      "manufactured": "2023",
+      "accidents": 1
+    },
+    {
+      "request_id": "01AMOT",
+      "customer_num": 3333333333,
+      "policy_num": 0,
+      "issue_date": "2025-03-10",
+      "expiry_date": "2026-03-10",
+      "broker_id": 100,
+      "brokers_ref": "BR-A003",
+      "payment": 600,
+      "make": "BMW",
+      "model": "M3",
+      "value": 75000,
+      "regnumber": "BMW1234",
+      "colour": "BLACK",
+      "cc": 2998,
+      "manufactured": "2024",
+      "accidents": 2
+    }
+  ]
+}
