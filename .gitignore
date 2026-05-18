@@ -29,6 +29,13 @@ java-run/
 # jqwik property-test failing-seed cache (per-machine)
 .jqwik-database
 
+# Spike artifacts (regenerable; REPORT.md and sources stay tracked)
+tools/spike/out/
+tools/spike/hello-db
+*.db
+*.mv.db
+*.trace.db
+
 # Logs
 *.log
 
