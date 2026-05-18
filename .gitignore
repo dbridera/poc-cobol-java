@@ -26,6 +26,9 @@ validation/reports/*.html
 # Java run outputs (regenerable per README §4)
 java-run/
 
+# jqwik property-test failing-seed cache (per-machine)
+.jqwik-database
+
 # Logs
 *.log
 
