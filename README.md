@@ -4,9 +4,9 @@
 
 | | |
 |---|---|
-| Status | Module zero (`add-motor-policy`) end-to-end **GREEN** |
-| Toolchain | GnuCOBOL 3.2 + Java 21 + Maven 3.9 + Spring Boot 3.3 |
-| Tests | 22 / 22 Java unit tests · 3 / 3 fixtures byte-exact equivalent |
+| Status | Modules **0**, **1A** (CICS facade), **1B** (DB / EXEC SQL) all end-to-end **GREEN** |
+| Toolchain | GnuCOBOL 3.2 + Java 21 + Maven 3.9 + Spring Boot 3.3 + JPA + H2 (+ SQLite shim for COBOL EXEC SQL) |
+| Tests | 22 / 22 Java unit tests · **6 / 6 fixtures byte-exact equivalent** across 3 modules |
 | Sample source | Adapted from public [`cicsdev/cics-genapp`](https://github.com/cicsdev/cics-genapp) |
 
 ---
@@ -30,20 +30,34 @@ If the diff is green, the translation is correct.
 Pre-requisite: toolchain (see §8). After that, from the repo root:
 
 ```bash
-./tools/run-cobol.sh add-motor-policy        # capture COBOL golden master
-./tools/run-java.sh  add-motor-policy        # build + run Spring Boot translation
-./tools/compare-outputs.py add-motor-policy  # exit 0 = byte-exact match
+# Module 0 — file I/O (VSAM-equivalent)
+./tools/run-cobol.sh    add-motor-policy
+./tools/run-java.sh     add-motor-policy
+./tools/compare-outputs.py add-motor-policy
+
+# Module 1B — EXEC SQL → JPA + H2
+./tools/run-cobol-db.sh add-policy-db
+./tools/run-java.sh     add-policy-db
+./tools/compare-outputs.py add-policy-db
+
+# Module 1A — CICS LINK chain → Spring service-to-service DI
+./tools/run-cobol-db.sh add-policy-facade
+./tools/run-java.sh     add-policy-facade
+./tools/compare-outputs.py add-policy-facade
 ```
 
-Expected output of the third command:
+Expected output across all 3 modules:
 
 ```
 [OK ] add-motor-policy/01-happy-small
 [OK ] add-motor-policy/02-validation-errors
 [OK ] add-motor-policy/03-numeric-boundaries
+[OK ] add-policy-db/01-happy-small
+[OK ] add-policy-db/02-sql-errors
+[OK ] add-policy-facade/01-happy-chain
 ```
 
-Plus a JSON proof artifact at `validation/reports/add-motor-policy.json` (`"diffs": []` per fixture).
+Plus JSON proof artifacts under `validation/reports/` — `"diffs": []` per fixture.
 
 ---
 
@@ -170,6 +184,7 @@ These are *not* theoretical — every one was caught by running the diff:
 3. **`ON SIZE ERROR` keeps its return code per paragraph.** A single top-level Java `catch` flattens this and loses the granular RC=11.
 4. **Spring Boot banner + startup logs leak into stdout.** `application.properties` has `logging.level.root=OFF`, `spring.main.banner-mode=off`, `spring.main.log-startup-info=false`.
 5. **Copybook `REDEFINES` is two interpretations of the same bytes** — must use a sealed interface or distinct view classes, never a single nullable bag.
+6. **`JpaRepository.save()` is INSERT-OR-UPDATE (MERGE), not INSERT.** Caught by module 1B fixture 02-sql-errors (duplicate PK). COBOL `EXEC SQL INSERT` throws on duplicate; `save()` silently overwrites. Fix: `EntityManager.persist() + em.flush() + @Transactional(REQUIRES_NEW)`. See [DECISIONS.md ADR-9](./docs/DECISIONS.md).
 
 ### What we did NOT yet run (honest disclaimer)
 
@@ -268,13 +283,13 @@ PostgreSQL is **not** required for module zero (the Java side writes flat files 
 ## 9. Limitations + next steps
 
 ### Out of scope for this PoC
-CICS / IMS online transactions · JCL → Spring Batch · EBCDIC ↔ ASCII at I/O boundaries · vector-DB RAG · production CI/CD · mainframe deployment.
+JCL → Spring Batch · cross-JVM CICS LINK (REST/RPC equivalents) · EBCDIC ↔ ASCII at I/O boundaries · vector-DB RAG · production CI/CD · mainframe deployment.
 
 ### Recommended next moves
 
-1. **Run the negative-control test** on module zero — change one `BigDecimal` to `double` in `MotorPremiumCalculator`, confirm the diff fails, then revert. Proves the harness has teeth.
-2. **Module 1** — pick another GenApp operation (INQUIRE POLICY or UPDATE POLICY). The skills should make this much faster. The framework "crystallizes" at module 2-3.
-3. **Wire JPA + Postgres + `@Transactional`** in module 1 to replace the COBOL CICS-level rollback (the orphan-policy risk noted in `specs/add-motor-policy.md` §8).
+1. **Run the negative-control test** on each module — change one BigDecimal to double (module 0), or one `em.persist()` back to `repository.save()` (modules 1A/1B), confirm the diff fails, then revert. Proves the harness has teeth on every module.
+2. **Module 2** — pick another GenApp operation (INQUIRE POLICY or UPDATE POLICY). The skills + glossary should make this much faster now that modules 1A and 1B have crystallized the DB + orchestrator patterns.
+3. **Real Postgres** — flip `application.properties` `spring.datasource.url` from `jdbc:h2:mem:` to `jdbc:postgresql://...`. The JPA layer is unchanged.
 4. **Drop the Anthropic Code Modernization Playbook PDF** into `docs/reference/` and reconcile any deltas with the methodology.
 
 ---

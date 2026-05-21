@@ -118,6 +118,34 @@ Flat file by design — convert to `docs/decisions/` once entries exceed ~15.
 
 ---
 
+## ADR-9 — `EntityManager.persist` over `JpaRepository.save` for COBOL INSERT semantics
+
+**Context.** `EXEC SQL INSERT INTO POLICY VALUES (...)` on DB2 is *always* an INSERT — duplicate PK returns SQLCODE -803 (or constraint-violation equivalent). The Spring Data JPA `repository.save(entity)` is *INSERT-OR-UPDATE* (MERGE): if the supplied entity has an `@Id` that already exists, Hibernate silently overwrites the row, and the method returns successfully.
+
+**Decision.** Translations of `EXEC SQL INSERT` use `EntityManager.persist(entity)` + `em.flush()` inside a service method annotated `@Transactional(propagation = REQUIRES_NEW)`. The flush forces the INSERT to execute (and fail, if it's going to) inside the called method, not at outer-transaction commit time. The caller catches `RuntimeException` and routes to a per-request return code.
+
+**Consequences.** The COBOL pattern "one CICS transaction per request" maps cleanly: each invocation of the insert service starts a fresh transaction, and a constraint failure on record N doesn't poison the persistence context for record N+1. The downside is that every translated INSERT paragraph now has a tighter contract than vanilla Spring Data JPA — code reviewers must reject `save()` for COBOL INSERTs.
+
+**Alternatives considered.** `repository.save()` — rejected; silently MERGEs and silently corrupts data, caught only by the byte-exact diff. `repository.existsById()` before `save()` — adds a SELECT round-trip and still doesn't atomically prevent races. `entityManager.persist()` without explicit `flush()` — the constraint failure surfaces at `@Transactional` commit time, which makes the catch point ambiguous and creates `UnexpectedRollbackException` headaches.
+
+**Evidence.** [java/add-policy-db/src/main/java/com/example/poc/addpolicydb/service/PolicyInsertService.java](../java/add-policy-db/src/main/java/com/example/poc/addpolicydb/service/PolicyInsertService.java) (the canonical pattern with rationale Javadoc). [cobol/add-policy-db/fixtures/02-sql-errors/](../cobol/add-policy-db/fixtures/02-sql-errors/) is the fixture that surfaced the issue: a 4-record run with a duplicate PK on record 4. Naive `save()` produced 4 inserted + corrupted row 1; the diff caught both deltas. [docs/glossary.yaml `db_access.exec_sql_insert`](./glossary.yaml).
+
+---
+
+## ADR-10 — `EXEC CICS LINK` maps to same-JVM Spring DI (for this PoC scope)
+
+**Context.** The original GenApp chains COBOL programs via `EXEC CICS LINK PROGRAM("LGAPDB01") COMMAREA(...)`. CICS LINK is in-region (same address space) for these examples. A faithful translation needs to preserve the *observable* chain — one program hands off control + a payload to another, gets it back mutated — without dragging in the CICS runtime, transaction scope, or recovery semantics that don't apply to a batch PoC.
+
+**Decision.** Translate `EXEC CICS LINK PROGRAM(X) COMMAREA(Y)` as a same-JVM Spring DI call: `XService.handle(Y)` injected via `@Autowired`. The commarea becomes a mutable DTO (or, more idiomatically, an input record + a return result). Cross-JVM / cross-service mappings (REST, gRPC, message queue) are deferred to a future module that actually exercises them.
+
+**Consequences.** The Java side has the same two-program structure visible to reviewers (one `@Service` calls another). The transaction boundary lives on the inner insert service (ADR-9), not the facade — matching the COBOL pattern where LGAPDB01 owns the SQL unit-of-work. Limitation: this PoC does not address CICS transaction nesting, two-phase commit across LINKed programs, or LINKed programs that themselves write to recoverable resources. Those are out of scope per [README §9](../README.md#9-limitations--next-steps).
+
+**Alternatives considered.** Inline the called program into the caller — rejected; loses the "program A calls program B" structure that's visible to the audience and required for refactoring later. REST call between two Spring apps — over-engineering for a same-JVM chain. A custom "CICS LINK emulator" — out of scope. Translate to Spring Cloud Function — adds infra without value at PoC scale.
+
+**Evidence.** [cobol/add-policy-facade/src/ADDPFCD.cbl](../cobol/add-policy-facade/src/ADDPFCD.cbl) (nested ADDPOLDB-INSERT program — the GnuCOBOL local equivalent of CICS LINK). [java/add-policy-facade/src/main/java/com/example/poc/addpolicyfacade/service/PolicyFacadeService.java](../java/add-policy-facade/src/main/java/com/example/poc/addpolicyfacade/service/PolicyFacadeService.java) (the `@Autowired` PolicyInsertService is the LINK-equivalent). [validation/reports/add-policy-facade.json](../validation/reports/add-policy-facade.json) proves byte-exact equivalence on the chained output.
+
+---
+
 ## How to add an ADR
 
 1. Append the next entry below with the same five-section shape.

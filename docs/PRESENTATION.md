@@ -46,7 +46,17 @@ A 4-step plan: COBOL → **agnostic pseudocode** → AI refinement → Java + AI
 
 ---
 
-## 4. Module zero — `add-motor-policy`
+## 4. Three modules — what each one proves
+
+| Module | What it proves | Status |
+|---|---|---|
+| **0 — add-motor-policy** | File I/O (VSAM-equivalent), BigDecimal precision, rounding rules, validation chain | ✅ 3 fixtures byte-exact |
+| **1B — add-policy-db** | `EXEC SQL INSERT` → JPA + H2 (the "DB2 / database access" stakeholder ask) | ✅ 2 fixtures byte-exact |
+| **1A — add-policy-facade** | `EXEC CICS LINK` chain → Spring service-to-service DI (the "COBOL orchestrator" stakeholder ask) | ✅ 1 fixture byte-exact |
+
+All three run through the **same 3-command harness** — `run-cobol*.sh` → `run-java.sh` → `compare-outputs.py`. Six fixtures, zero diffs.
+
+### 4.1 Module zero — `add-motor-policy`
 
 To prove the methodology works end-to-end before committing to a framework.
 
@@ -58,6 +68,36 @@ To prove the methodology works end-to-end before committing to a framework.
 ./tools/run-cobol.sh add-motor-policy        # capture golden master
 ./tools/run-java.sh  add-motor-policy        # build + run Spring Boot
 ./tools/compare-outputs.py add-motor-policy  # exit 0 = green
+```
+
+### 4.2 Module 1B — `add-policy-db` (the DB ask)
+
+A carve of `INSERT-POLICY` from GenApp `LGAPDB01:261-322`. Two `EXEC SQL` statements (INSERT + SELECT), 7 host variables, return-code dispatch on SQLCODE.
+
+- **COBOL side:** the EXEC SQL is routed through a 95-line C shim (`tools/spike/cob_sqlite.c`) callable from GnuCOBOL — proven by the [spike report](../tools/spike/REPORT.md). In production this would be the OCESQL/GIXSQL preprocessor; for the PoC we hand-translate to its equivalent output to keep dependencies minimal.
+- **Java side:** Spring Boot 3 + JPA + H2 (in-memory). `EntityManager.persist()` + `em.flush()` inside `@Transactional(REQUIRES_NEW)` — explicitly **not** `JpaRepository.save()` (see §6 finding 5.6).
+- **Output channels diffed:** stdout (`OK/ERR` per record + summary) and `out/policy.csv` (the POLICY table dumped as `id|col|col|...\n` rows, sorted by PK).
+- **Caveat:** H2 ≠ DB2. What's proven is the *translation pattern* (EXEC SQL → JPA, SQLCODE → typed exception). Production swaps the JDBC URL to Db2 LUW or Postgres with no Java code change.
+
+```bash
+./tools/run-cobol-db.sh add-policy-db
+./tools/run-java.sh     add-policy-db
+./tools/compare-outputs.py add-policy-db
+```
+
+### 4.3 Module 1A — `add-policy-facade` (the orchestrator ask)
+
+A carve of GenApp `LGAPOL01` — a thin facade that validates the request, then `EXEC CICS LINK PROGRAM("LGAPDB01")` to delegate the INSERT.
+
+- **COBOL side:** GnuCOBOL has no CICS runtime, so `EXEC CICS LINK` becomes a `CALL` to a nested `PROGRAM-ID ADDPOLDB-INSERT IS COMMON` (local equivalent — preserves "program A hands off to program B with a payload" structure visible to the reader).
+- **Java side:** `PolicyFacadeService.add()` → `@Autowired PolicyInsertService.insert()`. The CICS LINK collapses to Spring DI inside the same JVM. The `@Transactional` boundary lives on the inner insert service, matching the COBOL pattern where LGAPDB01 owned the SQL unit-of-work.
+- **What the byte-exact diff proves:** the *chained* output (stdout from facade-level validation + stdout from the inner program + the resulting POLICY table state) matches between the two architectures.
+- **Caveat:** cross-JVM CICS LINK (REST / gRPC / message queue equivalents) is out of scope for this PoC — same-JVM only. See [DECISIONS.md ADR-10](./DECISIONS.md).
+
+```bash
+./tools/run-cobol-db.sh add-policy-facade
+./tools/run-java.sh     add-policy-facade
+./tools/compare-outputs.py add-policy-facade
 ```
 
 ---
@@ -126,6 +166,9 @@ Forgetting `logging.level.root=OFF` produces a 13-line diff before the first bus
 
 ### 5.5 Copybook `REDEFINES` is two interpretations of the same bytes
 In `lgcmarea.cpy`, one 32 482-byte buffer redefines into 6 different policy structures. The Java mapping must use a sealed interface or distinct view classes — never collapse into a single nullable bag.
+
+### 5.6 `JpaRepository.save()` is INSERT-OR-UPDATE, not INSERT — **new in module 1B**
+Spring Data's `save()` performs MERGE semantics: if the entity's `@Id` already exists, Hibernate silently *overwrites* the row and returns success. COBOL `EXEC SQL INSERT` always tries to insert and returns SQLCODE -803 (UNIQUE constraint) on a duplicate PK. A naive `save()` translation passes unit tests but silently corrupts data — first row in the POLICY table is overwritten with later-record values, insert count is wrong, byte-exact diff catches it instantly. **Fix:** `EntityManager.persist() + em.flush() + @Transactional(propagation = REQUIRES_NEW)`. See [DECISIONS.md ADR-9](./DECISIONS.md).
 
 ---
 

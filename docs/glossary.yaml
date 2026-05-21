@@ -67,6 +67,11 @@ data_layer:
     rule: "table name = COBOL table or VSAM file name (snake_case)"
   vsam_ksds:
     target: "Postgres table; primary key = VSAM key fields"
+    note: |
+      Module zero (add-motor-policy) uses ORGANIZATION IS LINE SEQUENTIAL (the
+      GnuCOBOL analogue of VSAM ESDS) — the same SELECT/ASSIGN/OPEN/READ/WRITE
+      pattern translates byte-exactly to java.nio.file.Files write/read. The
+      "VSAM-equivalent" demo is module zero; no new module needed.
   vsam_esds:
     target: "Postgres table with surrogate auto PK + insertion-order timestamp"
   vsam_rrds:
@@ -75,6 +80,71 @@ data_layer:
     target: "Spring Data Stream<T> or paginated findAllByX"
   file_status:
     target: "typed exception or Result/Optional return; never silently ignored"
+  select_assign_line_sequential:
+    target: "java.nio.file.Files write/read with US_ASCII + LF line endings"
+    note: "Module zero proven. Use StandardCharsets.US_ASCII; never the platform default."
+
+# Module 1B (add-policy-db) empirical findings — DB / EXEC SQL → JPA pattern.
+db_access:
+  exec_sql_insert:
+    target: "EntityManager.persist(entity); em.flush()"
+    avoid: "JpaRepository.save(entity) — this is INSERT-OR-UPDATE (MERGE) semantics, not INSERT"
+    note: |
+      **Empirically caught by add-policy-db fixture 02-sql-errors.** A naive
+      save() translation silently overwrites an existing row with the same PK
+      while COBOL EXEC SQL INSERT throws SQLCODE -803 (UNIQUE constraint).
+      The byte-exact diff caught a 4-row vs 3-row miscount and a corrupted
+      first row. Always use persist() + flush() for INSERT semantics.
+  exec_sql_select_single:
+    target: "repository.findById() or findBy<Field>()"
+  exec_sql_select_into_host_var:
+    target: "repository.findBy<...>().orElseThrow(...) — typed exception on missing"
+  exec_sql_fetch_cursor:
+    target: "Spring Data Stream<T> or paginated query (defer to a module that needs it)"
+  identity_val_local:
+    target: "entity returned by persist()/save() has @GeneratedValue populated"
+    note: |
+      For byte-exact reproducibility module 1B uses fixture-controlled PKs
+      (no DB-side DEFAULT). Production translations should use @GeneratedValue
+      and accept that the *value* is non-deterministic; the equivalence harness
+      then masks the PK column from the diff.
+  current_timestamp_default:
+    target: "@CreationTimestamp (with determinism caveat)"
+    note: "Module 1B pins LASTCHANGED via fixture for byte-exact diff; production uses @CreationTimestamp."
+  sqlcode_minus_530_fk_violation:
+    target: "DataIntegrityViolationException → typed domain exception (e.g., PolicyForeignKeyException) + per-paragraph RC"
+  sqlcode_generic_error:
+    target: "PersistenceException → typed RuntimeException + per-paragraph RC=90"
+  transaction_boundary:
+    target: "@Transactional(propagation = REQUIRES_NEW) on the persist() service method"
+    note: |
+      Each request = one CICS transaction = one Spring transaction. REQUIRES_NEW
+      ensures a constraint failure on record N doesn't poison the inner JPA
+      session for record N+1.
+
+# Module 1A (add-policy-facade) empirical findings — CICS orchestrator pattern.
+orchestration:
+  exec_cics_link_program:
+    target: "@Autowired service-to-service call (same JVM) or RestTemplate (cross-service)"
+    note: |
+      Module 1A proves the same-JVM case: PolicyFacadeService → PolicyInsertService.
+      Cross-service mapping (REST/gRPC) is deferred to a future module that needs it.
+  exec_cics_return:
+    target: "method return + populated DTO (mutated commarea equivalent)"
+  exec_cics_abend_abcode:
+    target: "typed CicsAbendException(code) propagated up the stack"
+  exec_cics_asktime_formattime:
+    target: "java.time.LocalDateTime.now() / Instant.now() — use Clock injection for testability"
+  eibcalen_length_check:
+    target: "method-level validation on the parsed DTO (null checks, required fields)"
+    note: "Batch mode doesn't have a commarea length; map to field-presence + value checks."
+  cobol_call_nested_program:
+    target: "Direct method call between Spring @Service beans (same DI graph)"
+    note: |
+      GnuCOBOL's nested-program CALL is the local equivalent of CICS LINK PROGRAM.
+      In Java both collapse to a method call — what matters for the audience is
+      that ONE program/service hands off to ANOTHER, and the byte-exact diff
+      proves the chain preserves observable behavior.
 
 control_flow:
   go_to:
