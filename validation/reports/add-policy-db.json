@@ -1,0 +1,12 @@
+[
+  {
+    "fixture": "01-happy-small",
+    "module": "add-policy-db",
+    "diffs": []
+  },
+  {
+    "fixture": "02-sql-errors",
+    "module": "add-policy-db",
+    "diffs": []
+  }
+]

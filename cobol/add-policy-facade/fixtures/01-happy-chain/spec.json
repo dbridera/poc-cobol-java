@@ -1,0 +1,43 @@
+{
+  "name": "01-happy-chain",
+  "description": "Three valid POLICY inserts routed through the facade (CICS LINK chain equivalent). Same records as add-policy-db/01-happy-small so the DB-side outputs match line-for-line; this fixture additionally exercises the facade-level RC routing.",
+  "layout": "add_policy_db",
+  "records": [
+    {
+      "request_id":   "01APOL",
+      "policy_num":   1000000001,
+      "customer_num": 1234567890,
+      "issue_date":   "2026-01-15",
+      "expiry_date":  "2027-01-15",
+      "policy_type":  "M",
+      "lastchanged":  "2026-01-15-09.00.00.000000",
+      "broker_id":    100,
+      "brokers_ref":  "BR-A001",
+      "payment":      100
+    },
+    {
+      "request_id":   "01APOL",
+      "policy_num":   1000000002,
+      "customer_num": 2222222222,
+      "issue_date":   "2026-02-01",
+      "expiry_date":  "2027-02-01",
+      "policy_type":  "H",
+      "lastchanged":  "2026-02-01-09.00.00.000000",
+      "broker_id":    100,
+      "brokers_ref":  "BR-A002",
+      "payment":      250
+    },
+    {
+      "request_id":   "01APOL",
+      "policy_num":   1000000003,
+      "customer_num": 3333333333,
+      "issue_date":   "2026-03-10",
+      "expiry_date":  "2027-03-10",
+      "policy_type":  "E",
+      "lastchanged":  "2026-03-10-09.00.00.000000",
+      "broker_id":    200,
+      "brokers_ref":  "BR-A003",
+      "payment":      600
+    }
+  ]
+}

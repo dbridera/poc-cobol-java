@@ -28,24 +28,43 @@ import sys
 from pathlib import Path
 
 
-FIELDS = [
-    ("request_id",    "X", 6),
-    ("customer_num",  "9", 10),
-    ("policy_num",    "9", 10),
-    ("issue_date",    "X", 10),
-    ("expiry_date",   "X", 10),
-    ("broker_id",     "9", 10),
-    ("brokers_ref",   "X", 10),
-    ("payment",       "9", 6),
-    ("make",          "X", 15),
-    ("model",         "X", 15),
-    ("value",         "9", 6),
-    ("regnumber",     "X", 7),
-    ("colour",        "X", 8),
-    ("cc",            "9", 4),
-    ("manufactured",  "X", 10),
-    ("accidents",     "9", 6),
-]
+LAYOUTS = {
+    # Module zero: ADDMPOL.cbl, 143 chars (motor policy add).
+    "add_motor_policy": [
+        ("request_id",    "X", 6),
+        ("customer_num",  "9", 10),
+        ("policy_num",    "9", 10),
+        ("issue_date",    "X", 10),
+        ("expiry_date",   "X", 10),
+        ("broker_id",     "9", 10),
+        ("brokers_ref",   "X", 10),
+        ("payment",       "9", 6),
+        ("make",          "X", 15),
+        ("model",         "X", 15),
+        ("value",         "9", 6),
+        ("regnumber",     "X", 7),
+        ("colour",        "X", 8),
+        ("cc",            "9", 4),
+        ("manufactured",  "X", 10),
+        ("accidents",     "9", 6),
+    ],
+    # Module 1B: ADDPOLDB.cbl, 99 chars (POLICY-table insert via shim).
+    # Includes fixture-controlled policy_num + lastchanged to keep both
+    # COBOL and Java sides byte-deterministic without DB-side defaults.
+    "add_policy_db": [
+        ("request_id",    "X", 6),
+        ("policy_num",    "9", 10),
+        ("customer_num",  "9", 10),
+        ("issue_date",    "X", 10),
+        ("expiry_date",   "X", 10),
+        ("policy_type",   "X", 1),
+        ("lastchanged",   "X", 26),
+        ("broker_id",     "9", 10),
+        ("brokers_ref",   "X", 10),
+        ("payment",       "9", 6),
+    ],
+}
+FIELDS = LAYOUTS["add_motor_policy"]  # back-compat default for existing callers
 
 
 def fmt(field, kind, width, value):
@@ -59,11 +78,12 @@ def fmt(field, kind, width, value):
     return s
 
 
-def render_record(rec: dict) -> str:
-    parts = [fmt(name, kind, w, rec.get(name)) for (name, kind, w) in FIELDS]
+def render_record(rec: dict, fields) -> str:
+    parts = [fmt(name, kind, w, rec.get(name)) for (name, kind, w) in fields]
     line = "".join(parts)
-    if len(line) != sum(w for _, _, w in FIELDS):
-        raise SystemExit(f"width mismatch: got {len(line)}, expected {sum(w for _,_,w in FIELDS)}")
+    expected = sum(w for _, _, w in fields)
+    if len(line) != expected:
+        raise SystemExit(f"width mismatch: got {len(line)}, expected {expected}")
     return line
 
 
@@ -74,11 +94,15 @@ def main(argv):
     spec_path = Path(argv[1])
     out_path = Path(argv[2])
     spec = json.loads(spec_path.read_text())
+    layout_name = spec.get("layout", "add_motor_policy")
+    if layout_name not in LAYOUTS:
+        raise SystemExit(f"unknown layout: {layout_name!r} (known: {sorted(LAYOUTS)})")
+    fields = LAYOUTS[layout_name]
     out_path.parent.mkdir(parents=True, exist_ok=True)
     with out_path.open("w") as f:
         for rec in spec["records"]:
-            f.write(render_record(rec) + "\n")
-    print(f"wrote {len(spec['records'])} records to {out_path}")
+            f.write(render_record(rec, fields) + "\n")
+    print(f"wrote {len(spec['records'])} records ({layout_name}) to {out_path}")
     return 0
 
 

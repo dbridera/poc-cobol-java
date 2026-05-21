@@ -1,0 +1,55 @@
+{
+  "name": "02-sql-errors",
+  "description": "Exercises the SQL-error path. Record 4 reuses policy_num 1000000001 from record 1; both COBOL (via SQLite UNIQUE constraint) and Java (via H2 DataIntegrityViolationException) reject it. Demonstrates byte-exact equivalence on the error-handling path, not just the happy path.",
+  "layout": "add_policy_db",
+  "records": [
+    {
+      "request_id":   "01APOL",
+      "policy_num":   1000000001,
+      "customer_num": 1234567890,
+      "issue_date":   "2026-01-15",
+      "expiry_date":  "2027-01-15",
+      "policy_type":  "M",
+      "lastchanged":  "2026-01-15-09.00.00.000000",
+      "broker_id":    100,
+      "brokers_ref":  "BR-A001",
+      "payment":      100
+    },
+    {
+      "request_id":   "01APOL",
+      "policy_num":   1000000002,
+      "customer_num": 2222222222,
+      "issue_date":   "2026-02-01",
+      "expiry_date":  "2027-02-01",
+      "policy_type":  "H",
+      "lastchanged":  "2026-02-01-09.00.00.000000",
+      "broker_id":    100,
+      "brokers_ref":  "BR-A002",
+      "payment":      250
+    },
+    {
+      "request_id":   "01APOL",
+      "policy_num":   1000000003,
+      "customer_num": 3333333333,
+      "issue_date":   "2026-03-10",
+      "expiry_date":  "2027-03-10",
+      "policy_type":  "E",
+      "lastchanged":  "2026-03-10-09.00.00.000000",
+      "broker_id":    200,
+      "brokers_ref":  "BR-A003",
+      "payment":      600
+    },
+    {
+      "request_id":   "01APOL",
+      "policy_num":   1000000001,
+      "customer_num": 9999999999,
+      "issue_date":   "2026-04-01",
+      "expiry_date":  "2027-04-01",
+      "policy_type":  "C",
+      "lastchanged":  "2026-04-01-09.00.00.000000",
+      "broker_id":    300,
+      "brokers_ref":  "BR-DUP01",
+      "payment":      999
+    }
+  ]
+}
