@@ -27,13 +27,13 @@ What we are **not** claiming: that we built a CICS emulator, that we have DB2 bi
 
 | Phase | Purpose | Output | Skill file |
 |---|---|---|---|
-| **A — Discovery** | Pick a module, run it on GnuCOBOL, design fixtures, capture golden master | `cobol/<m>/`, `golden-master/<m>/` | [`.claude/skills/cobol-analyze/`](../.claude/skills/cobol-analyze/) |
-| **B — Spec** | Structured spec doc reviewable by a banking analyst — replaces "pseudocode" as the intermediate representation | `specs/<m>.md` | [`.claude/skills/cobol-spec/`](../.claude/skills/cobol-spec/) |
-| **C — Translation** | Spring Boot 3 + JPA + Java 21. `BigDecimal` everywhere for numerics, traceability comments back to COBOL source lines | `java/<m>/` | [`.claude/skills/java-translate/`](../.claude/skills/java-translate/) |
-| **D — Validation** | Byte-exact diff between COBOL and Java outputs (stdout + exit code + every output file / DB-table dump) | `validation/reports/<m>.json` | [`.claude/skills/equivalence-validate/`](../.claude/skills/equivalence-validate/) |
+| **A — Discovery** | Pick a module, run it on GnuCOBOL, design fixtures, capture golden master | `cobol/<m>/`, `golden-master/<m>/` | [`.claude/skills/cobol-analyze/`](../../.claude/skills/cobol-analyze/) |
+| **B — Spec** | Structured spec doc reviewable by a banking analyst — replaces "pseudocode" as the intermediate representation | `specs/<m>.md` | [`.claude/skills/cobol-spec/`](../../.claude/skills/cobol-spec/) |
+| **C — Translation** | Spring Boot 3 + JPA + Java 21. `BigDecimal` everywhere for numerics, traceability comments back to COBOL source lines | `java/<m>/` | [`.claude/skills/java-translate/`](../../.claude/skills/java-translate/) |
+| **D — Validation** | Byte-exact diff between COBOL and Java outputs (stdout + exit code + every output file / DB-table dump) | `validation/reports/<m>.json` | [`.claude/skills/equivalence-validate/`](../../.claude/skills/equivalence-validate/) |
 | **E — Framework capture** | Extract lessons as reusable Claude Code skills, glossary entries, and ADRs | `.claude/skills/`, `docs/glossary.yaml`, `docs/DECISIONS.md` | (this column) |
 
-### Non-negotiable rules (from [CLAUDE.md](../CLAUDE.md))
+### Non-negotiable rules (from [CLAUDE.md](../../CLAUDE.md))
 
 1. **Numeric precision:** every COBOL `PIC 9...V9...` / `COMP-3` / `PIC S9...` maps to `java.math.BigDecimal` with explicit `MathContext` and `RoundingMode`. Never `double` / `float` / `int` for monetary or accounting values.
 2. **Traceability:** every translated Java method carries `// COBOL: <file>.cbl:<startLine>-<endLine>` linking back to the source paragraph.
@@ -46,12 +46,12 @@ What we are **not** claiming: that we built a CICS emulator, that we have DB2 bi
 
 | Artifact | Path | Role |
 |---|---|---|
-| Mapping cheatsheet | [`CLAUDE.md`](../CLAUDE.md) | High-level COBOL → Java idiom map (every Claude session reads this) |
+| Mapping cheatsheet | [`CLAUDE.md`](../../CLAUDE.md) | High-level COBOL → Java idiom map (every Claude session reads this) |
 | Detailed idiom glossary | [`docs/glossary.yaml`](./glossary.yaml) | Repo-local "RAG" — naming, numerics, idioms, data layer, DB access, orchestration |
 | Architecture Decision Records | [`docs/DECISIONS.md`](./DECISIONS.md) | 10 ADRs — each codifies a load-bearing methodology choice with evidence |
-| Per-phase skills | [`.claude/skills/*/SKILL.md`](../.claude/skills/) | Phase A/B/C/D/E execution rules |
-| Validator subagent | [`.claude/agents/equivalence-validator.md`](../.claude/agents/equivalence-validator.md) | Read-only orchestrator that runs phases A+C+D and reports GREEN/RED |
-| Diff harness | [`tools/compare-outputs.py`](../tools/compare-outputs.py) | Byte-exact comparison of stdout / exit code / every output file |
+| Per-phase skills | [`.claude/skills/*/SKILL.md`](../../.claude/skills/) | Phase A/B/C/D/E execution rules |
+| Validator subagent | [`.claude/agents/equivalence-validator.md`](../../.claude/agents/equivalence-validator.md) | Read-only orchestrator that runs phases A+C+D and reports GREEN/RED |
+| Diff harness | [`tools/compare-outputs.py`](../../tools/compare-outputs.py) | Byte-exact comparison of stdout / exit code / every output file |
 
 ---
 
@@ -61,24 +61,24 @@ For each module: **what was kept verbatim**, **what was adapted** (with explicit
 
 ### 3.1 Module 0 — `add-motor-policy`
 
-**Source provenance:** adapted from GenApp [`LGAPDB01`](../cobol/genapp-source/lgapdb01.cbl) (the original CICS/DB2-flavored INSERT POLICY + INSERT MOTOR). CICS and DB2 stripped because GnuCOBOL doesn't support them; replaced with COBOL flat-file I/O for byte-exact diffability. See [`cobol/add-motor-policy/README.md`](../cobol/add-motor-policy/README.md) for line-by-line provenance.
+**Source provenance:** adapted from GenApp [`LGAPDB01`](../../cobol/genapp-source/lgapdb01.cbl) (the original CICS/DB2-flavored INSERT POLICY + INSERT MOTOR). CICS and DB2 stripped because GnuCOBOL doesn't support them; replaced with COBOL flat-file I/O for byte-exact diffability. See [`cobol/add-motor-policy/README.md`](../../cobol/add-motor-policy/README.md) for line-by-line provenance.
 
 **COBOL → Java asset mapping:**
 
 | COBOL asset | Path / location | Java target | Path |
 |---|---|---|---|
-| Program `ADDMPOL` (entry point) | [`src/ADDMPOL.cbl`](../cobol/add-motor-policy/src/ADDMPOL.cbl) | `AddMotorPolicyApplication` | [`AddMotorPolicyApplication.java`](../java/add-motor-policy/src/main/java/com/example/poc/addmotorpolicy/AddMotorPolicyApplication.java) |
-| Copybook `lgpolicy.cpy` (verbatim) | [`copybooks/lgpolicy.cpy`](../cobol/add-motor-policy/copybooks/lgpolicy.cpy) | Length constants | inlined in `RecordCodec` |
-| `MAIN-LOGIC SECTION` (l. 161) + `HANDLE-ONE-REQUEST` (l. 192) | ADDMPOL.cbl | `BatchRunner.run()` | [`batch/BatchRunner.java`](../java/add-motor-policy/src/main/java/com/example/poc/addmotorpolicy/batch/BatchRunner.java) |
+| Program `ADDMPOL` (entry point) | [`src/ADDMPOL.cbl`](../../cobol/add-motor-policy/src/ADDMPOL.cbl) | `AddMotorPolicyApplication` | [`AddMotorPolicyApplication.java`](../../java/add-motor-policy/src/main/java/com/example/poc/addmotorpolicy/AddMotorPolicyApplication.java) |
+| Copybook `lgpolicy.cpy` (verbatim) | [`copybooks/lgpolicy.cpy`](../../cobol/add-motor-policy/copybooks/lgpolicy.cpy) | Length constants | inlined in `RecordCodec` |
+| `MAIN-LOGIC SECTION` (l. 161) + `HANDLE-ONE-REQUEST` (l. 192) | ADDMPOL.cbl | `BatchRunner.run()` | [`batch/BatchRunner.java`](../../java/add-motor-policy/src/main/java/com/example/poc/addmotorpolicy/batch/BatchRunner.java) |
 | `CHECK-REQUEST-ID` (l. 219) | ADDMPOL.cbl | Inline check in `BatchRunner` | (request-id literal `01AMOT`) |
-| `VALIDATE-REQUEST` (l. 226, EVALUATE TRUE × 5 rules) | ADDMPOL.cbl | `RequestValidator.validate()` | [`service/RequestValidator.java`](../java/add-motor-policy/src/main/java/com/example/poc/addmotorpolicy/service/RequestValidator.java) |
-| `CALC-MOTOR-PREMIUM` (l. 249, CC brackets + ON SIZE ERROR) | ADDMPOL.cbl | `MotorPremiumCalculator.calculate()` | [`service/MotorPremiumCalculator.java`](../java/add-motor-policy/src/main/java/com/example/poc/addmotorpolicy/service/MotorPremiumCalculator.java) |
+| `VALIDATE-REQUEST` (l. 226, EVALUATE TRUE × 5 rules) | ADDMPOL.cbl | `RequestValidator.validate()` | [`service/RequestValidator.java`](../../java/add-motor-policy/src/main/java/com/example/poc/addmotorpolicy/service/RequestValidator.java) |
+| `CALC-MOTOR-PREMIUM` (l. 249, CC brackets + ON SIZE ERROR) | ADDMPOL.cbl | `MotorPremiumCalculator.calculate()` | [`service/MotorPremiumCalculator.java`](../../java/add-motor-policy/src/main/java/com/example/poc/addmotorpolicy/service/MotorPremiumCalculator.java) |
 | `INSERT-POLICY` (l. 279) + `INSERT-MOTOR` (l. 295) | ADDMPOL.cbl | `BatchRunner` write + `RecordCodec.encode*` | `BatchRunner.java`, `RecordCodec.java` |
 | `REPORT-ERROR` (l. 313) | ADDMPOL.cbl | `BatchRunner.writeErr` | `BatchRunner.java` |
 | `PRINT-SUMMARY` (l. 329) | ADDMPOL.cbl | `BatchRunner` summary line | `BatchRunner.java` |
-| `REQUEST-FILE` FD (line-sequential, 143-char fixed-width) | ADDMPOL.cbl | `RecordCodec.parseRequest()` + `MotorPolicyRequest` DTO | [`batch/RecordCodec.java`](../java/add-motor-policy/src/main/java/com/example/poc/addmotorpolicy/batch/RecordCodec.java), [`domain/MotorPolicyRequest.java`](../java/add-motor-policy/src/main/java/com/example/poc/addmotorpolicy/domain/MotorPolicyRequest.java) |
-| `POLICY-FILE` FD (output) | ADDMPOL.cbl | `RecordCodec.encodePolicy()` + `PolicyEntity` | `RecordCodec.java`, [`domain/PolicyEntity.java`](../java/add-motor-policy/src/main/java/com/example/poc/addmotorpolicy/domain/PolicyEntity.java) |
-| `MOTOR-FILE` FD (output) | ADDMPOL.cbl | `RecordCodec.encodeMotor()` + `MotorEntity` | `RecordCodec.java`, [`domain/MotorEntity.java`](../java/add-motor-policy/src/main/java/com/example/poc/addmotorpolicy/domain/MotorEntity.java) |
+| `REQUEST-FILE` FD (line-sequential, 143-char fixed-width) | ADDMPOL.cbl | `RecordCodec.parseRequest()` + `MotorPolicyRequest` DTO | [`batch/RecordCodec.java`](../../java/add-motor-policy/src/main/java/com/example/poc/addmotorpolicy/batch/RecordCodec.java), [`domain/MotorPolicyRequest.java`](../../java/add-motor-policy/src/main/java/com/example/poc/addmotorpolicy/domain/MotorPolicyRequest.java) |
+| `POLICY-FILE` FD (output) | ADDMPOL.cbl | `RecordCodec.encodePolicy()` + `PolicyEntity` | `RecordCodec.java`, [`domain/PolicyEntity.java`](../../java/add-motor-policy/src/main/java/com/example/poc/addmotorpolicy/domain/PolicyEntity.java) |
+| `MOTOR-FILE` FD (output) | ADDMPOL.cbl | `RecordCodec.encodeMotor()` + `MotorEntity` | `RecordCodec.java`, [`domain/MotorEntity.java`](../../java/add-motor-policy/src/main/java/com/example/poc/addmotorpolicy/domain/MotorEntity.java) |
 | `ERROR-FILE` FD (LINE SEQUENTIAL) | ADDMPOL.cbl | `BatchRunner.writeErr()` (strips trailing spaces) | `BatchRunner.java` |
 
 **COBOL idioms exercised:**
@@ -93,18 +93,18 @@ For each module: **what was kept verbatim**, **what was adapted** (with explicit
 | `OPEN OUTPUT` (file truncate) | `StandardOpenOption.TRUNCATE_EXISTING` |
 | `ORGANIZATION IS LINE SEQUENTIAL` | `Files.newBufferedWriter` with US_ASCII + LF |
 
-**Fixtures (3):** [`01-happy-small`](../cobol/add-motor-policy/fixtures/01-happy-small/) (3 valid records spanning CC brackets), [`02-validation-errors`](../cobol/add-motor-policy/fixtures/02-validation-errors/) (5 invalid + 1 unknown request-id), [`03-numeric-boundaries`](../cobol/add-motor-policy/fixtures/03-numeric-boundaries/) (CC bracket boundaries + overflow + HALF_UP rounding). 14 records total.
+**Fixtures (3):** [`01-happy-small`](../../cobol/add-motor-policy/fixtures/01-happy-small/) (3 valid records spanning CC brackets), [`02-validation-errors`](../../cobol/add-motor-policy/fixtures/02-validation-errors/) (5 invalid + 1 unknown request-id), [`03-numeric-boundaries`](../../cobol/add-motor-policy/fixtures/03-numeric-boundaries/) (CC bracket boundaries + overflow + HALF_UP rounding). 14 records total.
 
-**Evidence:** [`validation/reports/add-motor-policy.json`](../validation/reports/add-motor-policy.json) — `"diffs": []` per fixture. 22 / 22 unit tests passing (`mvn -B test` from `java/add-motor-policy/`).
+**Evidence:** [`validation/reports/add-motor-policy.json`](../../validation/reports/add-motor-policy.json) — `"diffs": []` per fixture. 22 / 22 unit tests passing (`mvn -B test` from `java/add-motor-policy/`).
 
 ---
 
 ### 3.2 Module 1B — `add-policy-db`
 
-**Source provenance:** carved from GenApp [`lgapdb01.cbl:261-322`](../cobol/genapp-source/lgapdb01.cbl) (the `INSERT-POLICY` paragraph, 2 EXEC SQL statements). See [`cobol/add-policy-db/README.md`](../cobol/add-policy-db/README.md).
+**Source provenance:** carved from GenApp [`lgapdb01.cbl:261-322`](../../cobol/genapp-source/lgapdb01.cbl) (the `INSERT-POLICY` paragraph, 2 EXEC SQL statements). See [`cobol/add-policy-db/README.md`](../../cobol/add-policy-db/README.md).
 
 **Adaptations forced by GnuCOBOL constraints:**
-- `EXEC SQL INSERT INTO POLICY ...` routed via `CALL "cob_sqlite_exec"` (95-line C shim wrapping libsqlite3) instead of native EXEC SQL — GnuCOBOL has no EXEC SQL preprocessor; production migration would use **GIXSQL** to preserve the original `EXEC SQL ... END-EXEC` syntax. See [`tools/spike/REPORT.md`](../tools/spike/REPORT.md).
+- `EXEC SQL INSERT INTO POLICY ...` routed via `CALL "cob_sqlite_exec"` (95-line C shim wrapping libsqlite3) instead of native EXEC SQL — GnuCOBOL has no EXEC SQL preprocessor; production migration would use **GIXSQL** to preserve the original `EXEC SQL ... END-EXEC` syntax. See [`tools/spike/REPORT.md`](../../tools/spike/REPORT.md).
 - DB2 `DEFAULT` for auto-PK + `CURRENT TIMESTAMP` replaced with fixture-controlled values (POLICYNUMBER + LASTCHANGED arrive in the request record), so both sides produce identical rows for byte-exact diff. Production uses `@GeneratedValue` + `@CreationTimestamp` and masks those columns from the diff.
 - `EXEC CICS RETURN` on error paths stripped → `GOBACK` / `STOP RUN`. CICS error queue (LGSTSQ) replaced by stderr writes.
 
@@ -112,13 +112,13 @@ For each module: **what was kept verbatim**, **what was adapted** (with explicit
 
 | COBOL asset | Java target | Path |
 |---|---|---|
-| Program `ADDPOLDB` | `AddPolicyDbApplication` | [`AddPolicyDbApplication.java`](../java/add-policy-db/src/main/java/com/example/poc/addpolicydb/AddPolicyDbApplication.java) |
-| `MAIN` paragraph (read loop + dispatch) | `BatchRunner.run()` (CommandLineRunner) | [`batch/BatchRunner.java`](../java/add-policy-db/src/main/java/com/example/poc/addpolicydb/batch/BatchRunner.java) |
-| `INSERT-POLICY` paragraph | `PolicyInsertService.insert()` | [`service/PolicyInsertService.java`](../java/add-policy-db/src/main/java/com/example/poc/addpolicydb/service/PolicyInsertService.java) |
-| Subset of `CA-POLICY-COMMON` (7 fields) from `lgcmarea.cpy` | `PolicyEntity` (`@Entity`) | [`domain/PolicyEntity.java`](../java/add-policy-db/src/main/java/com/example/poc/addpolicydb/domain/PolicyEntity.java) |
-| (none on COBOL side) | `PolicyRepository extends JpaRepository<PolicyEntity, Long>` | [`domain/PolicyRepository.java`](../java/add-policy-db/src/main/java/com/example/poc/addpolicydb/domain/PolicyRepository.java) |
-| Request record (99-char fixed-width) | `RecordCodec.parseRequest()` | [`batch/RecordCodec.java`](../java/add-policy-db/src/main/java/com/example/poc/addpolicydb/batch/RecordCodec.java) |
-| POLICY table DDL | `schema.sql` (loaded via `spring.sql.init.mode=always`) | [`resources/schema.sql`](../java/add-policy-db/src/main/resources/schema.sql) |
+| Program `ADDPOLDB` | `AddPolicyDbApplication` | [`AddPolicyDbApplication.java`](../../java/add-policy-db/src/main/java/com/example/poc/addpolicydb/AddPolicyDbApplication.java) |
+| `MAIN` paragraph (read loop + dispatch) | `BatchRunner.run()` (CommandLineRunner) | [`batch/BatchRunner.java`](../../java/add-policy-db/src/main/java/com/example/poc/addpolicydb/batch/BatchRunner.java) |
+| `INSERT-POLICY` paragraph | `PolicyInsertService.insert()` | [`service/PolicyInsertService.java`](../../java/add-policy-db/src/main/java/com/example/poc/addpolicydb/service/PolicyInsertService.java) |
+| Subset of `CA-POLICY-COMMON` (7 fields) from `lgcmarea.cpy` | `PolicyEntity` (`@Entity`) | [`domain/PolicyEntity.java`](../../java/add-policy-db/src/main/java/com/example/poc/addpolicydb/domain/PolicyEntity.java) |
+| (none on COBOL side) | `PolicyRepository extends JpaRepository<PolicyEntity, Long>` | [`domain/PolicyRepository.java`](../../java/add-policy-db/src/main/java/com/example/poc/addpolicydb/domain/PolicyRepository.java) |
+| Request record (99-char fixed-width) | `RecordCodec.parseRequest()` | [`batch/RecordCodec.java`](../../java/add-policy-db/src/main/java/com/example/poc/addpolicydb/batch/RecordCodec.java) |
+| POLICY table DDL | `schema.sql` (loaded via `spring.sql.init.mode=always`) | [`resources/schema.sql`](../../java/add-policy-db/src/main/resources/schema.sql) |
 | `cob_sqlite_dump` table → CSV | `repository.findAll()` + sorted writer | `BatchRunner.java` (lines ~80-100) |
 
 **EXEC SQL → JPA mapping table (see [`glossary.yaml` `db_access`](./glossary.yaml)):**
@@ -134,9 +134,9 @@ For each module: **what was kept verbatim**, **what was adapted** (with explicit
 | `CURRENT TIMESTAMP` default | `@CreationTimestamp` (with determinism caveat) |
 | Transaction scope | `@Transactional(propagation = REQUIRES_NEW)` — one tx per request, matching CICS pattern |
 
-**Fixtures (2):** [`01-happy-small`](../cobol/add-policy-db/fixtures/01-happy-small/) (3 valid inserts), [`02-sql-errors`](../cobol/add-policy-db/fixtures/02-sql-errors/) (3 valid + 1 duplicate-PK that triggers UNIQUE constraint on both sides).
+**Fixtures (2):** [`01-happy-small`](../../cobol/add-policy-db/fixtures/01-happy-small/) (3 valid inserts), [`02-sql-errors`](../../cobol/add-policy-db/fixtures/02-sql-errors/) (3 valid + 1 duplicate-PK that triggers UNIQUE constraint on both sides).
 
-**Evidence:** [`validation/reports/add-policy-db.json`](../validation/reports/add-policy-db.json) — `"diffs": []` per fixture. Full spec: [`specs/add-policy-db.md`](../specs/add-policy-db.md).
+**Evidence:** [`validation/reports/add-policy-db.json`](../../validation/reports/add-policy-db.json) — `"diffs": []` per fixture. Full spec: [`specs/add-policy-db.md`](../../specs/add-policy-db.md).
 
 **Empirical finding caught:** `JpaRepository.save()` is INSERT-OR-UPDATE (MERGE) — silently overwrote a row on duplicate PK. Documented in [ADR-9](./DECISIONS.md). Fix: `EntityManager.persist()` + `em.flush()` for true INSERT semantics.
 
@@ -144,7 +144,7 @@ For each module: **what was kept verbatim**, **what was adapted** (with explicit
 
 ### 3.3 Module 1A — `add-policy-facade`
 
-**Source provenance:** carved from GenApp [`lgapol01.cbl`](../cobol/genapp-source/lgapol01.cbl) (a thin facade that validates the commarea, then `EXEC CICS LINK PROGRAM("LGAPDB01")`). See [`cobol/add-policy-facade/README.md`](../cobol/add-policy-facade/README.md).
+**Source provenance:** carved from GenApp [`lgapol01.cbl`](../../cobol/genapp-source/lgapol01.cbl) (a thin facade that validates the commarea, then `EXEC CICS LINK PROGRAM("LGAPDB01")`). See [`cobol/add-policy-facade/README.md`](../../cobol/add-policy-facade/README.md).
 
 **Adaptations forced by GnuCOBOL constraints:**
 - `EXEC CICS LINK PROGRAM("LGAPDB01") COMMAREA(...)` → `CALL "ADDPOLDB-INSERT"` to a **nested COBOL PROGRAM-ID** in the same source file. GnuCOBOL has no CICS runtime; nested-program CALL is the local equivalent (control + payload + return-code propagation). Cross-JVM CICS LINK is out of scope (see [ADR-10](./DECISIONS.md)).
@@ -158,11 +158,11 @@ For each module: **what was kept verbatim**, **what was adapted** (with explicit
 
 | COBOL asset | Java target | Path |
 |---|---|---|
-| Program `ADDPFCD` (outer / facade) | `AddPolicyFacadeApplication` | [`AddPolicyFacadeApplication.java`](../java/add-policy-facade/src/main/java/com/example/poc/addpolicyfacade/AddPolicyFacadeApplication.java) |
-| `MAIN` paragraph (read loop) | `BatchRunner.run()` | [`batch/BatchRunner.java`](../java/add-policy-facade/src/main/java/com/example/poc/addpolicyfacade/batch/BatchRunner.java) |
-| `FACADE-HANDLE` (validate + delegate) | `PolicyFacadeService.add()` | [`service/PolicyFacadeService.java`](../java/add-policy-facade/src/main/java/com/example/poc/addpolicyfacade/service/PolicyFacadeService.java) |
-| **Nested** `PROGRAM-ID ADDPOLDB-INSERT IS COMMON` | `PolicyInsertService.insert()` (separate `@Service` bean) | [`service/PolicyInsertService.java`](../java/add-policy-facade/src/main/java/com/example/poc/addpolicyfacade/service/PolicyInsertService.java) |
-| `LK-INSERT-PARAMS` (linkage block, 9 fields) | `PolicyEntity` passed as method argument | [`domain/PolicyEntity.java`](../java/add-policy-facade/src/main/java/com/example/poc/addpolicyfacade/domain/PolicyEntity.java) |
+| Program `ADDPFCD` (outer / facade) | `AddPolicyFacadeApplication` | [`AddPolicyFacadeApplication.java`](../../java/add-policy-facade/src/main/java/com/example/poc/addpolicyfacade/AddPolicyFacadeApplication.java) |
+| `MAIN` paragraph (read loop) | `BatchRunner.run()` | [`batch/BatchRunner.java`](../../java/add-policy-facade/src/main/java/com/example/poc/addpolicyfacade/batch/BatchRunner.java) |
+| `FACADE-HANDLE` (validate + delegate) | `PolicyFacadeService.add()` | [`service/PolicyFacadeService.java`](../../java/add-policy-facade/src/main/java/com/example/poc/addpolicyfacade/service/PolicyFacadeService.java) |
+| **Nested** `PROGRAM-ID ADDPOLDB-INSERT IS COMMON` | `PolicyInsertService.insert()` (separate `@Service` bean) | [`service/PolicyInsertService.java`](../../java/add-policy-facade/src/main/java/com/example/poc/addpolicyfacade/service/PolicyInsertService.java) |
+| `LK-INSERT-PARAMS` (linkage block, 9 fields) | `PolicyEntity` passed as method argument | [`domain/PolicyEntity.java`](../../java/add-policy-facade/src/main/java/com/example/poc/addpolicyfacade/domain/PolicyEntity.java) |
 | `CA-RETURN-CODE` (PIC 9(2)) | `PolicyFacadeService.Result` enum (OK_00 / TOO_SHORT_98 / SQL_ERROR) | `PolicyFacadeService.java` |
 
 **EXEC CICS → Spring DI mapping table (see [`glossary.yaml` `orchestration`](./glossary.yaml)):**
@@ -177,9 +177,9 @@ For each module: **what was kept verbatim**, **what was adapted** (with explicit
 | `EIBCALEN` length check | field-presence + value-bound validation on the DTO |
 | Nested COBOL PROGRAM-ID CALL | Direct method call between Spring `@Service` beans |
 
-**Fixtures (1):** [`01-happy-chain`](../cobol/add-policy-facade/fixtures/01-happy-chain/) — 3 valid records exercising the full chain (read → facade validates → CALL nested → INSERT → row in POLICY).
+**Fixtures (1):** [`01-happy-chain`](../../cobol/add-policy-facade/fixtures/01-happy-chain/) — 3 valid records exercising the full chain (read → facade validates → CALL nested → INSERT → row in POLICY).
 
-**Evidence:** [`validation/reports/add-policy-facade.json`](../validation/reports/add-policy-facade.json) — `"diffs": []`. Full spec: [`specs/add-policy-facade.md`](../specs/add-policy-facade.md).
+**Evidence:** [`validation/reports/add-policy-facade.json`](../../validation/reports/add-policy-facade.json) — `"diffs": []`. Full spec: [`specs/add-policy-facade.md`](../../specs/add-policy-facade.md).
 
 ---
 
@@ -245,20 +245,20 @@ Findings 1-5 came from module 0; finding 6 came from module 1B. Each empirical f
 
 | Tool | Path | Purpose | Status |
 |---|---|---|---|
-| `compare-outputs.py` | [`tools/compare-outputs.py`](../tools/compare-outputs.py) | Byte-exact diff harness (stdout + exit code + output files). Writes JSON proof to `validation/reports/`. | Pre-existing, used by all 3 modules |
-| `run-cobol.sh` | [`tools/run-cobol.sh`](../tools/run-cobol.sh) | Compile + run COBOL fixture, capture golden master | Pre-existing, used by module 0 |
-| `run-java.sh` | [`tools/run-java.sh`](../tools/run-java.sh) | Build + run Java module against every fixture | Pre-existing, used by all 3 modules |
-| `make-fixture.py` | [`tools/make-fixture.py`](../tools/make-fixture.py) | Generate fixed-width `requests.dat` from JSON spec | **Extended** with multi-layout dict (module 0 unaffected) |
-| `run-cobol-db.sh` | [`tools/run-cobol-db.sh`](../tools/run-cobol-db.sh) | **NEW.** Sister of `run-cobol.sh` for DB-touching modules: free-format compile, links libcob_sqlite, sets DYLD_LIBRARY_PATH | New for modules 1A / 1B |
-| `cob_sqlite.c` | [`tools/spike/cob_sqlite.c`](../tools/spike/cob_sqlite.c) | **NEW.** 95-line C shim wrapping libsqlite3, callable from COBOL via `CALL "cob_sqlite_*"`. 4 functions: open / exec / dump / close. | New; supersedes need for GIXSQL on this platform for the PoC |
-| `run-spike.sh` | [`tools/spike/run-spike.sh`](../tools/spike/run-spike.sh) | Independent harness that proves the shim works (Hello-DB COBOL ↔ Java byte-exact) | New |
-| Validator subagent | [`.claude/agents/equivalence-validator.md`](../.claude/agents/equivalence-validator.md) | Read-only orchestrator that runs phases A+C+D and reports GREEN/RED | Pre-existing |
+| `compare-outputs.py` | [`tools/compare-outputs.py`](../../tools/compare-outputs.py) | Byte-exact diff harness (stdout + exit code + output files). Writes JSON proof to `validation/reports/`. | Pre-existing, used by all 3 modules |
+| `run-cobol.sh` | [`tools/run-cobol.sh`](../../tools/run-cobol.sh) | Compile + run COBOL fixture, capture golden master | Pre-existing, used by module 0 |
+| `run-java.sh` | [`tools/run-java.sh`](../../tools/run-java.sh) | Build + run Java module against every fixture | Pre-existing, used by all 3 modules |
+| `make-fixture.py` | [`tools/make-fixture.py`](../../tools/make-fixture.py) | Generate fixed-width `requests.dat` from JSON spec | **Extended** with multi-layout dict (module 0 unaffected) |
+| `run-cobol-db.sh` | [`tools/run-cobol-db.sh`](../../tools/run-cobol-db.sh) | **NEW.** Sister of `run-cobol.sh` for DB-touching modules: free-format compile, links libcob_sqlite, sets DYLD_LIBRARY_PATH | New for modules 1A / 1B |
+| `cob_sqlite.c` | [`tools/spike/cob_sqlite.c`](../../tools/spike/cob_sqlite.c) | **NEW.** 95-line C shim wrapping libsqlite3, callable from COBOL via `CALL "cob_sqlite_*"`. 4 functions: open / exec / dump / close. | New; supersedes need for GIXSQL on this platform for the PoC |
+| `run-spike.sh` | [`tools/spike/run-spike.sh`](../../tools/spike/run-spike.sh) | Independent harness that proves the shim works (Hello-DB COBOL ↔ Java byte-exact) | New |
+| Validator subagent | [`.claude/agents/equivalence-validator.md`](../../.claude/agents/equivalence-validator.md) | Read-only orchestrator that runs phases A+C+D and reports GREEN/RED | Pre-existing |
 
 ---
 
 ## 7. Is it runnable? — Yes. Reproduction recipe.
 
-From repository root, after toolchain setup (see [`tools/setup.md`](../tools/setup.md)):
+From repository root, after toolchain setup (see [`tools/setup.md`](../../tools/setup.md)):
 
 ```bash
 # Module 0 — file I/O (VSAM-equivalent)
@@ -282,7 +282,7 @@ Expected output:
 [OK ] add-policy-facade/01-happy-chain
 ```
 
-Wall time: ~30 seconds for module 0, ~10 seconds each for modules 1A/1B (after first build), ~1 minute total. JSON proof artifacts written under [`validation/reports/`](../validation/reports/).
+Wall time: ~30 seconds for module 0, ~10 seconds each for modules 1A/1B (after first build), ~1 minute total. JSON proof artifacts written under [`validation/reports/`](../../validation/reports/).
 
 ---
 
@@ -305,14 +305,14 @@ This PoC is **not** a production migration tool. It is a methodology + reusable 
 | Want to know… | Read |
 |---|---|
 | What this is and why (5 min) | [`docs/PRESENTATION.md`](./PRESENTATION.md) |
-| Hard rules every Claude session must follow | [`CLAUDE.md`](../CLAUDE.md) |
+| Hard rules every Claude session must follow | [`CLAUDE.md`](../../CLAUDE.md) |
 | Detailed mapping rules (idioms, numerics, data layer, DB, orchestration) | [`docs/glossary.yaml`](./glossary.yaml) |
 | Architectural decisions (10 ADRs) | [`docs/DECISIONS.md`](./DECISIONS.md) |
 | 5-phase methodology in depth | [`docs/METHODOLOGY.md`](./METHODOLOGY.md) |
-| Per-module structured specs | [`specs/`](../specs/) |
+| Per-module structured specs | [`specs/`](../../specs/) |
 | Per-module provenance ("kept / adapted / removed") | each module's `README.md` |
-| Spike that proved the EXEC SQL path | [`tools/spike/REPORT.md`](../tools/spike/REPORT.md) |
-| Byte-exact diff proof artifacts | [`validation/reports/`](../validation/reports/) |
+| Spike that proved the EXEC SQL path | [`tools/spike/REPORT.md`](../../tools/spike/REPORT.md) |
+| Byte-exact diff proof artifacts | [`validation/reports/`](../../validation/reports/) |
 | This report (PoC completion) | this file |
 
 ---

@@ -74,7 +74,7 @@ To prove the methodology works end-to-end before committing to a framework.
 
 A carve of `INSERT-POLICY` from GenApp `LGAPDB01:261-322`. Two `EXEC SQL` statements (INSERT + SELECT), 7 host variables, return-code dispatch on SQLCODE.
 
-- **COBOL side:** the EXEC SQL is routed through a 95-line C shim (`tools/spike/cob_sqlite.c`) callable from GnuCOBOL — proven by the [spike report](../tools/spike/REPORT.md). In production this would be the OCESQL/GIXSQL preprocessor; for the PoC we hand-translate to its equivalent output to keep dependencies minimal.
+- **COBOL side:** the EXEC SQL is routed through a 95-line C shim (`tools/spike/cob_sqlite.c`) callable from GnuCOBOL — proven by the [spike report](../../tools/spike/REPORT.md). In production this would be the OCESQL/GIXSQL preprocessor; for the PoC we hand-translate to its equivalent output to keep dependencies minimal.
 - **Java side:** Spring Boot 3 + JPA + H2 (in-memory). `EntityManager.persist()` + `em.flush()` inside `@Transactional(REQUIRES_NEW)` — explicitly **not** `JpaRepository.save()` (see §6 finding 5.6).
 - **Output channels diffed:** stdout (`OK/ERR` per record + summary) and `out/policy.csv` (the POLICY table dumped as `id|col|col|...\n` rows, sorted by PK).
 - **Caveat:** H2 ≠ DB2. What's proven is the *translation pattern* (EXEC SQL → JPA, SQLCODE → typed exception). Production swaps the JDBC URL to Db2 LUW or Postgres with no Java code change.

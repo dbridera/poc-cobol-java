@@ -56,7 +56,7 @@ After all records:
 | 2 | Insert one row | `INSERT INTO POLICY VALUES (...)` via `cob_sqlite_exec` | `EntityManager.persist(entity); em.flush()` |
 | 3 | Dump table | `SELECT * FROM POLICY ORDER BY 1` via `cob_sqlite_dump` | `repository.findAll().sort(...)` then write |
 
-**Critical:** Java uses `EntityManager.persist`, **NOT** `JpaRepository.save()`. See [docs/DECISIONS.md ADR-9](../docs/DECISIONS.md) — `save()` is INSERT-OR-UPDATE (MERGE) and silently corrupts data on duplicate PK. Caught empirically by fixture 02-sql-errors.
+**Critical:** Java uses `EntityManager.persist`, **NOT** `JpaRepository.save()`. See [docs/methodology/DECISIONS.md ADR-9](../docs/methodology/DECISIONS.md) — `save()` is INSERT-OR-UPDATE (MERGE) and silently corrupts data on duplicate PK. Caught empirically by fixture 02-sql-errors.
 
 ## 5. Error handling
 

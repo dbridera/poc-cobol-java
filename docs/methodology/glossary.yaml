@@ -21,8 +21,34 @@ naming:
 
 numerics:
   policy: "All COBOL numerics map to java.math.BigDecimal. Never double/float/int for money."
+  policy_scope_note: |
+    The rule is **unconditional** — it applies to loop indices, digit accumulators,
+    check-digit operands, and other non-monetary integers too. Module 2
+    (cci-account-converter) has zero monetary values yet still uses BigDecimal
+    throughout the check-digit calculator per CLAUDE.md hard rule 1. This is
+    deliberate: the rule's value is that it forecloses an entire class of bugs
+    (silent precision loss, locale-dependent rounding) without per-field judgment
+    calls. If a future module finds the BigDecimal overhead measurable, file an
+    ADR-style exception with a specific perf benchmark.
   scale_rule: "scale = digits to the right of V; for PIC 9(7)V99 -> scale 2"
   default_rounding: "RoundingMode.HALF_UP"
+  integer_truncation_rule: |
+    For divisions whose result is stored back into an integer PIC (no V, no
+    fractional retention), the rounding mode is **RoundingMode.DOWN**, not
+    HALF_UP. COBOL's `WS-INT-FIELD = X / Y` with `WS-INT-FIELD PIC 9(N)`
+    truncates the fractional part. Java: `dividend.divide(divisor, 0,
+    RoundingMode.DOWN)`. **Empirically required on module 2** for the
+    check-digit `sum / 10` step. Distinct from HALF_UP — they diverge whenever
+    the units digit of the dividend is ≥ 5.
+  pic_truncation_load_bearing: |
+    A `PIC 9(N) := value` where `value > 10^N - 1` **silently keeps the low N
+    digits**. This is sometimes the algorithm. Example: in BCTITSCV's mod-10
+    check-digit, the formula yields `10` when `sum mod 10 == 0`; the assignment
+    to `PIC 9(01)` truncates to `0` which is the correct check digit. Java
+    must reproduce explicitly with `result.remainder(BigDecimal.valueOf(10^N))`
+    or `result.mod(...)` — silently allowing 2-digit output where 1 was
+    expected is a bug. **Empirically required on module 2.** Flag every
+    `MOVE x-digit-value TO PIC 9(narrower)` in the spec.
   default_rounding_note: |
     COBOL `ROUNDED` (with no explicit MODE clause) is "round-to-nearest, ties away from zero"
     a.k.a. HALF_AWAY_FROM_ZERO. For NON-NEGATIVE values this is the same as Java's HALF_UP.
@@ -41,6 +67,22 @@ numerics:
     the granular RC.
 
 idioms:
+  mod_10_check_digit:
+    pattern: |
+      Pair of paragraphs that compute a Luhn-like check digit over a fixed-length
+      digit string via alternating ×1 / ×2 multipliers, digit-sum extraction
+      (`(x/10) + (x%10)`), and a final `((sum/10)*10 + 10) - sum` that relies on
+      PIC truncation for the `sum mod 10 == 0` case.
+    java: |
+      Single `CheckDigitCalculator.compute(String digits) -> BigDecimal`. Use
+      `RoundingMode.DOWN` on `sum.divide(TEN, 0)`. Finish with
+      `result.remainder(TEN)` to model PIC 9(01) truncation. Worked example in
+      [java/cci-account-converter/.../CheckDigitCalculator.java].
+    note: |
+      Recurring banking idiom — CCI (Peru), CBU (Argentina), IBAN, CLABE (Mexico),
+      and most national interbank codes use a variant. Promote a shared
+      `CheckDigitCalculator` to a `commons` package the first time a second
+      module needs it.
   EVALUATE_TRUE:
     java: "switch expression with boolean cases, or rule chain when conditions are complex"
   PERFORM_THRU:
@@ -51,6 +93,17 @@ idioms:
   REDEFINES:
     java: "two view classes over the same byte[] OR sealed interface with explicit converter"
     note: "never silently treat the two views as the same type"
+  REDEFINES_simple_alternative:
+    when: "the two views are both flat groups of String / numeric sub-fields and the calling code always knows which view is in play"
+    java: |
+      A single `String` backing field plus per-view getter methods that
+      `substring()` into the right offsets. e.g.
+      `getOfiBcpIm()` reads bytes 8-10, `getOfiBcpSt()` reads bytes 7-9 of the
+      same underlying string. Lighter than a sealed interface; valid when the
+      family discriminator is itself a commarea field. **Empirically used on
+      module 2 (cci-account-converter)** for the IM / ST views over the same
+      20-byte commercial-account string.
+    avoid: "If different REDEFINES groups would have different *types* (mix of String + BigDecimal + nested groups), use the sealed-interface form instead."
   OCCURS_DEPENDING_ON:
     java: "List<T> whose size is bound to the depending field; validate at construction"
   level_88:

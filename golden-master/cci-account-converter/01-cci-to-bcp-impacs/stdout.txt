@@ -1,0 +1,6 @@
+RC: 00
+MSG: 
+FAM-RET: 004
+BCP-EDIT: 00221502152345678112
+CUENTA-ITE:                     
+---

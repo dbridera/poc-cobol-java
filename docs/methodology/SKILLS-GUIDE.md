@@ -10,12 +10,12 @@ This doc only covers what isn't already in the per-skill `SKILL.md` files. Each 
 
 | Phase | Skill | Trigger to invoke |
 |---|---|---|
-| A — Discovery | [`cobol-analyze`](../.claude/skills/cobol-analyze/SKILL.md) | Starting a new module, or the user names a COBOL program |
-| B — Spec | [`cobol-spec`](../.claude/skills/cobol-spec/SKILL.md) | After Phase A's `cobol/<m>/README.md` exists and `golden-master/<m>/` has been captured |
-| C — Translation | [`java-translate`](../.claude/skills/java-translate/SKILL.md) | After `specs/<m>.md` exists and SME has reviewed |
-| C (data layer) | [`copybook-to-entity`](../.claude/skills/copybook-to-entity/SKILL.md) | When starting Phase C for a module whose copybooks haven't been mapped yet |
-| D — Validation | [`equivalence-validate`](../.claude/skills/equivalence-validate/SKILL.md) | After every Phase C change; before declaring a module done |
-| D (orchestration) | [`equivalence-validator`](../.claude/agents/equivalence-validator.md) (subagent) | Proactively after any Phase C change — the subagent runs the three-step harness and reports green/red |
+| A — Discovery | [`cobol-analyze`](../../.claude/skills/cobol-analyze/SKILL.md) | Starting a new module, or the user names a COBOL program |
+| B — Spec | [`cobol-spec`](../../.claude/skills/cobol-spec/SKILL.md) | After Phase A's `cobol/<m>/README.md` exists and `golden-master/<m>/` has been captured |
+| C — Translation | [`java-translate`](../../.claude/skills/java-translate/SKILL.md) | After `specs/<m>.md` exists and SME has reviewed |
+| C (data layer) | [`copybook-to-entity`](../../.claude/skills/copybook-to-entity/SKILL.md) | When starting Phase C for a module whose copybooks haven't been mapped yet |
+| D — Validation | [`equivalence-validate`](../../.claude/skills/equivalence-validate/SKILL.md) | After every Phase C change; before declaring a module done |
+| D (orchestration) | [`equivalence-validator`](../../.claude/agents/equivalence-validator.md) (subagent) | Proactively after any Phase C change — the subagent runs the three-step harness and reports green/red |
 
 Phase E has no skill — it *produces* skills. See §4.
 
@@ -48,7 +48,7 @@ The contracts are explicit so a future engineer (or LLM session) knows what file
 
 | | |
 |---|---|
-| **Consumes** | `specs/<m>.md`, `golden-master/<m>/`, [docs/glossary.yaml](./glossary.yaml), [CLAUDE.md](../CLAUDE.md) hard rules |
+| **Consumes** | `specs/<m>.md`, `golden-master/<m>/`, [docs/glossary.yaml](./glossary.yaml), [CLAUDE.md](../../CLAUDE.md) hard rules |
 | **Produces** | `java/<module>/` Spring Boot project with `pom.xml`, `src/main/java/com/example/poc/<module>/...`, `application.properties` with banner suppression |
 | **Done when** | `mvn -B test` is green AND `tools/run-java.sh <module>` succeeds AND every method has a `// COBOL: <file>.cbl:<startLine>-<endLine>` traceability comment |
 | **Don't proceed if** | Any `BigDecimal` could be `double`/`float` — reject the translation regardless of test status (see [ADR-3](./DECISIONS.md#adr-3--bigdecimal-is-mandatory-for-every-cobol-numeric)) |
@@ -129,7 +129,7 @@ When NOT to add a new skill:
 3. Mirror the section structure of an adjacent skill if your skill is a phase variant. The five existing skills follow a rough shape: *purpose → required sections / hard rules → procedure → reference example*.
 4. Cite evidence — link to a fixture, a glossary entry, or a line range in module zero. Skills without evidence become aspirational and decay.
 5. Update [docs/glossary.yaml](./glossary.yaml) if the skill introduces new vocabulary, and cross-link from `METHODOLOGY.md` if the skill changes a phase's shape.
-6. If the skill is read-only orchestration (not generation), make it a subagent instead — `.claude/agents/<name>.md` with `tools: Bash, Read, Grep` (no `Edit`/`Write`). The [equivalence-validator](../.claude/agents/equivalence-validator.md) is the canonical example.
+6. If the skill is read-only orchestration (not generation), make it a subagent instead — `.claude/agents/<name>.md` with `tools: Bash, Read, Grep` (no `Edit`/`Write`). The [equivalence-validator](../../.claude/agents/equivalence-validator.md) is the canonical example.
 
 ### Example — a hypothetical `cics-bms-to-rest` skill
 
@@ -150,7 +150,7 @@ Why `equivalence-validator` is a subagent rather than a script:
 
 - **Bounded scope.** The subagent has `tools: Bash, Read, Grep` only. It cannot edit the Java, the COBOL, or the comparator. This is an enforced boundary, not a convention.
 - **Reads structured output.** The subagent reads `validation/reports/<module>.json` and reports a clean `RESULT: GREEN` / `RESULT: RED`. Useful when a parent agent or human is iterating on Phase C and wants a fast verdict without parsing diff output.
-- **Fails loud, never relaxes.** [.claude/agents/equivalence-validator.md](../.claude/agents/equivalence-validator.md) explicitly forbids speculating about causes when the failure mode is unfamiliar — quote the diff and stop.
+- **Fails loud, never relaxes.** [.claude/agents/equivalence-validator.md](../../.claude/agents/equivalence-validator.md) explicitly forbids speculating about causes when the failure mode is unfamiliar — quote the diff and stop.
 
 Use it as the standard "is the diff still green?" check after any Phase C edit. Don't run the three commands manually when you can ask the subagent.
 

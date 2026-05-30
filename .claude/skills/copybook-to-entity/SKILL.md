@@ -78,7 +78,7 @@ public record Quotes(int count, List<Quote> entries) {
 
 - Class name = copybook name in PascalCase, drop redundant prefixes: `lgpolicy.cpy` → `Policy*` classes (not `LgPolicy*`).
 - Field name = COBOL data name in camelCase, dropping trailing `-` segments (e.g., `DB2-M-VALUE` → `value`, scoped within a `Motor` class so the prefix is unnecessary).
-- Java packages follow `docs/glossary.yaml` `naming.java_packages`.
+- Java packages follow `docs/methodology/glossary.yaml` `naming.java_packages`.
 
 ## Persistence vs DTO decision
 

@@ -4,10 +4,10 @@
 
 | | |
 |---|---|
-| Status | Modules **0**, **1A** (CICS facade), **1B** (DB / EXEC SQL) all end-to-end **GREEN** |
+| Status | Modules **0**, **1A** (CICS facade), **1B** (DB / EXEC SQL), **2** (real BCP banking package) all end-to-end **GREEN** |
 | Toolchain | GnuCOBOL 3.2 + Java 21 + Maven 3.9 + Spring Boot 3.3 + JPA + H2 (+ SQLite shim for COBOL EXEC SQL) |
-| Tests | 22 / 22 Java unit tests · **6 / 6 fixtures byte-exact equivalent** across 3 modules |
-| Sample source | Adapted from public [`cicsdev/cics-genapp`](https://github.com/cicsdev/cics-genapp) |
+| Tests | 35 / 35 Java unit tests · **9 / 9 fixtures byte-exact equivalent** across 4 modules |
+| Sample source | Adapted from public [`cicsdev/cics-genapp`](https://github.com/cicsdev/cics-genapp) (modules 0/1A/1B) + Banco de Crédito del Perú `BCTITSCV` (module 2, real banking) |
 
 ---
 
@@ -27,7 +27,17 @@ If the diff is green, the translation is correct.
 
 ## 2. 60-second quickstart
 
-Pre-requisite: toolchain (see §8). After that, from the repo root:
+Pre-requisite: toolchain (see §8). After that, from the repo root, **one command runs all four modules end-to-end**:
+
+```bash
+./tools/demo-commands.sh all
+```
+
+Prints phase headers (A / C / D), echoes each command, ends with a proof block confirming 9 / 9 fixtures byte-exact equivalent across modules 0, 1A, 1B, 2.
+
+Per-module subcommands are below. For the full narrative + talking points, see [`docs/demo/DEMO.md`](./docs/demo/DEMO.md).
+
+### Raw commands (for live typing / debugging)
 
 ```bash
 # Module 0 — file I/O (VSAM-equivalent)
@@ -44,9 +54,14 @@ Pre-requisite: toolchain (see §8). After that, from the repo root:
 ./tools/run-cobol-db.sh add-policy-facade
 ./tools/run-java.sh     add-policy-facade
 ./tools/compare-outputs.py add-policy-facade
+
+# Module 2 — real BCP banking package (CCI ↔ commercial account, mod-10 check digits)
+./tools/run-cobol.sh    cci-account-converter
+./tools/run-java.sh     cci-account-converter
+./tools/compare-outputs.py cci-account-converter
 ```
 
-Expected output across all 3 modules:
+Expected output across all 4 modules:
 
 ```
 [OK ] add-motor-policy/01-happy-small
@@ -55,9 +70,34 @@ Expected output across all 3 modules:
 [OK ] add-policy-db/01-happy-small
 [OK ] add-policy-db/02-sql-errors
 [OK ] add-policy-facade/01-happy-chain
+[OK ] cci-account-converter/01-cci-to-bcp-impacs
+[OK ] cci-account-converter/02-bcp-to-cci-saving
+[OK ] cci-account-converter/03-validation-error
 ```
 
 Plus JSON proof artifacts under `validation/reports/` — `"diffs": []` per fixture.
+
+---
+
+## 2.5. Running the four example modules
+
+| Module | What it proves | Command |
+|---|---|---|
+| 0 | VSAM / file access | `./tools/demo-commands.sh module-0` |
+| 1B | DB2 / EXEC SQL → JPA | `./tools/demo-commands.sh module-1b` |
+| 1A | CICS LINK → Spring service-to-service DI | `./tools/demo-commands.sh module-1a` |
+| 2 | Real banking package + mod-10 check digits | `./tools/demo-commands.sh module-2` |
+| **all** | the above × 4 + cross-module proof block | `./tools/demo-commands.sh all` |
+
+Each subcommand prints a per-phase narrative (A / C / D) and a RESULT summary citing the ADR(s) that module surfaced. Add `--quiet` to suppress narration. Full talking points + Q&A: [`docs/demo/DEMO.md`](./docs/demo/DEMO.md).
+
+---
+
+## 2.6. Translating a new COBOL module
+
+Drop your COBOL under `cobol/<your-module>/src/*.cbl` (and copybooks under `cobol/<your-module>/copybooks/*.cpy`), open Claude Code at the repo root, and follow phases A → E using the skills under [`.claude/skills/`](./.claude/skills/). Each phase has a paste-ready prompt in [`docs/methodology/RUNNING-WITH-CLAUDE.md`](./docs/methodology/RUNNING-WITH-CLAUDE.md). The five-phase shape and rationale are explained in [`docs/methodology/METHODOLOGY.md`](./docs/methodology/METHODOLOGY.md). The hard rules every session must follow are in [`CLAUDE.md`](./CLAUDE.md).
+
+Phase A produces both a prose `README.md` and a structured `DEPENDENCIES.md` (asset map: programs, paragraph PERFORM tree, external CALLs, copybooks, files, EXEC SQL, EXEC CICS, entry points — 8 fixed sections per [`.claude/skills/cobol-analyze/SKILL.md`](./.claude/skills/cobol-analyze/SKILL.md) §4.5). Phase B produces `specs/<your-module>.md`. Phase C produces `java/<your-module>/`. Phase D produces `validation/reports/<your-module>.json` with `"diffs": []` per fixture.
 
 ---
 
@@ -65,7 +105,7 @@ Plus JSON proof artifacts under `validation/reports/` — `"diffs": []` per fixt
 
 | Phase | What happens | Output | Skill file |
 |---|---|---|---|
-| **A — Discovery** | Pick a module, get it runnable on GnuCOBOL, design fixtures, capture golden master | `cobol/<m>/`, `golden-master/<m>/` | `.claude/skills/cobol-analyze/` |
+| **A — Discovery** | Pick a module, get it runnable on GnuCOBOL, design fixtures, capture golden master | `cobol/<m>/README.md` + `cobol/<m>/DEPENDENCIES.md` (asset map), `golden-master/<m>/` | `.claude/skills/cobol-analyze/` |
 | **B — Spec** | Claude writes a structured spec doc reviewable by a banking SME (data dictionary, control flow, edge cases). COBOL stays the source of truth. | `specs/<m>.md` | `.claude/skills/cobol-spec/` |
 | **C — Translation** | Spring Boot 3 + JPA + Java 21. `BigDecimal` everywhere, traceability comments back to COBOL line ranges. | `java/<m>/` | `.claude/skills/java-translate/` |
 | **D — Validation** | Replay golden-master fixtures against the Java; byte-exact diff. | `validation/reports/<m>.json` | `.claude/skills/equivalence-validate/` |
@@ -82,49 +122,53 @@ poc-cobol-java/
 ├── README.md                          this file (entry point)
 ├── CLAUDE.md                          hard rules — every Claude session reads this
 ├── docs/
-│   ├── PRESENTATION.md                5-minute explainer for stakeholders
-│   ├── glossary.yaml                  COBOL → Java idiom + naming map
+│   ├── methodology/                   permanent framework docs (10 files)
+│   │   ├── METHODOLOGY.md             why the 5-phase shape
+│   │   ├── DECISIONS.md               12 ADRs (load-bearing methodology choices)
+│   │   ├── glossary.yaml              COBOL → Java idiom + naming map (the "RAG")
+│   │   ├── SKILLS-GUIDE.md            handoff contracts between phases
+│   │   ├── SCALING.md                 what the green diff does + doesn't prove
+│   │   ├── RUNNING-WITH-CLAUDE.md     operator's guide for adopting the framework
+│   │   ├── PRESENTATION.md            5-minute stakeholder explainer
+│   │   ├── EXECUTIVE-REPORT.md        executive summary
+│   │   ├── POC-COMPLETION-REPORT.md   full completion report
+│   │   └── MODULE-2-REPORT.md         module 2 session report
+│   ├── demo/
+│   │   └── DEMO.md                    reproduce the full demo end-to-end
 │   └── reference/                     drop the Anthropic playbook PDF here
 │
 ├── cobol/
-│   ├── add-motor-policy/              MODULE ZERO
-│   │   ├── README.md                  provenance: kept / adapted / added
-│   │   ├── src/ADDMPOL.cbl            adapted from GenApp LGAPDB01
-│   │   ├── copybooks/lgpolicy.cpy     verbatim from GenApp
-│   │   └── fixtures/
-│   │       ├── 01-happy-small/        spec.json + generated requests.dat
-│   │       ├── 02-validation-errors/
-│   │       └── 03-numeric-boundaries/
+│   ├── add-motor-policy/              MODULE 0 — VSAM / file I/O
+│   ├── add-policy-db/                 MODULE 1B — DB2 / EXEC SQL → JPA
+│   ├── add-policy-facade/             MODULE 1A — CICS LINK → Spring DI
+│   ├── cci-account-converter/         MODULE 2 — real BCP package (BCTITSCV)
+│   │   ├── README.md                  prose Phase A doc (provenance, data dictionary, ...)
+│   │   ├── DEPENDENCIES.md            structured 8-section asset map (Phase A)
+│   │   ├── original/                  verbatim sources from the client
+│   │   ├── src/                       adapted COBOL (compile unit)
+│   │   ├── copybooks/                 lowercase copy for the GnuCOBOL -I path
+│   │   └── fixtures/<n>/in/requests.dat
 │   └── genapp-source/                 unmodified GenApp originals (traceability)
 │
-├── golden-master/
-│   └── add-motor-policy/              captured COBOL outputs per fixture
-│       └── <fixture>/{stdout.txt, exit_code, stderr.txt, out/...}
+├── golden-master/<module>/<fixture>/  captured COBOL outputs (stdout, exit_code, out/)
 │
-├── specs/
-│   └── add-motor-policy.md            structured spec (Phase B)
+├── specs/<module>.md                  structured spec (Phase B)
 │
-├── java/
-│   └── add-motor-policy/              Spring Boot project (Phase C)
-│       ├── pom.xml
-│       └── src/{main,test}/java/com/example/poc/addmotorpolicy/
-│           ├── AddMotorPolicyApplication.java
-│           ├── batch/{BatchRunner, RecordCodec}.java
-│           ├── domain/{MotorPolicyRequest, PolicyEntity, MotorEntity}.java
-│           └── service/{MotorPremiumCalculator, RequestValidator,
-│                        PremiumOverflowException}.java
+├── java/<module>/                     Spring Boot project (Phase C)
+│   ├── pom.xml
+│   └── src/{main,test}/java/com/example/poc/<module>/...
 │
-├── java-run/                          regenerable; outputs from Java side
-│   └── add-motor-policy/<fixture>/
+├── java-run/<module>/<fixture>/       regenerable; outputs from Java side
 │
-├── validation/
-│   └── reports/add-motor-policy.json  machine-readable diff proof
+├── validation/reports/<module>.json   machine-readable diff proof
 │
 └── tools/
     ├── setup.md                       toolchain install instructions
-    ├── run-cobol.sh                   compile + run COBOL, capture golden master
+    ├── run-cobol.sh                   compile + run COBOL (file-only), capture golden master
+    ├── run-cobol-db.sh                same, for modules using the libcob_sqlite shim
     ├── run-java.sh                    package + run Spring Boot, capture java-run
     ├── compare-outputs.py             byte-exact diff harness
+    ├── demo-commands.sh               narrated wrapper for the four reference modules
     ├── capture-fixtures.sh            batch wrapper for run-cobol.sh
     └── make-fixture.py                generate fixed-width requests.dat from JSON spec
 ```
@@ -142,30 +186,32 @@ VS Code suggestions:
 | Layer | Command | Result |
 |---|---|---|
 | Toolchain self-test | `./tools/run-cobol.sh --self-test` | OK (compiles + runs hello-world COBOL) |
-| Java unit tests | `(cd java/add-motor-policy && mvn -B test)` | **22 / 22 passed** |
-| Behavioral equivalence | `./tools/compare-outputs.py add-motor-policy` | **3 fixtures, 14 records, 0 diffs** |
+| Java unit tests | `mvn -B test` per module | **35 / 35 passed across 4 modules** |
+| Behavioral equivalence | `./tools/demo-commands.sh all` | **9 fixtures · 4 modules · 0 bytes diverging** |
 
-### Java unit tests (last `mvn test`)
+### Cross-module result table
 
-```
-Tests run: 3,  RecordCodecTest                (parse + encode policy/motor records)
-Tests run: 12, MotorPremiumCalculatorTest     (CC brackets, HALF_UP, overflow, golden values)
-Tests run: 7,  RequestValidatorTest           (short-circuit ordering for each rule)
-Tests run: 22, Failures: 0, Errors: 0, Skipped: 0
-BUILD SUCCESS
-```
+| Module | What it proves | Fixtures | Diffs | Empirical finding codified |
+|---|---|---|---|---|
+| 0 — `add-motor-policy` | VSAM / file access | 3 | 0 | HALF_UP not HALF_EVEN ([ADR-4](./docs/methodology/DECISIONS.md)) |
+| 1B — `add-policy-db` | DB2 / EXEC SQL → JPA + H2 | 2 | 0 | `em.persist + flush` over `JpaRepository.save` ([ADR-9](./docs/methodology/DECISIONS.md)) |
+| 1A — `add-policy-facade` | CICS LINK → Spring DI | 1 | 0 | same-JVM Spring DI for PoC scope ([ADR-10](./docs/methodology/DECISIONS.md)) |
+| 2 — `cci-account-converter` | Real BCP banking package + mod-10 check digits | 3 | 0 | Integer-division `RoundingMode.DOWN` ([ADR-11](./docs/methodology/DECISIONS.md)) + PIC narrow-store truncation as algorithm ([ADR-12](./docs/methodology/DECISIONS.md)) |
+| **Total** | — | **9** | **0** | 5 ADRs across 4 modules — pattern is converging |
 
-### Equivalence proof (`validation/reports/add-motor-policy.json`)
+### Equivalence proofs
+
+Per-fixture `"diffs": []` in every `validation/reports/<module>.json`. Cross-module summary by running `./tools/demo-commands.sh proof`. Module 2 example:
 
 ```json
 [
-  { "fixture": "01-happy-small",        "module": "add-motor-policy", "diffs": [] },
-  { "fixture": "02-validation-errors",  "module": "add-motor-policy", "diffs": [] },
-  { "fixture": "03-numeric-boundaries", "module": "add-motor-policy", "diffs": [] }
+  { "fixture": "01-cci-to-bcp-impacs",  "module": "cci-account-converter", "diffs": [] },
+  { "fixture": "02-bcp-to-cci-saving",  "module": "cci-account-converter", "diffs": [] },
+  { "fixture": "03-validation-error",   "module": "cci-account-converter", "diffs": [] }
 ]
 ```
 
-`diffs: []` per fixture means COBOL and Java agree on **every byte** of stdout, exit code, `policy.dat`, `motor.dat`, and `error.log`.
+`diffs: []` means COBOL and Java agree on **every byte** of every output channel — stdout, exit code, output files, table dumps, and error logs.
 
 ### What the 14 records actually exercise
 
@@ -179,18 +225,21 @@ BUILD SUCCESS
 
 These are *not* theoretical — every one was caught by running the diff:
 
-1. **Default COBOL `ROUNDED` is HALF_UP, not HALF_EVEN.** Caught by record 2 of fixture 01 (`350 + 22500×0.005 + 50 = 512.50 → 513`). HALF_EVEN would give 512. Glossary updated.
+1. **Default COBOL `ROUNDED` is HALF_UP, not HALF_EVEN.** Caught by module 0 record 2 of fixture 01 (`350 + 22500×0.005 + 50 = 512.50 → 513`). HALF_EVEN would give 512. → [ADR-4](./docs/methodology/DECISIONS.md).
 2. **`EVALUATE TRUE` is short-circuit.** Reports the first failing rule, not all of them. Java preserves order.
 3. **`ON SIZE ERROR` keeps its return code per paragraph.** A single top-level Java `catch` flattens this and loses the granular RC=11.
 4. **Spring Boot banner + startup logs leak into stdout.** `application.properties` has `logging.level.root=OFF`, `spring.main.banner-mode=off`, `spring.main.log-startup-info=false`.
-5. **Copybook `REDEFINES` is two interpretations of the same bytes** — must use a sealed interface or distinct view classes, never a single nullable bag.
-6. **`JpaRepository.save()` is INSERT-OR-UPDATE (MERGE), not INSERT.** Caught by module 1B fixture 02-sql-errors (duplicate PK). COBOL `EXEC SQL INSERT` throws on duplicate; `save()` silently overwrites. Fix: `EntityManager.persist() + em.flush() + @Transactional(REQUIRES_NEW)`. See [DECISIONS.md ADR-9](./docs/DECISIONS.md).
+5. **Copybook `REDEFINES` is two interpretations of the same bytes** — must use a sealed interface or distinct view classes, never a single nullable bag. Module 2 codified a lighter [REDEFINES alternative](./docs/methodology/glossary.yaml) for flat-group views.
+6. **`JpaRepository.save()` is INSERT-OR-UPDATE (MERGE), not INSERT.** Caught by module 1B fixture 02-sql-errors (duplicate PK). COBOL `EXEC SQL INSERT` throws on duplicate; `save()` silently overwrites. Fix: `EntityManager.persist() + em.flush() + @Transactional(REQUIRES_NEW)`. → [ADR-9](./docs/methodology/DECISIONS.md).
+7. **Integer-division arithmetic uses `RoundingMode.DOWN`, not `HALF_UP`.** Caught by module 2 — the mod-10 check-digit calculation breaks if HALF_UP rounds `sum/10` upward. Distinct from ADR-4 (which governs `ROUNDED`). → [ADR-11](./docs/methodology/DECISIONS.md).
+8. **PIC narrow-store truncation is part of the algorithm, not an overflow.** Module 2's mod-10 relies on `WS-UNO-NUMERO PIC 9(01) := 10 → 0` to compute `(10 - sum%10) % 10`. Java must reproduce explicitly with `result.remainder(BigDecimal.TEN)`. → [ADR-12](./docs/methodology/DECISIONS.md).
+9. **Negative-control test confirmed (module 2).** Deliberately changing the `×2` multiplier in `CheckDigitCalculator` to `×1` produced a clean `[FAIL]` on fixture 02 (`CUENTA-ITE: ...28 → ...09`, exit 1). Reverted to green. The harness has teeth.
 
 ### What we did NOT yet run (honest disclaimer)
 
-- **Negative-control test.** Deliberately switching one BigDecimal calc to `double` and confirming the diff fails. Recommended before module 1.
-- **Property-based tests** (jqwik dependency is in `pom.xml`) — placeholder for module 1+.
+- **Property-based tests** (jqwik dependency is in module 0's `pom.xml`) — still a placeholder; only module 2 has hand-pinned mod-10 cases.
 - **Cross-COBOL-implementation check.** Only GnuCOBOL was used. A real migration should also run the original on the mainframe at least once and confirm GnuCOBOL produces the same golden master.
+- **Negative-control on the other three modules.** Module 2 proved teeth; modules 0/1A/1B still trust the harness without a same-module proof.
 
 ---
 
@@ -216,11 +265,12 @@ export JAVA_HOME="/usr/local/opt/openjdk@21"
 
 | Task | Where to edit | Then |
 |---|---|---|
+| Run all four reference modules end-to-end | n/a | `./tools/demo-commands.sh all` |
 | Change a fixture's data | `cobol/<module>/fixtures/<name>/spec.json` | `python3 tools/make-fixture.py spec.json in/requests.dat`, then re-run the three commands above |
 | Add a new fixture | new dir under `cobol/<module>/fixtures/` with `spec.json` | same as above |
 | Change COBOL business logic | `cobol/<module>/src/*.cbl` | re-run all three commands; the diff will show what changed |
 | Change Java translation | `java/<module>/src/main/java/...` | `mvn -B test` from the module dir, then `./tools/run-java.sh && ./tools/compare-outputs.py` |
-| Add a new module from scratch | start a Claude Code session with the `cobol-analyze` skill | follow phases A → E in order |
+| Add a new module from scratch | follow [`docs/methodology/RUNNING-WITH-CLAUDE.md`](./docs/methodology/RUNNING-WITH-CLAUDE.md) — paste-ready prompt per phase | `cobol-analyze` → `cobol-spec` → `java-translate` → `equivalence-validate` → crystallize |
 
 ### Debugging a red diff
 
@@ -287,10 +337,11 @@ JCL → Spring Batch · cross-JVM CICS LINK (REST/RPC equivalents) · EBCDIC ↔
 
 ### Recommended next moves
 
-1. **Run the negative-control test** on each module — change one BigDecimal to double (module 0), or one `em.persist()` back to `repository.save()` (modules 1A/1B), confirm the diff fails, then revert. Proves the harness has teeth on every module.
-2. **Module 2** — pick another GenApp operation (INQUIRE POLICY or UPDATE POLICY). The skills + glossary should make this much faster now that modules 1A and 1B have crystallized the DB + orchestrator patterns.
+1. **Run the negative-control test on modules 0 / 1A / 1B.** Module 2 proved harness teeth; the other three still trust the harness without a same-module proof. Half a day each.
+2. **Add an IMPACS-encode + CTS fixture** to module 2 to cover the two paragraphs that 3 fixtures don't yet exercise (`1500` IMPACS branch, `1500` CTS-override branch). See [docs/methodology/MODULE-2-REPORT.md §7](./docs/methodology/MODULE-2-REPORT.md).
 3. **Real Postgres** — flip `application.properties` `spring.datasource.url` from `jdbc:h2:mem:` to `jdbc:postgresql://...`. The JPA layer is unchanged.
-4. **Drop the Anthropic Code Modernization Playbook PDF** into `docs/reference/` and reconcile any deltas with the methodology.
+4. **Property-based tests** with jqwik for the mod-10 check digit (canonical self-validating property: `check(payload ‖ check(payload)) == 0`).
+5. **Drop the Anthropic Code Modernization Playbook PDF** into `docs/reference/` and reconcile any deltas with the methodology.
 
 ---
 
@@ -298,9 +349,17 @@ JCL → Spring Batch · cross-JVM CICS LINK (REST/RPC equivalents) · EBCDIC ↔
 
 | Want to know… | Read |
 |---|---|
-| What this is and why (5 min) | [`docs/PRESENTATION.md`](./docs/PRESENTATION.md) |
+| **Reproduce the demo end-to-end** | [`docs/demo/DEMO.md`](./docs/demo/DEMO.md) |
+| **Adopt the framework on a new COBOL module** | [`docs/methodology/RUNNING-WITH-CLAUDE.md`](./docs/methodology/RUNNING-WITH-CLAUDE.md) |
+| What this is and why (5 min stakeholder pitch) | [`docs/methodology/PRESENTATION.md`](./docs/methodology/PRESENTATION.md) |
+| Why the 5-phase shape (engineering rationale) | [`docs/methodology/METHODOLOGY.md`](./docs/methodology/METHODOLOGY.md) |
 | Hard rules every Claude session must follow | [`CLAUDE.md`](./CLAUDE.md) |
-| What module zero does, byte by byte | [`specs/add-motor-policy.md`](./specs/add-motor-policy.md) |
-| What was kept / adapted / added from GenApp | [`cobol/add-motor-policy/README.md`](./cobol/add-motor-policy/README.md) |
-| Naming + idiom map for the translator | [`docs/glossary.yaml`](./docs/glossary.yaml) |
+| Handoff contracts between phases (skill ↔ skill) | [`docs/methodology/SKILLS-GUIDE.md`](./docs/methodology/SKILLS-GUIDE.md) |
+| What the green diff does NOT prove (honesty) | [`docs/methodology/SCALING.md`](./docs/methodology/SCALING.md) |
+| Naming + idiom map for the translator | [`docs/methodology/glossary.yaml`](./docs/methodology/glossary.yaml) |
+| 12 ADRs — load-bearing methodology choices | [`docs/methodology/DECISIONS.md`](./docs/methodology/DECISIONS.md) |
+| Full completion + executive reports | [`docs/methodology/POC-COMPLETION-REPORT.md`](./docs/methodology/POC-COMPLETION-REPORT.md) · [`docs/methodology/EXECUTIVE-REPORT.md`](./docs/methodology/EXECUTIVE-REPORT.md) |
+| Module 2 session report (real-banking deep dive) | [`docs/methodology/MODULE-2-REPORT.md`](./docs/methodology/MODULE-2-REPORT.md) |
+| Per-module spec (byte-exact contract) | `specs/<module>.md` |
+| Per-module asset / dependency map | `cobol/<module>/DEPENDENCIES.md` |
 | Approved methodology plan | `~/.claude/plans/breezy-tinkering-mccarthy.md` |

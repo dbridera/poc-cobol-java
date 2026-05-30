@@ -45,7 +45,7 @@ Assuming module 1 is another GenApp operation of similar size (e.g., INQUIRE POL
 - **Fixtures** — every module needs its own input data covering its own validation rules and PIC boundaries.
 - **SME review** — every spec needs a human banking analyst to confirm the rules match what the bank charges. No shortcut.
 - **Copybook idiosyncrasies** — each new copybook can introduce a new `REDEFINES` shape or `OCCURS DEPENDING ON` chain that the existing skill doesn't yet cover.
-- **CICS / DB2 adaptations** — the "what was adapted" section in [cobol/add-motor-policy/README.md](../cobol/add-motor-policy/README.md) repeats per module until we have a real CICS/DB2 story (see §4).
+- **CICS / DB2 adaptations** — the "what was adapted" section in [cobol/add-motor-policy/README.md](../../cobol/add-motor-policy/README.md) repeats per module until we have a real CICS/DB2 story (see §4).
 
 ### What DOES amortize
 
@@ -80,7 +80,7 @@ Each entry: **Why it breaks** + **earliest signal you're in this territory**. Us
 **Signal.** Source contains `EXEC CICS SEND MAP` / `RECEIVE MAP`, or a `DFHCOMMAREA` larger than a request record. Module zero adapted *around* this by reading from a flat file; we have no answer for code that *can't* be adapted around it.
 
 ### IMS hierarchical databases
-**Why it breaks.** [.claude/skills/copybook-to-entity/SKILL.md](../.claude/skills/copybook-to-entity/SKILL.md) maps copybooks to JPA `@Entity` (relational). IMS DBDs / PSBs / segment hierarchies don't map cleanly — relational tables are a fundamentally different shape.
+**Why it breaks.** [.claude/skills/copybook-to-entity/SKILL.md](../../.claude/skills/copybook-to-entity/SKILL.md) maps copybooks to JPA `@Entity` (relational). IMS DBDs / PSBs / segment hierarchies don't map cleanly — relational tables are a fundamentally different shape.
 **Signal.** Source contains `EXEC DLI` calls or a `PSBNAME` reference. Modules sitting on IMS need a different persistence-mapping strategy before the methodology applies.
 
 ### Deep JCL chains
@@ -117,7 +117,7 @@ Engineering leadership will ask: "what doesn't your green diff prove?" Honest li
 
 - **Cross-compiler equivalence.** Module zero proves Java matches **GnuCOBOL output**, not IBM Enterprise COBOL output. The two compilers diverge on edge cases (e.g., `MOVE` truncation rules for misaligned `COMP-3`, intrinsic function precision, default code-page collation). Without a one-time mainframe run-through, this gap is unknown. See [ADR-2](./DECISIONS.md#adr-2--gnucobol-is-the-reference-compiler-for-the-poc).
 
-- **Harness teeth.** The negative-control test ([.claude/skills/equivalence-validate/SKILL.md](../.claude/skills/equivalence-validate/SKILL.md) "Negative-control sanity check") is **not yet run** on module zero. Until it is, we're trusting the harness without proof it would have failed if we'd been wrong. Fix before module 1.
+- **Harness teeth.** The negative-control test ([.claude/skills/equivalence-validate/SKILL.md](../../.claude/skills/equivalence-validate/SKILL.md) "Negative-control sanity check") is **not yet run** on module zero. Until it is, we're trusting the harness without proof it would have failed if we'd been wrong. Fix before module 1.
 
 - **EBCDIC collation in sort orders.** EBCDIC and ASCII sort the same letters but different *symbols* into different orders (`a < A` in EBCDIC; `A < a` in ASCII). Programs that sort or compare with mixed alphanumerics may produce different results on the mainframe even with identical logic.
 

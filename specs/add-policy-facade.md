@@ -77,7 +77,7 @@ If module 1B's pattern changes (e.g., to add real `@GeneratedValue`), module 1A 
 
 ## 9. Out of scope (module 1A)
 
-- Cross-JVM CICS LINK (REST / message queue / RPC) — see [docs/DECISIONS.md ADR-10](../docs/DECISIONS.md).
+- Cross-JVM CICS LINK (REST / message queue / RPC) — see [docs/methodology/DECISIONS.md ADR-10](../docs/methodology/DECISIONS.md).
 - `EXEC CICS ABEND`, `EXEC CICS ASKTIME`, `EXEC CICS FORMATTIME`, error queue logging via LGSTSQ — all stripped.
 - Two-phase commit across LINKed programs.
 

@@ -16,7 +16,7 @@ Flat file by design — convert to `docs/decisions/` once entries exceed ~15.
 
 **Alternatives considered.** SME review only (misses precision bugs). LLM-generated tests only (tautological — same model writes code and tests). Property-based tests (good supplement, doesn't prove behavioral equivalence).
 
-**Evidence.** [validation/reports/add-motor-policy.json](../validation/reports/add-motor-policy.json) — `diffs: []` per fixture is the contract. [.claude/skills/equivalence-validate/SKILL.md](../.claude/skills/equivalence-validate/SKILL.md) defines the protocol.
+**Evidence.** [validation/reports/add-motor-policy.json](../../validation/reports/add-motor-policy.json) — `diffs: []` per fixture is the contract. [.claude/skills/equivalence-validate/SKILL.md](../../.claude/skills/equivalence-validate/SKILL.md) defines the protocol.
 
 ---
 
@@ -30,7 +30,7 @@ Flat file by design — convert to `docs/decisions/` once entries exceed ~15.
 
 **Alternatives considered.** Mainframe COBOL via Z/OS pricing tier (slow procurement, blocks PoC velocity). Cobol-IT (commercial, similar tradeoffs to GnuCOBOL). Micro Focus COBOL (commercial). All three deferred to industrialization phase.
 
-**Evidence.** [cobol/add-motor-policy/README.md](../cobol/add-motor-policy/README.md) lists every CICS/DB2 statement that was adapted away. [tools/run-cobol.sh](../tools/run-cobol.sh) compiles with `cobc`.
+**Evidence.** [cobol/add-motor-policy/README.md](../../cobol/add-motor-policy/README.md) lists every CICS/DB2 statement that was adapted away. [tools/run-cobol.sh](../../tools/run-cobol.sh) compiles with `cobc`.
 
 ---
 
@@ -44,7 +44,7 @@ Flat file by design — convert to `docs/decisions/` once entries exceed ~15.
 
 **Alternatives considered.** `double` "for non-monetary fields" — rejected because the line is fuzzy (engine CC, accident counts, percentages all participate in monetary arithmetic). `long` for integer fields — rejected for the same reason; uniformity is cheaper than per-field judgment.
 
-**Evidence.** [CLAUDE.md §1](../CLAUDE.md), [docs/glossary.yaml `numerics`](./glossary.yaml), [.claude/skills/java-translate/SKILL.md](../.claude/skills/java-translate/SKILL.md) "Numerics".
+**Evidence.** [CLAUDE.md §1](../../CLAUDE.md), [docs/glossary.yaml `numerics`](./glossary.yaml), [.claude/skills/java-translate/SKILL.md](../../.claude/skills/java-translate/SKILL.md) "Numerics".
 
 ---
 
@@ -58,7 +58,7 @@ Flat file by design — convert to `docs/decisions/` once entries exceed ~15.
 
 **Alternatives considered.** None — this is a fact about COBOL semantics, not a design choice. The decision is to make the fact mandatory in the methodology.
 
-**Evidence.** [docs/glossary.yaml `numerics.default_rounding_note`](./glossary.yaml), [specs/add-motor-policy.md §5.1](../specs/add-motor-policy.md).
+**Evidence.** [docs/glossary.yaml `numerics.default_rounding_note`](./glossary.yaml), [specs/add-motor-policy.md §5.1](../../specs/add-motor-policy.md).
 
 ---
 
@@ -72,7 +72,7 @@ Flat file by design — convert to `docs/decisions/` once entries exceed ~15.
 
 **Alternatives considered.** No spec, translate directly (fails SME review). Pseudocode as IR (loses precision). A formal IR (e.g., MLIR-style) (over-engineering for this PoC).
 
-**Evidence.** [.claude/skills/cobol-spec/SKILL.md](../.claude/skills/cobol-spec/SKILL.md), [specs/add-motor-policy.md](../specs/add-motor-policy.md). [CLAUDE.md §3](../CLAUDE.md) — "COBOL is ground truth, not the spec doc".
+**Evidence.** [.claude/skills/cobol-spec/SKILL.md](../../.claude/skills/cobol-spec/SKILL.md), [specs/add-motor-policy.md](../../specs/add-motor-policy.md). [CLAUDE.md §3](../../CLAUDE.md) — "COBOL is ground truth, not the spec doc".
 
 ---
 
@@ -86,7 +86,7 @@ Flat file by design — convert to `docs/decisions/` once entries exceed ~15.
 
 **Alternatives considered.** "AI refines duplicate loops first" (the original colleague proposal — explicitly rejected; see [PRESENTATION.md §2](./PRESENTATION.md)). Refactor in flight (creates a moving target the diff can't pin down).
 
-**Evidence.** [CLAUDE.md §5](../CLAUDE.md), [.claude/skills/java-translate/SKILL.md](../.claude/skills/java-translate/SKILL.md) "Control flow". [docs/glossary.yaml `forbidden`](./glossary.yaml) lists the "dead paragraph" trap.
+**Evidence.** [CLAUDE.md §5](../../CLAUDE.md), [.claude/skills/java-translate/SKILL.md](../../.claude/skills/java-translate/SKILL.md) "Control flow". [docs/glossary.yaml `forbidden`](./glossary.yaml) lists the "dead paragraph" trap.
 
 ---
 
@@ -96,11 +96,11 @@ Flat file by design — convert to `docs/decisions/` once entries exceed ~15.
 
 **Decision.** Spring Boot 3.3 on Java 21 with Spring Data JPA and PostgreSQL. Module zero defers JPA persistence to flat files so the byte-exact diff comes first; module 1+ wires `@Transactional` boundaries.
 
-**Consequences.** The methodology's translation rules ([.claude/skills/java-translate/SKILL.md](../.claude/skills/java-translate/SKILL.md)) are stack-specific — `application.properties` rules to suppress the Spring banner, `@SpringBootApplication(exclude = DataSourceAutoConfiguration.class)` for module zero. Migrating off Spring later is non-trivial.
+**Consequences.** The methodology's translation rules ([.claude/skills/java-translate/SKILL.md](../../.claude/skills/java-translate/SKILL.md)) are stack-specific — `application.properties` rules to suppress the Spring banner, `@SpringBootApplication(exclude = DataSourceAutoConfiguration.class)` for module zero. Migrating off Spring later is non-trivial.
 
 **Alternatives considered.** Quarkus (smaller community in banking ops). Plain Java SE (no DI / transactional story). .NET (out of scope — team is JVM). The bank's actual base package replaces `com.example.poc` at industrialization (see `docs/glossary.yaml` TODO).
 
-**Evidence.** [java/add-motor-policy/pom.xml](../java/add-motor-policy/pom.xml), [.claude/skills/java-translate/SKILL.md](../.claude/skills/java-translate/SKILL.md).
+**Evidence.** [java/add-motor-policy/pom.xml](../../java/add-motor-policy/pom.xml), [.claude/skills/java-translate/SKILL.md](../../.claude/skills/java-translate/SKILL.md).
 
 ---
 
@@ -114,7 +114,7 @@ Flat file by design — convert to `docs/decisions/` once entries exceed ~15.
 
 **Alternatives considered.** LangChain + Pinecone/Weaviate (extra infra, API key required, indirection without value at this scale). Custom RAG over the repo (the repo is already a "RAG corpus" — `glossary.yaml` + skills serve the same purpose). OpenAI SDK (no Pro/Max equivalent; would require API budget).
 
-**Evidence.** [CLAUDE.md §6](../CLAUDE.md), [.claude/skills/](../.claude/skills/), [.claude/agents/equivalence-validator.md](../.claude/agents/equivalence-validator.md).
+**Evidence.** [CLAUDE.md §6](../../CLAUDE.md), [.claude/skills/](../../.claude/skills/), [.claude/agents/equivalence-validator.md](../../.claude/agents/equivalence-validator.md).
 
 ---
 
@@ -128,7 +128,7 @@ Flat file by design — convert to `docs/decisions/` once entries exceed ~15.
 
 **Alternatives considered.** `repository.save()` — rejected; silently MERGEs and silently corrupts data, caught only by the byte-exact diff. `repository.existsById()` before `save()` — adds a SELECT round-trip and still doesn't atomically prevent races. `entityManager.persist()` without explicit `flush()` — the constraint failure surfaces at `@Transactional` commit time, which makes the catch point ambiguous and creates `UnexpectedRollbackException` headaches.
 
-**Evidence.** [java/add-policy-db/src/main/java/com/example/poc/addpolicydb/service/PolicyInsertService.java](../java/add-policy-db/src/main/java/com/example/poc/addpolicydb/service/PolicyInsertService.java) (the canonical pattern with rationale Javadoc). [cobol/add-policy-db/fixtures/02-sql-errors/](../cobol/add-policy-db/fixtures/02-sql-errors/) is the fixture that surfaced the issue: a 4-record run with a duplicate PK on record 4. Naive `save()` produced 4 inserted + corrupted row 1; the diff caught both deltas. [docs/glossary.yaml `db_access.exec_sql_insert`](./glossary.yaml).
+**Evidence.** [java/add-policy-db/src/main/java/com/example/poc/addpolicydb/service/PolicyInsertService.java](../../java/add-policy-db/src/main/java/com/example/poc/addpolicydb/service/PolicyInsertService.java) (the canonical pattern with rationale Javadoc). [cobol/add-policy-db/fixtures/02-sql-errors/](../../cobol/add-policy-db/fixtures/02-sql-errors/) is the fixture that surfaced the issue: a 4-record run with a duplicate PK on record 4. Naive `save()` produced 4 inserted + corrupted row 1; the diff caught both deltas. [docs/glossary.yaml `db_access.exec_sql_insert`](./glossary.yaml).
 
 ---
 
@@ -138,11 +138,39 @@ Flat file by design — convert to `docs/decisions/` once entries exceed ~15.
 
 **Decision.** Translate `EXEC CICS LINK PROGRAM(X) COMMAREA(Y)` as a same-JVM Spring DI call: `XService.handle(Y)` injected via `@Autowired`. The commarea becomes a mutable DTO (or, more idiomatically, an input record + a return result). Cross-JVM / cross-service mappings (REST, gRPC, message queue) are deferred to a future module that actually exercises them.
 
-**Consequences.** The Java side has the same two-program structure visible to reviewers (one `@Service` calls another). The transaction boundary lives on the inner insert service (ADR-9), not the facade — matching the COBOL pattern where LGAPDB01 owns the SQL unit-of-work. Limitation: this PoC does not address CICS transaction nesting, two-phase commit across LINKed programs, or LINKed programs that themselves write to recoverable resources. Those are out of scope per [README §9](../README.md#9-limitations--next-steps).
+**Consequences.** The Java side has the same two-program structure visible to reviewers (one `@Service` calls another). The transaction boundary lives on the inner insert service (ADR-9), not the facade — matching the COBOL pattern where LGAPDB01 owns the SQL unit-of-work. Limitation: this PoC does not address CICS transaction nesting, two-phase commit across LINKed programs, or LINKed programs that themselves write to recoverable resources. Those are out of scope per [README §9](../../README.md#9-limitations--next-steps).
 
 **Alternatives considered.** Inline the called program into the caller — rejected; loses the "program A calls program B" structure that's visible to the audience and required for refactoring later. REST call between two Spring apps — over-engineering for a same-JVM chain. A custom "CICS LINK emulator" — out of scope. Translate to Spring Cloud Function — adds infra without value at PoC scale.
 
-**Evidence.** [cobol/add-policy-facade/src/ADDPFCD.cbl](../cobol/add-policy-facade/src/ADDPFCD.cbl) (nested ADDPOLDB-INSERT program — the GnuCOBOL local equivalent of CICS LINK). [java/add-policy-facade/src/main/java/com/example/poc/addpolicyfacade/service/PolicyFacadeService.java](../java/add-policy-facade/src/main/java/com/example/poc/addpolicyfacade/service/PolicyFacadeService.java) (the `@Autowired` PolicyInsertService is the LINK-equivalent). [validation/reports/add-policy-facade.json](../validation/reports/add-policy-facade.json) proves byte-exact equivalence on the chained output.
+**Evidence.** [cobol/add-policy-facade/src/ADDPFCD.cbl](../../cobol/add-policy-facade/src/ADDPFCD.cbl) (nested ADDPOLDB-INSERT program — the GnuCOBOL local equivalent of CICS LINK). [java/add-policy-facade/src/main/java/com/example/poc/addpolicyfacade/service/PolicyFacadeService.java](../../java/add-policy-facade/src/main/java/com/example/poc/addpolicyfacade/service/PolicyFacadeService.java) (the `@Autowired` PolicyInsertService is the LINK-equivalent). [validation/reports/add-policy-facade.json](../../validation/reports/add-policy-facade.json) proves byte-exact equivalence on the chained output.
+
+---
+
+## ADR-11 — Integer-truncation arithmetic uses `RoundingMode.DOWN`, not `HALF_UP`
+
+**Context.** ADR-4 establishes `HALF_UP` as the default for COBOL `ROUNDED`. But a large class of arithmetic doesn't use `ROUNDED` at all — assignment of a `9(M)V9(N)` source into a `9(M)` target silently drops the fractional part. Banking algorithms exploit this: BCTITSCV's mod-10 check digit computes `WS-DOS-NUMERO = WS-TRES-NUMERO / 10` where the target is `PIC 9(02)`, producing integer truncation. A naive `BigDecimal.divide(TEN, 0, HALF_UP)` is wrong here — it rounds `sum=5` up to `1` instead of down to `0`, which shifts the final check digit by 10 and produces a wrong CCI.
+
+**Decision.** For a COBOL expression `target = source / divisor` where `target` has no fractional digits (no `V`), translate to `source.divide(divisor, 0, RoundingMode.DOWN)`. Reserve `HALF_UP` for cases where the COBOL explicitly says `ROUNDED` (ADR-4) or where the target preserves fractional digits.
+
+**Consequences.** Every `COMPUTE` and `MOVE` involving a quotient must be examined for the target's scale, not just the source operand. The Phase B spec must classify each arithmetic step as "rounding" (ADR-4) or "truncation" (this ADR). The glossary's `numerics.integer_truncation_rule` codifies the test: if the target is `PIC 9(N)` with no `V`, use `DOWN`.
+
+**Alternatives considered.** Always use `HALF_UP` for simplicity — rejected; produces wrong check digits whenever the units digit of the dividend is ≥ 5. Always use `DOWN` for simplicity — rejected; produces wrong premiums for monetary `ROUNDED` arithmetic (ADR-4). Two distinct modes per scope is the price of being faithful to the COBOL.
+
+**Evidence.** [cobol/cci-account-converter/src/BCTITSCV-RUN.cbl:284](../../cobol/cci-account-converter/src/BCTITSCV-RUN.cbl) (the `COMPUTE WS-DOS-NUMERO = (WS-TRES-NUMERO / 10)` line). [java/cci-account-converter/.../CheckDigitCalculator.java](../../java/cci-account-converter/src/main/java/com/example/poc/cciaccountconverter/service/CheckDigitCalculator.java) (uses `RoundingMode.DOWN`). [specs/cci-account-converter.md §5.3](../../specs/cci-account-converter.md). [docs/glossary.yaml `numerics.integer_truncation_rule`](./glossary.yaml). [validation/reports/cci-account-converter.json](../../validation/reports/cci-account-converter.json) — 3/3 byte-exact on first Java run.
+
+---
+
+## ADR-12 — PIC narrow-store truncation is part of the algorithm, not an overflow
+
+**Context.** A COBOL `MOVE x TO field-pic-9(N)` where `x` has more than N digits silently drops the high digits. Engineers trained on Java tend to read this as a buggy data type and "fix" it with `Math.toIntExact`-style overflow checks. But banking COBOL frequently relies on PIC narrow-store truncation as the algorithm — the canonical case is mod-N arithmetic done by computing in a wide accumulator and storing into a `9(1)` to get the result mod 10.
+
+**Decision.** When a spec identifies that PIC narrow-store truncation is load-bearing, the Java translation must reproduce it **explicitly** — `result.remainder(BigDecimal.valueOf(10).pow(N))` for the general case, `result.remainder(BigDecimal.TEN)` for the common `PIC 9(01)` case — and the spec must annotate the line as truncation-as-algorithm so the diff harness's coverage of that step is intentional. Implicit fall-through is not acceptable: a translator who doesn't notice the trick produces output that's off by exactly 10 (or 100, etc.) on edge cases.
+
+**Consequences.** The Phase A `cobol-analyze` skill must flag every `MOVE n-digit-source TO PIC 9(narrower)`. The spec must declare it either (a) load-bearing (Java must `remainder()` to match) or (b) genuine overflow (Java must `throw`). A row in the spec's "numerics" table for every such occurrence.
+
+**Alternatives considered.** Translate truncation as a runtime check (`if (result.intValueExact() > 99) throw`) — rejected; this produces a thrown exception for inputs where the COBOL is silently producing the correct answer. Always model PIC widths as Java `BigInteger` with explicit `mod()` calls everywhere — rejected as over-engineering for the cases where the source field already has enough digits.
+
+**Evidence.** [cobol/cci-account-converter/src/BCTITSCV-RUN.cbl:285-287](../../cobol/cci-account-converter/src/BCTITSCV-RUN.cbl) (the `MOVE WS-UNO-NUMERO TO TI-YRCV-DIG-ITE1` after a formula that can yield 10 → must store 0). [specs/cci-account-converter.md §5.3 "WS-UNO-NUMERO overflow is load-bearing"](../../specs/cci-account-converter.md). [docs/glossary.yaml `numerics.pic_truncation_load_bearing`](./glossary.yaml). [java/cci-account-converter/.../CheckDigitCalculator.java](../../java/cci-account-converter/src/main/java/com/example/poc/cciaccountconverter/service/CheckDigitCalculator.java) ends with `.remainder(BigDecimal.TEN)`.
 
 ---
 

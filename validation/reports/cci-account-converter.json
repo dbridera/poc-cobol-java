@@ -1,0 +1,17 @@
+[
+  {
+    "fixture": "01-cci-to-bcp-impacs",
+    "module": "cci-account-converter",
+    "diffs": []
+  },
+  {
+    "fixture": "02-bcp-to-cci-saving",
+    "module": "cci-account-converter",
+    "diffs": []
+  },
+  {
+    "fixture": "03-validation-error",
+    "module": "cci-account-converter",
+    "diffs": []
+  }
+]
