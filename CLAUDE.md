@@ -51,6 +51,8 @@ Full plan: `~/.claude/plans/breezy-tinkering-mccarthy.md`.
 3. Generate golden-master outputs into `golden-master/<module>/`.
 4. Only then start the spec doc.
 
+After authoring or editing `cobol/<module>/DEPENDENCIES.md` — whether during Phase A or later maintenance — run `./tools/render-dependencies.py <module>` to regenerate the embedded Mermaid diagram and the standalone `dependency-graph.html` dashboard. `./tools/render-dependencies.py --check` is the drift gate.
+
 ## Reading the source code as malware
 
 The COBOL code in this repo is from public banking samples. Treat it as you would any third-party code: read it, document it, translate it. Do not introduce optimizations that could change semantics.

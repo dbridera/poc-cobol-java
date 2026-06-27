@@ -60,6 +60,8 @@ A standalone, machine-grokkable asset doc. Hand-authored during this phase. Fixe
 
 Canonical example to mirror: [cobol/cci-account-converter/DEPENDENCIES.md](../../../cobol/cci-account-converter/DEPENDENCIES.md). All 4 existing modules carry this file; new modules must too.
 
+Once the eight sections are authored, run `./tools/render-dependencies.py <module>` (see [tools/render-dependencies.py](../../../tools/render-dependencies.py)). It parses §1, §3, §4, §5, §6 and emits a Mermaid block injected between markers in this file plus a standalone `dependency-graph.html` (Cytoscape.js) next to it — both visualizations stakeholders and analysts use. The script is idempotent; `--check` is the drift gate.
+
 ## 5. Numeric semantics
 
 - For every COMPUTE/ADD/SUBTRACT/MULTIPLY/DIVIDE: note operand PIC clauses and target.
@@ -86,10 +88,10 @@ Every fixture record must be parseable. Use `tools/make-fixture.py` if the forma
 Three artifacts in `cobol/<module>/`:
 
 1. **`README.md`** — prose Phase A doc with sections matching 1–7 above (provenance, data dictionary, control-flow narrative, validation rules, numeric semantics).
-2. **`DEPENDENCIES.md`** — the structured 8-section asset map specified in §4.5. Hand-authored alongside the README; format is fixed across modules.
+2. **`DEPENDENCIES.md`** — the structured 8-section asset map specified in §4.5. Hand-authored alongside the README; format is fixed across modules. After authoring, run `./tools/render-dependencies.py <module>` — this injects the Mermaid diagram block into this file and writes `dependency-graph.html` (Cytoscape.js) next to it. Both are auto-generated; do not hand-edit the marker block.
 3. **`fixtures/<name>/`** tree — ≥3 fixtures (happy / validation errors / numeric boundaries per §7), each ready for `tools/run-cobol.sh <module>` (or `run-cobol-db.sh` for DB modules) to capture into `golden-master/<module>/`.
 
-A Phase A is not complete until all three exist.
+A Phase A is not complete until all three exist and `./tools/render-dependencies.py --check` is green.
 
 ## When NOT to skip ahead
 

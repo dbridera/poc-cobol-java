@@ -6,6 +6,34 @@ For business meaning, data dictionary, validation rules, and numeric semantics, 
 
 ---
 
+
+## Diagram
+
+<!-- BEGIN AUTO-GENERATED DIAGRAM (render-dependencies.py) -->
+
+```mermaid
+flowchart LR
+    classDef program fill:#cfe2ff,stroke:#0d6efd,stroke-width:2px,color:#0a3678
+    classDef programNested fill:#bcd6fb,stroke:#0d6efd,stroke-width:2px,stroke-dasharray:5 3,color:#0a3678
+    classDef copybook fill:#d1e7dd,stroke:#198754,stroke-width:2px,color:#0f4d2e
+    classDef fileIn fill:#fff3cd,stroke:#fd7e14,stroke-width:2px,color:#7a3a02
+    classDef fileOut fill:#fcd5b5,stroke:#fd7e14,stroke-width:2px,color:#7a3a02
+    classDef sqlTable fill:#e2d6f5,stroke:#6f42c1,stroke-width:2px,color:#3d2367
+    classDef shim fill:#e9ecef,stroke:#6c757d,stroke-width:2px,color:#495057
+    DRIVER_BCTITSCV["DRIVER-BCTITSCV"]:::program
+    BCTITSCV["BCTITSCV"]:::programNested
+    BCTIYRCV["BCTIYRCV"]:::copybook
+    requests_dat["requests.dat"]:::fileIn
+    DRIVER_BCTITSCV -->|CALL| BCTITSCV
+    DRIVER_BCTITSCV -->|COPY| BCTIYRCV
+    BCTITSCV -->|COPY| BCTIYRCV
+    requests_dat -->|READ| DRIVER_BCTITSCV
+```
+
+<!-- END AUTO-GENERATED DIAGRAM -->
+
+---
+
 ## 1. Programs
 
 | PROGRAM-ID | Source | Entry signature | Role | Notes |

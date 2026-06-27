@@ -6,6 +6,45 @@ For business meaning, data dictionary, and the EXEC SQL → SQLite shim adaptati
 
 ---
 
+
+## Diagram
+
+<!-- BEGIN AUTO-GENERATED DIAGRAM (render-dependencies.py) -->
+
+```mermaid
+flowchart LR
+    classDef program fill:#cfe2ff,stroke:#0d6efd,stroke-width:2px,color:#0a3678
+    classDef programNested fill:#bcd6fb,stroke:#0d6efd,stroke-width:2px,stroke-dasharray:5 3,color:#0a3678
+    classDef copybook fill:#d1e7dd,stroke:#198754,stroke-width:2px,color:#0f4d2e
+    classDef fileIn fill:#fff3cd,stroke:#fd7e14,stroke-width:2px,color:#7a3a02
+    classDef fileOut fill:#fcd5b5,stroke:#fd7e14,stroke-width:2px,color:#7a3a02
+    classDef sqlTable fill:#e2d6f5,stroke:#6f42c1,stroke-width:2px,color:#3d2367
+    classDef shim fill:#e9ecef,stroke:#6c757d,stroke-width:2px,color:#495057
+    ADDPOLDB["ADDPOLDB"]:::program
+    cob_sqlite_open["cob_sqlite_open"]:::shim
+    cob_sqlite_exec["cob_sqlite_exec"]:::shim
+    cob_sqlite_dump["cob_sqlite_dump"]:::shim
+    cob_sqlite_close["cob_sqlite_close"]:::shim
+    requests_dat["requests.dat"]:::fileIn
+    policy_db["policy.db"]:::fileOut
+    policy_csv["policy.csv"]:::fileOut
+    POLICY["POLICY"]:::sqlTable
+    ADDPOLDB -->|CALL| cob_sqlite_open
+    ADDPOLDB -->|CALL| cob_sqlite_exec
+    ADDPOLDB -->|CALL| cob_sqlite_dump
+    ADDPOLDB -->|CALL| cob_sqlite_close
+    requests_dat -->|READ| ADDPOLDB
+    ADDPOLDB -->|WRITE| policy_db
+    ADDPOLDB -->|WRITE| policy_csv
+    ADDPOLDB -->|DROP| POLICY
+    ADDPOLDB -->|CREATE| POLICY
+    ADDPOLDB -->|INSERT| POLICY
+```
+
+<!-- END AUTO-GENERATED DIAGRAM -->
+
+---
+
 ## 1. Programs
 
 | PROGRAM-ID | Source | Entry signature | Role | Notes |
