@@ -2,16 +2,37 @@
   {
     "fixture": "01-happy-small",
     "module": "add-motor-policy",
+    "summary": {
+      "files_compared": 5,
+      "records_compared": 10,
+      "bytes_compared": 666,
+      "bytes_differing": 0,
+      "files_differing": 0
+    },
     "diffs": []
   },
   {
     "fixture": "02-validation-errors",
     "module": "add-motor-policy",
+    "summary": {
+      "files_compared": 5,
+      "records_compared": 12,
+      "bytes_compared": 931,
+      "bytes_differing": 0,
+      "files_differing": 0
+    },
     "diffs": []
   },
   {
     "fixture": "03-numeric-boundaries",
     "module": "add-motor-policy",
+    "summary": {
+      "files_compared": 5,
+      "records_compared": 18,
+      "bytes_compared": 1250,
+      "bytes_differing": 0,
+      "files_differing": 0
+    },
     "diffs": []
   }
 ]

@@ -2,16 +2,37 @@
   {
     "fixture": "01-cci-to-bcp-impacs",
     "module": "cci-account-converter",
+    "summary": {
+      "files_compared": 2,
+      "records_compared": 6,
+      "bytes_compared": 94,
+      "bytes_differing": 0,
+      "files_differing": 0
+    },
     "diffs": []
   },
   {
     "fixture": "02-bcp-to-cci-saving",
     "module": "cci-account-converter",
+    "summary": {
+      "files_compared": 2,
+      "records_compared": 6,
+      "bytes_compared": 94,
+      "bytes_differing": 0,
+      "files_differing": 0
+    },
     "diffs": []
   },
   {
     "fixture": "03-validation-error",
     "module": "cci-account-converter",
+    "summary": {
+      "files_compared": 2,
+      "records_compared": 6,
+      "bytes_compared": 113,
+      "bytes_differing": 0,
+      "files_differing": 0
+    },
     "diffs": []
   }
 ]

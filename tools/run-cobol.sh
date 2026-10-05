@@ -104,6 +104,11 @@ main() {
   if [[ "${1:-}" == "--self-test" ]]; then self_test; return; fi
   require_cobc
   local module="${1:?usage: $0 <module> [fixture]}"
+  # Multi-step job modules (JCL analogue) declare cobol/<module>/job.json and are
+  # executed by run-job.py; everything below stays the single-program path.
+  if [[ -f "cobol/$module/job.json" ]]; then
+    exec "$REPO_ROOT/tools/run-job.py" --side cobol "$module" ${2:+"$2"}
+  fi
   if [[ -n "${2:-}" ]]; then
     run_fixture "$module" "$2"
   else

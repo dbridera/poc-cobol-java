@@ -2,11 +2,25 @@
   {
     "fixture": "01-happy-small",
     "module": "add-policy-db",
+    "summary": {
+      "files_compared": 3,
+      "records_compared": 7,
+      "bytes_compared": 385,
+      "bytes_differing": 0,
+      "files_differing": 0
+    },
     "diffs": []
   },
   {
     "fixture": "02-sql-errors",
     "module": "add-policy-db",
+    "summary": {
+      "files_compared": 3,
+      "records_compared": 8,
+      "bytes_compared": 423,
+      "bytes_differing": 0,
+      "files_differing": 0
+    },
     "diffs": []
   }
 ]

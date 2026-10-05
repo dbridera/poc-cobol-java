@@ -31,6 +31,7 @@
     <span class="chip" style="background:#fcd5b5;border-color:#fd7e14">output file</span>
     <span class="chip" style="background:#e2d6f5;border-color:#6f42c1">SQL table</span>
     <span class="chip" style="background:#e9ecef;border-color:#6c757d">C shim</span>
+    <span class="chip" style="background:#f8d7da;border-color:#dc3545">job step</span>
   </div>
 </header>
 <div id="cy"></div>
@@ -175,6 +176,7 @@ const cy = cytoscape({
     { selector: 'node.type-file-out',        style: { 'background-color': '#fcd5b5', 'border-color': '#fd7e14' }},
     { selector: 'node.type-sql-table',       style: { 'background-color': '#e2d6f5', 'border-color': '#6f42c1' }},
     { selector: 'node.type-shim',            style: { 'background-color': '#e9ecef', 'border-color': '#6c757d', 'color': '#495057' }},
+    { selector: 'node.type-job-step',        style: { 'background-color': '#f8d7da', 'border-color': '#dc3545', 'color': '#58151c', 'shape': 'round-rectangle' }},
     { selector: 'edge', style: {
         'label': 'data(label)', 'font-size': 10, 'color': '#495057',
         'text-background-color': '#fff', 'text-background-opacity': 0.85,

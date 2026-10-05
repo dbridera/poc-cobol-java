@@ -2,6 +2,13 @@
   {
     "fixture": "01-happy-chain",
     "module": "add-policy-facade",
+    "summary": {
+      "files_compared": 3,
+      "records_compared": 7,
+      "bytes_compared": 385,
+      "bytes_differing": 0,
+      "files_differing": 0
+    },
     "diffs": []
   }
 ]
