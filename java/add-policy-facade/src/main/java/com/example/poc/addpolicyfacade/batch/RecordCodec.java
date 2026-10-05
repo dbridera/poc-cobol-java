@@ -24,6 +24,7 @@ import org.springframework.stereotype.Component;
  * the COBOL inserts via {@code FUNCTION TRIM} — see
  * [cobol/add-policy-db/src/ADDPOLDB.cbl:144]. We trim here for byte-exact diff.
  */
+// COBOL: ADDPOLDB.cbl:33-44 (REQUEST-RECORD, shared with module 1B)
 @Component
 public class RecordCodec {
 

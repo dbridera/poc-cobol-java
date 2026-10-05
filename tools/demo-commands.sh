@@ -12,8 +12,11 @@
 #   ./tools/demo-commands.sh module-1b    # DB2 / EXEC SQL → JPA + H2 — 2 fixtures
 #   ./tools/demo-commands.sh module-1a    # CICS LINK → Spring service-to-service — 1 fixture
 #   ./tools/demo-commands.sh module-2     # Real banking module: CCI ↔ BCP (BCTITSCV) — 3 fixtures
-#   ./tools/demo-commands.sh proof        # cat all 4 validation/reports/*.json with cross-module summary
-#   ./tools/demo-commands.sh all          # module-0 + module-1b + module-1a + module-2 + proof
+#   ./tools/demo-commands.sh module-3     # Nightly batch: 4-step JCL job (CardDemo), restart + abend — 6 fixtures
+#   ./tools/demo-commands.sh negative-control  # sabotage one rounding mode in module 3, show the red diff, revert
+#   ./tools/demo-commands.sh conformance  # tools/check-module.sh --all: every module went through the same 5 phases
+#   ./tools/demo-commands.sh proof        # validation/reports/*.json + cross-module summary (computed, not hard-coded)
+#   ./tools/demo-commands.sh all          # module-0 + module-1b + module-1a + module-2 + module-3 + conformance + proof
 #
 # Add --quiet to any subcommand to suppress the narrative (terse mode).
 #
@@ -112,17 +115,18 @@ preflight() {
   echo
   echo "${BOLD}==== Clean state (so live run feels fresh) ====${RESET}"
   echo "  ${BOLD}\$ rm -rf java-run cobol/*/bin${RESET}"
-  rm -rf java-run cobol/add-motor-policy/bin cobol/add-policy-db/bin cobol/add-policy-facade/bin cobol/cci-account-converter/bin
+  rm -rf java-run cobol/add-motor-policy/bin cobol/add-policy-db/bin cobol/add-policy-facade/bin cobol/cci-account-converter/bin cobol/nightly-batch/bin
 
   echo
-  echo "${BOLD}==== Warm-up: all four modules end-to-end ====${RESET}"
+  echo "${BOLD}==== Warm-up: all five modules end-to-end ====${RESET}"
   QUIET=1 module-0
   QUIET=1 module-1b
   QUIET=1 module-1a
   QUIET=1 module-2
+  QUIET=1 module-3
 
   echo
-  echo "${GREEN}${BOLD}Pre-flight complete. Nine fixtures byte-exact equivalent.${RESET}"
+  echo "${GREEN}${BOLD}Pre-flight complete. Fifteen fixtures byte-exact equivalent.${RESET}"
   echo "${GREEN}You're ready for the live demo.${RESET}"
 }
 
@@ -231,18 +235,90 @@ module-2() {
     "Integer division uses RoundingMode.DOWN, not HALF_UP (ADR-11) + PIC narrow-store truncation as algorithm (ADR-12)"
 }
 
+module-3() {
+  module_header "3" "Nightly batch — a 4-step JCL job (CardDemo nightly close)" "nightly-batch" \
+    "how do you handle real batch: JCL steps, VSAM updated in place, sorts, restart after a crash, abends?"
+
+  phase "A" "Capture the legacy job, step by step" \
+    "run the 16-step job on GnuCOBOL for 6 fixtures: 6 KSDS loads → POSTTRAN → backup → INTCALC → sort+reload → unload+sort+report → 2 capture unloads" \
+    "every step's stdout + RC, the job log and the 9 datasets the job leaves behind are the contract — one fixture is killed after step 2 and resumed" \
+    "golden-master/nightly-batch/"
+  run ./tools/run-job.sh nightly-batch
+
+  phase "C" "Exercise the Spring Batch translation" \
+    "the same job.json drives one Spring Batch Step per JCL step; KSDS files are H2 tables via JDBC; BigDecimal with DOWN where COBOL truncates" \
+    "restart = JobRepository skipping COMPLETED steps across two JVM runs; abend = RC 12 and NOT RUN steps, capture unloads still run" \
+    "java-run/nightly-batch/"
+  run ./tools/run-java.sh nightly-batch
+
+  phase "D" "Byte-exact validation — 44 files per fixture" \
+    "diff fixed-length binary datasets (overpunched signs included) with record/column/hex reporting, per-step stdout, RC and the job log" \
+    "fixture 05 proves killed-and-resumed ≡ unbroken; fixture 03 holds the numeric edge cases; fixture 06 the abend" \
+    "validation/reports/nightly-batch.json"
+  run ./tools/compare-outputs.py nightly-batch
+
+  if [[ $QUIET -eq 0 ]]; then
+    echo
+    echo "${CYAN}${BOLD}  MOMENT 1 — restart: the job log of fixture 05 (killed after INTCALC, resumed)${RESET}"
+    grep -vE "RC=0000$" golden-master/nightly-batch/05-restart/out/run-log.txt | sed 's/^/    /'
+    echo "${DIM}    outputs identical to the unbroken run (check-module.sh enforces it) — on both sides${RESET}"
+    echo
+    echo "${CYAN}${BOLD}  MOMENT 2 — the faithful bug: last account after INTCALC (fixture 01, golden master)${RESET}"
+    echo "${DIM}    CBACT04C.cbl:219-221 — the ELSE that would update the last account never runs: interest transaction written,${RESET}"
+    echo "${DIM}    balance untouched, cycle totals not reset. The Java reproduces it (CLAUDE.md rule 5) and the SME checklist asks about it.${RESET}"
+    ./tools/make-fixture.py --dump carddemo_account golden-master/nightly-batch/01-happy-small/out/acctfile.unl \
+      | tail -1 | python3 -c "import sys,json; r=json.loads(sys.stdin.read()); print('    account', r['ACCT-ID'], 'balance', r['ACCT-CURR-BAL'], 'cycle credit', r['ACCT-CURR-CYC-CREDIT'], 'cycle debit', r['ACCT-CURR-CYC-DEBIT'])"
+  fi
+
+  result_summary "3" "Module 3 (nightly batch, 4 JCL steps)" "6" "6" \
+    "per-step stdout · exit_code (MAXRC) · run-log.txt · dalyrejs · tranbkp · systran · combined · tranbkp2 · trandaly · tranrept · acctfile.unl · tcatbal.unl" \
+    "JCL step = Spring Batch step with step-level restart (ADR-14) · JDBC not JPA for record-at-a-time batch (ADR-13) · COMPUTE without ROUNDED truncates toward zero · faithful defects replicated, never fixed"
+}
+
+negative-control() {
+  module_header "NC" "Negative control — does the harness bite?" "nightly-batch" \
+    "how do we know the diff would catch a translation that is wrong by one cent?"
+  local f=java/nightly-batch/src/main/java/com/example/poc/nightlybatch/service/InterestCalculator.java
+  echo
+  echo "  ${BOLD}sabotage:${RESET} RoundingMode.DOWN → HALF_UP in InterestCalculator.monthlyInterest — one token, the kind of change a reviewer would wave through"
+  sed -i '' 's/divide(TWELVE_HUNDRED, 2, RoundingMode.DOWN)/divide(TWELVE_HUNDRED, 2, RoundingMode.HALF_UP)/' "$f"
+  grep -n "RoundingMode.HALF_UP" "$f" | sed 's/^/    /'
+  ./tools/run-java.sh nightly-batch 03-numeric-boundaries >/dev/null 2>&1 || true
+  echo
+  run ./tools/compare-outputs.py nightly-batch 03-numeric-boundaries || true
+  echo
+  echo "  ${BOLD}revert${RESET} (git keeps the real file) and restore green:"
+  sed -i '' 's/divide(TWELVE_HUNDRED, 2, RoundingMode.HALF_UP)/divide(TWELVE_HUNDRED, 2, RoundingMode.DOWN)/' "$f"
+  ./tools/run-java.sh nightly-batch >/dev/null 2>&1
+  run ./tools/compare-outputs.py nightly-batch
+}
+
+conformance() {
+  echo "${BOLD}════════════════════════════════════════════════════════════${RESET}"
+  echo "${BOLD}  CONFORMANCE — did every module go through the same five phases with the same tooling?${RESET}"
+  echo "${BOLD}════════════════════════════════════════════════════════════${RESET}"
+  run ./tools/check-module.sh --all
+}
+
 proof() {
   echo "${BOLD}════════════════════════════════════════════════════════════${RESET}"
   echo "${BOLD}  PROOF — validation/reports/*.json — \"diffs\": [] is the contract${RESET}"
   echo "${BOLD}════════════════════════════════════════════════════════════${RESET}"
-  for m in add-motor-policy add-policy-db add-policy-facade cci-account-converter; do
+  for f in validation/reports/*.json; do
+    local m; m="$(basename "$f" .json)"
     echo
     echo "${BOLD}--- $m ---${RESET}"
-    cat "validation/reports/$m.json" | python3 -m json.tool
+    python3 - "$f" <<'PY'
+import json, sys
+for e in json.load(open(sys.argv[1])):
+    s = e.get("summary", {})
+    status = "diffs: []" if not e.get("diffs") else f"diffs: {len(e['diffs'])}"
+    print(f"  {e.get('fixture','?'):<26} {status:<10} records {s.get('records_compared',0):>5} · bytes {s.get('bytes_compared',0):>7} · differing {s.get('bytes_differing',0)}")
+PY
   done
   echo
   echo "${GREEN}${BOLD}────────────────────────────────────────────────────────────${RESET}"
-  echo "${GREEN}${BOLD}  SUMMARY: 9 / 9 fixtures byte-exact equivalent across modules 0, 1A, 1B, 2${RESET}"
+  ./tools/compare-outputs.py --summary | sed "s/^/${GREEN}${BOLD}  /; s/\$/${RESET}/"
   echo "${GREEN}${BOLD}────────────────────────────────────────────────────────────${RESET}"
 }
 
@@ -252,19 +328,25 @@ case "${1:-}" in
   module-1b) module-1b ;;
   module-1a) module-1a ;;
   module-2)  module-2 ;;
+  module-3)  module-3 ;;
+  negative-control) negative-control ;;
+  conformance) conformance ;;
   proof)     proof ;;
-  all)       module-0; module-1b; module-1a; module-2; proof ;;
+  all)       module-0; module-1b; module-1a; module-2; module-3; conformance; proof ;;
   *)
     cat >&2 <<EOF
-usage: $0 {preflight|module-0|module-1b|module-1a|module-2|proof|all} [--quiet]
+usage: $0 {preflight|module-0|module-1b|module-1a|module-2|module-3|negative-control|conformance|proof|all} [--quiet]
 
-  preflight   run ~30 min before demo: toolchain check + clean state + warm-up
-  module-0    VSAM / file access (add-motor-policy)         — 3 fixtures
-  module-1b   DB2 / EXEC SQL → JPA (add-policy-db)          — 2 fixtures
-  module-1a   CICS LINK → Spring DI (add-policy-facade)     — 1 fixture
-  module-2    Real BCP package: CCI ↔ BCP (BCTITSCV)        — 3 fixtures
-  proof       cat all four validation/reports/*.json + cross-module summary
-  all         module-0 + module-1b + module-1a + module-2 + proof
+  preflight         run ~30 min before demo: toolchain check + clean state + warm-up
+  module-0          VSAM / file access (add-motor-policy)                 — 3 fixtures
+  module-1b         DB2 / EXEC SQL → JPA (add-policy-db)                  — 2 fixtures
+  module-1a         CICS LINK → Spring DI (add-policy-facade)             — 1 fixture
+  module-2          Real BCP package: CCI ↔ BCP (BCTITSCV)                — 3 fixtures
+  module-3          Nightly batch: 4-step JCL job, restart, abend (CardDemo) — 6 fixtures
+  negative-control  flip one rounding mode in module 3 → red diff at a named record/column → revert
+  conformance       tools/check-module.sh --all (same five phases, same tooling, every module)
+  proof             validation/reports/*.json + cross-module summary (computed)
+  all               all five modules + conformance + proof
   --quiet     suppress narrative phase headers (terse mode)
 EOF
     exit 2

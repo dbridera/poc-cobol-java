@@ -30,7 +30,7 @@ The contracts are explicit so a future engineer (or LLM session) knows what file
 | | |
 |---|---|
 | **Consumes** | `cobol/<module>/src/*.cbl`, `cobol/<module>/copybooks/*.cpy`, JCL/scripts if any, sample data |
-| **Produces** | `cobol/<module>/README.md` populated with sections 1–7 of the skill; `cobol/<module>/fixtures/<name>/spec.json` per fixture |
+| **Produces** | `cobol/<module>/README.md` populated with sections 1–7 of the skill; `DEPENDENCIES.md`; `cobol/<module>/fixtures/<name>/spec.json` (or `fixture.json`) per fixture; for job modules also `job.json` and generated `src/ksds/` loaders |
 | **Side effects** | After `tools/run-cobol.sh <module>`: `golden-master/<module>/<fixture>/{stdout.txt, exit_code, stderr.txt, out/...}` |
 | **Done when** | Every paragraph is named in the README's control-flow map, every PIC is in the data dictionary, ≥3 fixtures cover happy path + validation errors + numeric boundaries, golden master captures cleanly |
 | **Don't proceed if** | Any paragraph's purpose is "TBD" — get SME input first |
@@ -50,7 +50,7 @@ The contracts are explicit so a future engineer (or LLM session) knows what file
 |---|---|
 | **Consumes** | `specs/<m>.md`, `golden-master/<m>/`, [docs/glossary.yaml](./glossary.yaml), [CLAUDE.md](../../CLAUDE.md) hard rules |
 | **Produces** | `java/<module>/` Spring Boot project with `pom.xml`, `src/main/java/com/example/poc/<module>/...`, `application.properties` with banner suppression |
-| **Done when** | `mvn -B test` is green AND `tools/run-java.sh <module>` succeeds AND every method has a `// COBOL: <file>.cbl:<startLine>-<endLine>` traceability comment |
+| **Done when** | `mvn -B test` is green AND `tools/run-java.sh <module>` succeeds AND every translated method has a `// COBOL: <file>.cbl:<startLine>-<endLine>` traceability comment (harness-infrastructure classes carry `// cobol-trace-exempt: <why>`) |
 | **Don't proceed if** | Any `BigDecimal` could be `double`/`float` — reject the translation regardless of test status (see [ADR-3](./DECISIONS.md#adr-3--bigdecimal-is-mandatory-for-every-cobol-numeric)) |
 
 `copybook-to-entity` is invoked *within* Phase C when the engineer encounters a copybook not already mapped. Its consumes/produces are local: copybook in, `domain/<X>Entity.java` or `domain/<X>Request.java` out, with `REDEFINES` mapped to a `sealed interface` (never a single nullable bag).
@@ -61,7 +61,7 @@ The contracts are explicit so a future engineer (or LLM session) knows what file
 |---|---|
 | **Consumes** | Phase A's `golden-master/<m>/`, Phase C's Java build |
 | **Produces** | `validation/reports/<module>.json` (per-fixture diff results), `java-run/<m>/<fixture>/` artifacts |
-| **Done when** | All fixtures show `[OK ]`; report shows `"diffs": []` per fixture; negative-control test (deliberately break a `BigDecimal`, confirm diff fails) has run at least once |
+| **Done when** | All fixtures show `[OK ]`; report shows `"diffs": []` per fixture; negative-control test (deliberately break a `BigDecimal`, confirm diff fails) has run at least once; `./tools/check-module.sh <module>` is CONFORMANT (restart invariant included for job modules) |
 | **Don't proceed if** | Any diff fails — fix Java/spec/harness; **never** weaken the comparator |
 
 The `equivalence-validator` subagent is the read-only orchestrator: it runs the three commands, reads the JSON, and reports `RESULT: GREEN` / `RESULT: RED`. It cannot edit Java, COBOL, or the comparator. Use it after any Phase C edit; don't run the harness manually if you can avoid it.

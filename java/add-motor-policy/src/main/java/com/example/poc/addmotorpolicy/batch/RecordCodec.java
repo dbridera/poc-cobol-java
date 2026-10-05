@@ -21,6 +21,7 @@ import java.math.BigInteger;
  *   <li>alphanumeric PIC X(n) → right-padded with spaces, exactly n chars</li>
  * </ul>
  */
+// COBOL: ADDMPOL.cbl:44-95 (FD record layouts: REQUEST-RECORD, POLICY / MOTOR output records)
 @Component
 public class RecordCodec {
 

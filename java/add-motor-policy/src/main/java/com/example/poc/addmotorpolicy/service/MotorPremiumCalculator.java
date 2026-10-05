@@ -21,6 +21,7 @@ import java.math.RoundingMode;
  *       reporting matches COBOL.</li>
  * </ul>
  */
+// COBOL: ADDMPOL.cbl:232-264 (CALC-MOTOR-PREMIUM)
 @Component
 public class MotorPremiumCalculator {
 

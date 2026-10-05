@@ -62,13 +62,26 @@ java/<module>/
 - One `@Entity` per output table / file record. Fields use the same names (camelCase) as the COBOL group items.
 - Module zero may skip JPA persistence (writes go to flat files). Module 1+ must wire `@Transactional` boundaries to replace the COBOL paragraph that did `EXEC CICS ABEND` to roll back.
 
+## Multi-step batch (JCL) modules — module 3 pattern
+
+When `cobol/<module>/job.json` exists (see `cobol-analyze` §3.5), the Java target is **Spring Boot 3 + Spring Batch 5 + JDBC (H2 file database in the sandbox)**, canonical example `java/nightly-batch/`:
+
+- The application takes `--manifest`, `--workdir`, `--fixture`, `--run`, `--last-run`, `--abend-after`, `--parm.STEP`, `--env.VAR` (what `tools/run-job.py --side java` passes) and exits with MAXRC. Build the `Job` from the manifest: one **Tasklet per step** (ADR-15 — never chunk-oriented for read-modify-rewrite loops), a decider per position for the injected abend, `RunLogListener` writing `out/run-log.txt` in the harness format, per-step stdout to `out/steps/nn-NAME.stdout.txt` and the RC to `nn-NAME.rc`.
+- Failure semantics are the harness's (ADR-14): RC outside `rc_ok` → job failed → later non-`always` steps record `NOT RUN (JOB FAILED)`; `AbendException` → RC 12 after printing the `CEE3ABD` stub line.
+- KSDS files → `KsdsTable` over `JdbcTemplate` (ADR-13): DDL generated from the copybook `Layout`, padded `VARCHAR` keys, `DECIMAL` amounts, FILLER columns; `READ`/`WRITE`/`REWRITE`/`READ NEXT`/`OPEN OUTPUT` have one SQL twin each. JPA is for online services, not for this.
+- Records → `CobolRecord` over a `Layout` (field names = COBOL data names): `get` returns padded bytes, `decimal` a scaled `BigDecimal`, `set`/`setDecimal`/`add` apply COBOL store rules (scale truncation toward zero, low-order digit retention, no SIZE ERROR), `initialize()` leaves FILLER alone, `moveFrom` is a group MOVE. Keep the **working-storage records alive across the loop** exactly as the COBOL does (a failed `READ … INTO` leaves the previous record; EOF branches may use it).
+- Sequential files → `FixedRecordFile` (ISO-8859-1, exact LRECL, no terminators). Signed DISPLAY fields → `ZonedDecimal` (EBCDIC overpunch). `DISPLAY` formats → `CobolDisplay` (`+000000020.43`). Edited pictures → `PicEditor` (zero prints as all spaces when every digit is `Z`).
+- The clock comes from the manifest env (`COB_CURRENT_DATE`), never `now()`.
+- Faithful defects are reproduced with a comment `// COBOL: <file>.cbl:<a>-<b> … (faithful defect Dn, CLAUDE.md rule 5)`; harness-infrastructure classes (manifest, job state, log writer) carry `// cobol-trace-exempt: <why>` instead of a paragraph reference.
+
 ## Verification before declaring "done"
 
 1. `mvn -q test` is green (unit tests for calculator, validator, codec).
 2. `tools/run-java.sh <module>` produces output under `java-run/`.
 3. `tools/compare-outputs.py <module>` returns exit 0 with `[OK ]` for every fixture.
 4. The byte-exact diff INCLUDES at least one fixture exercising every PIC numeric boundary defined in the spec.
-5. A negative-control test passes: deliberately switching one BigDecimal calculation to `double` reproduces a real diff failure (proves the harness has teeth).
+5. Two negative controls pass: (a) deliberately switching one rounding mode (or a BigDecimal to `double`) reproduces a real diff failure at a named record/column; (b) "fixing" a documented faithful defect goes red too. Revert both.
+6. `./tools/check-module.sh <module>` reports CONFORMANT.
 
 ## Common pitfalls
 

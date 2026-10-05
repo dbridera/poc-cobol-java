@@ -66,6 +66,28 @@ numerics:
     the same return code with the same error string. Generic "throw RuntimeException" loses
     the granular RC.
 
+  zoned_overpunch_sign: |
+    Signed DISPLAY fields (PIC S9(n)V9(s)) in mainframe data carry the sign as an
+    overpunch on the last digit; after EBCDIC->ASCII conversion it shows as
+    `{`/`A`-`I` (+0..+9) and `}`/`J`-`R` (-0..-9): `0000005047G` = +504.77,
+    `0000009190}` = -919.00. GnuCOBOL needs `-fsign=EBCDIC` to read/write it
+    (module 3 spike a: without the flag +504.77 reads as +504.70). Java:
+    `ZonedDecimal.decodeSigned/encodeSigned` — never parse with `Integer.parseInt`.
+  compute_without_rounded_truncates_toward_zero: |
+    A COMPUTE/DIVIDE whose target keeps decimals but has no ROUNDED keeps the
+    target's scale by truncation toward zero: `(bal * rate) / 1200` into
+    S9(09)V99 gives 0.09575 -> 0.09 and -11.4875 -> -11.48 (DOWN, not FLOOR).
+    Java: `divide(divisor, scale, RoundingMode.DOWN)`. **Empirically required on
+    module 3** (CBACT04C.cbl:464); a HALF_UP translation is red at a named cent
+    (negative control 1).
+  add_without_size_error_keeps_low_order_digits: |
+    ADD/COMPUTE into a field too small and with no ON SIZE ERROR keeps the
+    low-order digits (standard truncation): 9999999999.00 + 5.00 into
+    S9(10)V99 = 0000000004.00; a 10-digit cycle total moved into S9(09)V99
+    loses its first digit so a credit-limit check silently passes. Java:
+    `ZonedDecimal.truncate(value, digits, scale)` on every store (module 3,
+    fixture 03). Same family as ADR-12 — truncation is the algorithm.
+
 idioms:
   mod_10_check_digit:
     pattern: |
@@ -111,6 +133,33 @@ idioms:
   IF_ELSE_chain:
     java: "early return when guard-style; nested else-if when truly mutually exclusive"
 
+  read_into_at_eof_keeps_previous_record: |
+    `READ file INTO ws-record` at end of file (status 10) does NOT move anything:
+    the working-storage copy still holds the last record read. Code that uses
+    that record in its AT END / EOF branch is using stale data. Module 3:
+    CBTRN03C.cbl:197-204 re-adds the last amount to the page total (faithful
+    defect D2 — replicate, do not fix). Java: keep the WS record object alive
+    across the loop and read it after the loop exactly as the COBOL does.
+  initialize_skips_filler: |
+    `INITIALIZE group` sets X to spaces and numerics to zero but leaves FILLER
+    items untouched (no WITH FILLER). Whatever a previous READ INTO left in a
+    FILLER survives into the next WRITE. Verified on GnuCOBOL 3.2 (module 3
+    spike j); the first Java run was red on exactly this byte.
+  next_sentence_in_inline_perform: |
+    `NEXT SENTENCE` inside an inline PERFORM jumps to after the next period —
+    i.e. past END-PERFORM *and* any statement sharing that sentence. Document
+    whether the branch is reachable before translating (module 3: unreachable,
+    the SORT step pre-filters; D3).
+  string_does_not_space_fill: |
+    `STRING ... INTO field` writes only the characters it produces; the rest of
+    the target keeps its previous content. Equivalent to a padded MOVE only when
+    the target held spaces (true for module 3's interest description).
+  control_break_last_group_never_flushed: |
+    Control-break loops of the form `PERFORM UNTIL EOF ... IF NOT EOF ... ELSE
+    flush` never execute the ELSE when the loop condition is tested first: the
+    last group is never flushed. CBACT04C.cbl:219-221 (D1): the last account's
+    interest is never written back. Replicate; raise it in the SME checklist.
+
 data_layer:
   copybook_record:
     target: "DTO / value object (record class in Java 21)"
@@ -136,6 +185,31 @@ data_layer:
   select_assign_line_sequential:
     target: "java.nio.file.Files write/read with US_ASCII + LF line endings"
     note: "Module zero proven. Use StandardCharsets.US_ASCII; never the platform default."
+
+  vsam_ksds_batch_module:
+    target: "relational table via JdbcTemplate (KsdsTable): PK = key fields as padded VARCHAR, signed amounts DECIMAL(p,s), FILLER kept as columns"
+    note: |
+      Module 3 (nightly-batch). JDBC, not JPA, for record-at-a-time batch (ADR-13).
+      `READ` = SELECT by pk, `REWRITE` = UPDATE, `WRITE` = INSERT (duplicate = status 22),
+      `READ NEXT` = SELECT ORDER BY pk, `OPEN OUTPUT` = TRUNCATE.
+  vsam_alternate_index: |
+    `ALTERNATE RECORD KEY` -> secondary index on the alternate-key columns;
+    `READ ... KEY IS alt` -> SELECT WHERE alt = ? ORDER BY pk (first row). Under
+    BDB a file created with the AIX opens fine in programs that do not declare
+    it (module 3 spike c), so one physical copy suffices.
+  ksds_key_order_is_byte_order: |
+    Sequential access returns records in byte order of the key. With keys stored
+    as zero/space-padded VARCHAR, `ORDER BY key columns` reproduces it; never
+    cast numeric keys to numbers.
+  in_place_updated_file_capture: |
+    A file opened I-O is modified, not produced; the single-program harness
+    never captured it. Multi-step modules add a generated UNLD-<DS> step
+    (`always: true`) that writes the KSDS to a sequential twin, and only that
+    twin is diffed (ADR-14).
+  record_sequential_fixed: |
+    `ORGANIZATION SEQUENTIAL` = fixed-length records, no line terminators.
+    Java: `FixedRecordFile` with ISO-8859-1, exact LRECL, no newline. Line
+    sequential (module 0) and record sequential (module 3) are different files.
 
 # Module 1B (add-policy-db) empirical findings — DB / EXEC SQL → JPA pattern.
 db_access:
@@ -199,6 +273,27 @@ orchestration:
       that ONE program/service hands off to ANOTHER, and the byte-exact diff
       proves the chain preserves observable behavior.
 
+  jcl_job_to_manifest:
+    target: "cobol/<module>/job.json (datasets + ordered steps with DD->dataset map, PARM, rc_ok, always) — read by both tools/run-job.py and the Spring Batch app"
+    note: "ADR-14. One source of truth for step order and failure rules on both sides."
+  jcl_step_exec_pgm:
+    target: "one Spring Batch Step (Tasklet running the whole program in one transaction, ADR-15)"
+  jcl_cond_and_maxrc:
+    target: "rc_ok per step; RC outside it fails the job, later steps NOT RUN except always:true; exit code = MAXRC of the instance"
+  jcl_parm:
+    target: "PARM env var on the COBOL side (a tiny driver builds the halfword-length + text structure and CALLs the program); manifest `parm` / --parm.STEP on the Java side"
+  idcams_repro:
+    target: "generated LOAD-<DS> / UNLD-<DS> COBOL programs (tools/gen-ksds-io.py) and KsdsLoad/UnloadProgram tasklets"
+  dfsort_step:
+    target: "small COBOL SORT program (USING/GIVING or INPUT PROCEDURE) on the COBOL side; List.sort with a Comparator on the padded key bytes in Java"
+    note: "Without OPTION EQUALS the order of equal keys is unspecified — add a documented tie-break on a unique field (ADR-16)."
+  checkpoint_restart:
+    target: "step-level: completed steps are skipped on resume (.jobstate on the COBOL side, Spring Batch JobRepository on an H2 file database on the Java side); fixture 05 proves resumed == unbroken"
+  cee3abd_user_abend:
+    target: "AbendException(code) -> RC 12, the step stops where it is; the stub prints 'CEE3ABD: USER ABEND U+000000999'"
+  function_current_date:
+    target: "COB_CURRENT_DATE=\"YYYY/MM/DD HH:MM:SS.hh\" (fractional part mandatory) <-> fixed LocalDateTime from the same manifest value (ADR-16)"
+
 control_flow:
   go_to:
     rule: "GO TO is rare in well-structured COBOL; if encountered, refactor to method calls but document the original target paragraph in a traceability comment"
@@ -220,9 +315,23 @@ testing:
       - "all-spaces / low-values / high-values for every PIC X field"
       - "boundary of OCCURS DEPENDING ON (0, 1, max)"
 
+  capture_allow_list:
+    rule: "Multi-step modules capture only datasets flagged capture:true plus out/steps/* and out/run-log.txt; BDB/H2 files never leave the sandbox"
+  restart_fixture:
+    rule: "Every multi-step module has a fixture with JOB_PLAN=\"abend-after=<STEP>;resume\" and RESTART_EQUIVALENT_TO=<unbroken fixture>; tools/check-module.sh enforces output equality"
+  abend_fixture:
+    rule: "At least one fixture reaches an abend path (RC 12) so NOT RUN / always-step semantics are diffed"
+  two_negative_controls:
+    rule: "Per module: (1) flip a rounding mode, (2) 'fix' a documented faithful defect — both must go red at a named record/column, then be reverted"
+  binary_diff_report:
+    rule: "compare-outputs.py reports first differing offset, record, column and hex for fixed-length files (lrecl from job.json); the demo shows that line"
+
 forbidden:
   - "double or float for any COBOL numeric"
   - "silent rounding without explicit RoundingMode"
   - "removing 'dead' COBOL paragraphs without proof they are unreachable from any entry point"
   - "merging REDEFINES views into a single type without a converter"
   - "skipping golden-master diff before declaring a module done"
+  - "fixing an unreachable branch, a stale-record use, or any other faithful defect in the translation — replicate it, cite it, and put it on the SME checklist (module 3 D1/D2)"
+  - "capturing a KSDS/BDB/H2 file as an output — diff its unload"
+  - "a clock that is not pinned in the job manifest"

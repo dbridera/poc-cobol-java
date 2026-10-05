@@ -28,6 +28,7 @@ import java.util.List;
  *   PROCESSED=NNNNNN INSERTED=NNNNNN REJECTED=NNNNNN
  * </pre>
  */
+// COBOL: ADDPOLDB.cbl:71-117 (MAIN)
 @Component
 public class BatchRunner implements CommandLineRunner {
 
