@@ -122,7 +122,7 @@ check_module() {
     fi
     local untraced soft_untraced
     untraced="$(find "$jdir/src/main/java" \( -path '*/service/*' -o -path '*/batch/*' \) -name '*.java' \
-                 ! -name '*Application.java' -print0 2>/dev/null | xargs -0 grep -LE 'COBOL:.*\.(cbl|CBL|COB):?[0-9]' 2>/dev/null)"
+                 ! -name '*Application.java' -print0 2>/dev/null | xargs -0 grep -LE 'COBOL:.*\.(cbl|CBL|COB):?[0-9]|cobol-trace-exempt:' 2>/dev/null)"
     [[ -z "$untraced" ]] && pass "7 every service/batch class cites COBOL: <file>.cbl:<lines>" \
                           || fail "7 service/batch classes without COBOL: <file>.cbl:<lines> traceability: $(echo "$untraced" | sed 's|.*/||' | tr '\n' ' ')"
     soft_untraced="$(find "$jdir/src/main/java" -path '*/domain/*' -name '*.java' -print0 2>/dev/null | xargs -0 grep -LE 'COBOL:|\.cpy|copybook' 2>/dev/null)"

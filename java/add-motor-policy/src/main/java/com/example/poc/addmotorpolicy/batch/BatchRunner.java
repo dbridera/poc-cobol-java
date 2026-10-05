@@ -28,6 +28,7 @@ import java.util.Optional;
  *
  * <p>Files are opened with TRUNCATE — matching {@code OPEN OUTPUT}.
  */
+// COBOL: ADDMPOL.cbl:158-198 (MAIN-LOGIC + HANDLE-ONE-REQUEST)
 @Component
 public class BatchRunner {
 

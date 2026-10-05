@@ -39,6 +39,7 @@ import org.springframework.transaction.annotation.Transactional;
  * transaction — the COBOL pattern is "one CICS transaction per request",
  * not one transaction wrapping the whole batch.
  */
+// COBOL: lgapdb01.cbl:261-322 (INSERT-POLICY)
 @Service
 public class PolicyInsertService {
 
