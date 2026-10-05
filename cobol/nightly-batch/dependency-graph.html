@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>nightly-batch — Dependency Graph</title>
+<style>
+  html, body { margin: 0; padding: 0; height: 100%;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+  header { padding: 12px 20px; background: #f8f9fa; border-bottom: 1px solid #dee2e6; }
+  header h1 { margin: 0 0 4px; font-size: 18px; }
+  header p { margin: 0 0 6px; color: #6c757d; font-size: 13px; }
+  header a { color: #0d6efd; text-decoration: none; }
+  header a:hover { text-decoration: underline; }
+  #legend { font-size: 12px; color: #495057; }
+  #legend .chip { display: inline-block; padding: 2px 10px; border-radius: 12px;
+    margin-right: 6px; border: 2px solid; }
+  #cy { width: 100vw; height: calc(100vh - 110px); }
+</style>
+</head>
+<body>
+<header>
+  <h1>nightly-batch — Dependency Graph</h1>
+  <p>Generated from <a href="DEPENDENCIES.md">DEPENDENCIES.md</a> by
+     <code>tools/render-dependencies.py</code>. Drag to pan, scroll to zoom,
+     click a node to highlight its neighbors, click empty space to reset.</p>
+  <div id="legend">
+    <span class="chip" style="background:#cfe2ff;border-color:#0d6efd">program</span>
+    <span class="chip" style="background:#bcd6fb;border-color:#0d6efd;border-style:dashed">nested program</span>
+    <span class="chip" style="background:#d1e7dd;border-color:#198754">copybook</span>
+    <span class="chip" style="background:#fff3cd;border-color:#fd7e14">input file</span>
+    <span class="chip" style="background:#fcd5b5;border-color:#fd7e14">output file</span>
+    <span class="chip" style="background:#e2d6f5;border-color:#6f42c1">SQL table</span>
+    <span class="chip" style="background:#e9ecef;border-color:#6c757d">C shim</span>
+    <span class="chip" style="background:#f8d7da;border-color:#dc3545">job step</span>
+  </div>
+</header>
+<div id="cy"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.28.1/cytoscape.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dagre@0.8.5/dist/dagre.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/cytoscape-dagre@2.5.0/cytoscape-dagre.min.js"></script>
+<script>
+cytoscape.use(cytoscapeDagre);
+const data = {
+  "module": "nightly-batch",
+  "nodes": [
+    {
+      "id": "CBTRN02C",
+      "type": "program",
+      "label": "CBTRN02C"
+    },
+    {
+      "id": "CBACT04C",
+      "type": "program",
+      "label": "CBACT04C"
+    },
+    {
+      "id": "CBTRN03C",
+      "type": "program",
+      "label": "CBTRN03C"
+    },
+    {
+      "id": "INTCALC",
+      "type": "program",
+      "label": "INTCALC"
+    },
+    {
+      "id": "CEE3ABD",
+      "type": "program",
+      "label": "CEE3ABD"
+    },
+    {
+      "id": "CBSORT01",
+      "type": "program",
+      "label": "CBSORT01"
+    },
+    {
+      "id": "CBSORT02",
+      "type": "program",
+      "label": "CBSORT02"
+    },
+    {
+      "id": "LOAD-ACCTFILE",
+      "type": "program",
+      "label": "LOAD-ACCTFILE"
+    },
+    {
+      "id": "LOAD-XREFFILE",
+      "type": "program",
+      "label": "LOAD-XREFFILE"
+    },
+    {
+      "id": "LOAD-TCATBALF",
+      "type": "program",
+      "label": "LOAD-TCATBALF"
+    },
+    {
+      "id": "LOAD-DISCGRP",
+      "type": "program",
+      "label": "LOAD-DISCGRP"
+    },
+    {
+      "id": "LOAD-TRANTYPE",
+      "type": "program",
+      "label": "LOAD-TRANTYPE"
+    },
+    {
+      "id": "LOAD-TRANCATG",
+      "type": "program",
+      "label": "LOAD-TRANCATG"
+    },
+    {
+      "id": "LOAD-TRANSACT",
+      "type": "program",
+      "label": "LOAD-TRANSACT"
+    },
+    {
+      "id": "UNLD-TRANSACT",
+      "type": "program",
+      "label": "UNLD-TRANSACT"
+    },
+    {
+      "id": "UNLD-ACCTFILE",
+      "type": "program",
+      "label": "UNLD-ACCTFILE"
+    },
+    {
+      "id": "UNLD-TCATBALF",
+      "type": "program",
+      "label": "UNLD-TCATBALF"
+    },
+    {
+      "id": "CVTRA06Y",
+      "type": "copybook",
+      "label": "CVTRA06Y"
+    },
+    {
+      "id": "CVTRA05Y",
+      "type": "copybook",
+      "label": "CVTRA05Y"
+    },
+    {
+      "id": "CVACT03Y",
+      "type": "copybook",
+      "label": "CVACT03Y"
+    },
+    {
+      "id": "CVACT01Y",
+      "type": "copybook",
+      "label": "CVACT01Y"
+    },
+    {
+      "id": "CVTRA01Y",
+      "type": "copybook",
+      "label": "CVTRA01Y"
+    },
+    {
+      "id": "CVTRA02Y",
+      "type": "copybook",
+      "label": "CVTRA02Y"
+    },
+    {
+      "id": "CVTRA03Y",
+      "type": "copybook",
+      "label": "CVTRA03Y"
+    },
+    {
+      "id": "CVTRA04Y",
+      "type": "copybook",
+      "label": "CVTRA04Y"
+    },
+    {
+      "id": "CVTRA07Y",
+      "type": "copybook",
+      "label": "CVTRA07Y"
+    },
+    {
+      "id": "dailytran.dat",
+      "type": "file-in",
+      "label": "dailytran.dat"
+    },
+    {
+      "id": "xreffile.ksds",
+      "type": "file-in",
+      "label": "xreffile.ksds"
+    },
+    {
+      "id": "acctfile.ksds",
+      "type": "file-out",
+      "label": "acctfile.ksds"
+    },
+    {
+      "id": "tcatbal.ksds",
+      "type": "file-in",
+      "label": "tcatbal.ksds"
+    },
+    {
+      "id": "discgrp.ksds",
+      "type": "file-in",
+      "label": "discgrp.ksds"
+    },
+    {
+      "id": "trantype.ksds",
+      "type": "file-in",
+      "label": "trantype.ksds"
+    },
+    {
+      "id": "trancatg.ksds",
+      "type": "file-in",
+      "label": "trancatg.ksds"
+    },
+    {
+      "id": "transact.ksds",
+      "type": "file-out",
+      "label": "transact.ksds"
+    },
+    {
+      "id": "dalyrejs.dat",
+      "type": "file-out",
+      "label": "dalyrejs.dat"
+    },
+    {
+      "id": "systran.dat",
+      "type": "file-out",
+      "label": "systran.dat"
+    },
+    {
+      "id": "tranbkp.dat",
+      "type": "file-in",
+      "label": "tranbkp.dat"
+    },
+    {
+      "id": "tranbkp2.dat",
+      "type": "file-in",
+      "label": "tranbkp2.dat"
+    },
+    {
+      "id": "dateparm.dat",
+      "type": "file-in",
+      "label": "dateparm.dat"
+    },
+    {
+      "id": "trandaly.dat",
+      "type": "file-in",
+      "label": "trandaly.dat"
+    },
+    {
+      "id": "tranrept.dat",
+      "type": "file-out",
+      "label": "tranrept.dat"
+    },
+    {
+      "id": "step:LOAD-ACCTFILE",
+      "type": "job-step",
+      "label": "LOAD-ACCTFILE"
+    },
+    {
+      "id": "step:LOAD-XREFFILE",
+      "type": "job-step",
+      "label": "LOAD-XREFFILE"
+    },
+    {
+      "id": "step:LOAD-TCATBALF",
+      "type": "job-step",
+      "label": "LOAD-TCATBALF"
+    },
+    {
+      "id": "step:LOAD-DISCGRP",
+      "type": "job-step",
+      "label": "LOAD-DISCGRP"
+    },
+    {
+      "id": "step:LOAD-TRANTYPE",
+      "type": "job-step",
+      "label": "LOAD-TRANTYPE"
+    },
+    {
+      "id": "step:LOAD-TRANCATG",
+      "type": "job-step",
+      "label": "LOAD-TRANCATG"
+    },
+    {
+      "id": "step:POSTTRAN",
+      "type": "job-step",
+      "label": "POSTTRAN"
+    },
+    {
+      "id": "step:TRANBKP",
+      "type": "job-step",
+      "label": "TRANBKP"
+    },
+    {
+      "id": "step:INTCALC",
+      "type": "job-step",
+      "label": "INTCALC"
+    },
+    {
+      "id": "step:COMBSORT",
+      "type": "job-step",
+      "label": "COMBSORT"
+    },
+    {
+      "id": "step:COMBLOAD",
+      "type": "job-step",
+      "label": "COMBLOAD"
+    },
+    {
+      "id": "step:REPTUNLD",
+      "type": "job-step",
+      "label": "REPTUNLD"
+    },
+    {
+      "id": "step:REPTSORT",
+      "type": "job-step",
+      "label": "REPTSORT"
+    },
+    {
+      "id": "step:TRANREPT",
+      "type": "job-step",
+      "label": "TRANREPT"
+    },
+    {
+      "id": "step:UNLD-ACCTFILE",
+      "type": "job-step",
+      "label": "UNLD-ACCTFILE"
+    },
+    {
+      "id": "step:UNLD-TCATBALF",
+      "type": "job-step",
+      "label": "UNLD-TCATBALF"
+    }
+  ],
+  "edges": [
+    {
+      "src": "INTCALC",
+      "dst": "CBACT04C",
+      "label": "CALL"
+    },
+    {
+      "src": "CBTRN02C",
+      "dst": "CEE3ABD",
+      "label": "CALL"
+    },
+    {
+      "src": "CBACT04C",
+      "dst": "CEE3ABD",
+      "label": "CALL"
+    },
+    {
+      "src": "CBTRN03C",
+      "dst": "CEE3ABD",
+      "label": "CALL"
+    },
+    {
+      "src": "CBTRN02C",
+      "dst": "CVTRA06Y",
+      "label": "COPY"
+    },
+    {
+      "src": "CBTRN02C",
+      "dst": "CVTRA05Y",
+      "label": "COPY"
+    },
+    {
+      "src": "CBACT04C",
+      "dst": "CVTRA05Y",
+      "label": "COPY"
+    },
+    {
+      "src": "CBTRN03C",
+      "dst": "CVTRA05Y",
+      "label": "COPY"
+    },
+    {
+      "src": "CBTRN02C",
+      "dst": "CVACT03Y",
+      "label": "COPY"
+    },
+    {
+      "src": "CBACT04C",
+      "dst": "CVACT03Y",
+      "label": "COPY"
+    },
+    {
+      "src": "CBTRN03C",
+      "dst": "CVACT03Y",
+      "label": "COPY"
+    },
+    {
+      "src": "CBTRN02C",
+      "dst": "CVACT01Y",
+      "label": "COPY"
+    },
+    {
+      "src": "CBACT04C",
+      "dst": "CVACT01Y",
+      "label": "COPY"
+    },
+    {
+      "src": "CBTRN02C",
+      "dst": "CVTRA01Y",
+      "label": "COPY"
+    },
+    {
+      "src": "CBACT04C",
+      "dst": "CVTRA01Y",
+      "label": "COPY"
+    },
+    {
+      "src": "CBACT04C",
+      "dst": "CVTRA02Y",
+      "label": "COPY"
+    },
+    {
+      "src": "CBTRN03C",
+      "dst": "CVTRA03Y",
+      "label": "COPY"
+    },
+    {
+      "src": "CBTRN03C",
+      "dst": "CVTRA04Y",
+      "label": "COPY"
+    },
+    {
+      "src": "CBTRN03C",
+      "dst": "CVTRA07Y",
+      "label": "COPY"
+    },
+    {
+      "src": "dailytran.dat",
+      "dst": "CBTRN02C",
+      "label": "READ"
+    },
+    {
+      "src": "xreffile.ksds",
+      "dst": "CBTRN02C",
+      "label": "READ"
+    },
+    {
+      "src": "xreffile.ksds",
+      "dst": "CBACT04C",
+      "label": "READ"
+    },
+    {
+      "src": "xreffile.ksds",
+      "dst": "CBTRN03C",
+      "label": "READ"
+    },
+    {
+      "src": "CBTRN02C",
+      "dst": "acctfile.ksds",
+      "label": "WRITE"
+    },
+    {
+      "src": "CBACT04C",
+      "dst": "acctfile.ksds",
+      "label": "WRITE"
+    },
+    {
+      "src": "tcatbal.ksds",
+      "dst": "CBTRN02C",
+      "label": "READ"
+    },
+    {
+      "src": "tcatbal.ksds",
+      "dst": "CBACT04C",
+      "label": "READ"
+    },
+    {
+      "src": "discgrp.ksds",
+      "dst": "CBACT04C",
+      "label": "READ"
+    },
+    {
+      "src": "trantype.ksds",
+      "dst": "CBTRN03C",
+      "label": "READ"
+    },
+    {
+      "src": "trancatg.ksds",
+      "dst": "CBTRN03C",
+      "label": "READ"
+    },
+    {
+      "src": "CBTRN02C",
+      "dst": "transact.ksds",
+      "label": "WRITE"
+    },
+    {
+      "src": "CBTRN02C",
+      "dst": "dalyrejs.dat",
+      "label": "WRITE"
+    },
+    {
+      "src": "CBACT04C",
+      "dst": "systran.dat",
+      "label": "WRITE"
+    },
+    {
+      "src": "tranbkp.dat",
+      "dst": "CBSORT01",
+      "label": "READ"
+    },
+    {
+      "src": "tranbkp2.dat",
+      "dst": "CBSORT02",
+      "label": "READ"
+    },
+    {
+      "src": "dateparm.dat",
+      "dst": "CBTRN03C",
+      "label": "READ"
+    },
+    {
+      "src": "dateparm.dat",
+      "dst": "CBSORT02",
+      "label": "READ"
+    },
+    {
+      "src": "trandaly.dat",
+      "dst": "CBTRN03C",
+      "label": "READ"
+    },
+    {
+      "src": "CBTRN03C",
+      "dst": "tranrept.dat",
+      "label": "WRITE"
+    },
+    {
+      "src": "step:LOAD-ACCTFILE",
+      "dst": "LOAD-ACCTFILE",
+      "label": "EXEC"
+    },
+    {
+      "src": "step:LOAD-ACCTFILE",
+      "dst": "step:LOAD-XREFFILE",
+      "label": "NEXT"
+    },
+    {
+      "src": "step:LOAD-XREFFILE",
+      "dst": "LOAD-XREFFILE",
+      "label": "EXEC"
+    },
+    {
+      "src": "step:LOAD-XREFFILE",
+      "dst": "step:LOAD-TCATBALF",
+      "label": "NEXT"
+    },
+    {
+      "src": "step:LOAD-TCATBALF",
+      "dst": "LOAD-TCATBALF",
+      "label": "EXEC"
+    },
+    {
+      "src": "step:LOAD-TCATBALF",
+      "dst": "step:LOAD-DISCGRP",
+      "label": "NEXT"
+    },
+    {
+      "src": "step:LOAD-DISCGRP",
+      "dst": "LOAD-DISCGRP",
+      "label": "EXEC"
+    },
+    {
+      "src": "step:LOAD-DISCGRP",
+      "dst": "step:LOAD-TRANTYPE",
+      "label": "NEXT"
+    },
+    {
+      "src": "step:LOAD-TRANTYPE",
+      "dst": "LOAD-TRANTYPE",
+      "label": "EXEC"
+    },
+    {
+      "src": "step:LOAD-TRANTYPE",
+      "dst": "step:LOAD-TRANCATG",
+      "label": "NEXT"
+    },
+    {
+      "src": "step:LOAD-TRANCATG",
+      "dst": "LOAD-TRANCATG",
+      "label": "EXEC"
+    },
+    {
+      "src": "step:LOAD-TRANCATG",
+      "dst": "step:POSTTRAN",
+      "label": "NEXT"
+    },
+    {
+      "src": "step:POSTTRAN",
+      "dst": "CBTRN02C",
+      "label": "EXEC"
+    },
+    {
+      "src": "step:POSTTRAN",
+      "dst": "step:TRANBKP",
+      "label": "NEXT"
+    },
+    {
+      "src": "step:TRANBKP",
+      "dst": "UNLD-TRANSACT",
+      "label": "EXEC"
+    },
+    {
+      "src": "step:TRANBKP",
+      "dst": "step:INTCALC",
+      "label": "NEXT"
+    },
+    {
+      "src": "step:INTCALC",
+      "dst": "INTCALC",
+      "label": "EXEC"
+    },
+    {
+      "src": "step:INTCALC",
+      "dst": "step:COMBSORT",
+      "label": "NEXT"
+    },
+    {
+      "src": "step:COMBSORT",
+      "dst": "CBSORT01",
+      "label": "EXEC"
+    },
+    {
+      "src": "step:COMBSORT",
+      "dst": "step:COMBLOAD",
+      "label": "NEXT"
+    },
+    {
+      "src": "step:COMBLOAD",
+      "dst": "LOAD-TRANSACT",
+      "label": "EXEC"
+    },
+    {
+      "src": "step:COMBLOAD",
+      "dst": "step:REPTUNLD",
+      "label": "NEXT"
+    },
+    {
+      "src": "step:REPTUNLD",
+      "dst": "UNLD-TRANSACT",
+      "label": "EXEC"
+    },
+    {
+      "src": "step:REPTUNLD",
+      "dst": "step:REPTSORT",
+      "label": "NEXT"
+    },
+    {
+      "src": "step:REPTSORT",
+      "dst": "CBSORT02",
+      "label": "EXEC"
+    },
+    {
+      "src": "step:REPTSORT",
+      "dst": "step:TRANREPT",
+      "label": "NEXT"
+    },
+    {
+      "src": "step:TRANREPT",
+      "dst": "CBTRN03C",
+      "label": "EXEC"
+    },
+    {
+      "src": "step:TRANREPT",
+      "dst": "step:UNLD-ACCTFILE",
+      "label": "NEXT"
+    },
+    {
+      "src": "step:UNLD-ACCTFILE",
+      "dst": "UNLD-ACCTFILE",
+      "label": "EXEC"
+    },
+    {
+      "src": "step:UNLD-ACCTFILE",
+      "dst": "step:UNLD-TCATBALF",
+      "label": "NEXT"
+    },
+    {
+      "src": "step:UNLD-TCATBALF",
+      "dst": "UNLD-TCATBALF",
+      "label": "EXEC"
+    }
+  ]
+};
+const elements = [
+  ...data.nodes.map(n => ({ data: { id: n.id, label: n.label }, classes: 'type-' + n.type })),
+  ...data.edges.map(e => ({ data: { source: e.src, target: e.dst, label: e.label }}))
+];
+const cy = cytoscape({
+  container: document.getElementById('cy'),
+  elements: elements,
+  layout: { name: 'dagre', rankDir: 'LR',
+            nodeSep: 30, edgeSep: 10, rankSep: 90,
+            fit: true, padding: 30, animate: false },
+  style: [
+    { selector: 'node', style: {
+        'label': 'data(label)', 'text-valign': 'center', 'text-halign': 'center',
+        'text-wrap': 'wrap', 'text-max-width': 100, 'font-size': 10,
+        'padding': '5px', 'shape': 'round-rectangle',
+        'width': 'label', 'height': 'label', 'border-width': 1.5
+    }},
+    { selector: 'node.type-program',         style: { 'background-color': '#cfe2ff', 'border-color': '#0d6efd' }},
+    { selector: 'node.type-program-nested',  style: { 'background-color': '#bcd6fb', 'border-color': '#0d6efd', 'border-style': 'dashed' }},
+    { selector: 'node.type-copybook',        style: { 'background-color': '#d1e7dd', 'border-color': '#198754' }},
+    { selector: 'node.type-file-in',         style: { 'background-color': '#fff3cd', 'border-color': '#fd7e14' }},
+    { selector: 'node.type-file-out',        style: { 'background-color': '#fcd5b5', 'border-color': '#fd7e14' }},
+    { selector: 'node.type-sql-table',       style: { 'background-color': '#e2d6f5', 'border-color': '#6f42c1' }},
+    { selector: 'node.type-shim',            style: { 'background-color': '#e9ecef', 'border-color': '#6c757d', 'color': '#495057' }},
+    { selector: 'node.type-job-step',        style: { 'background-color': '#f8d7da', 'border-color': '#dc3545', 'color': '#58151c', 'shape': 'round-rectangle' }},
+    { selector: 'edge', style: {
+        'label': 'data(label)', 'font-size': 10, 'color': '#495057',
+        'text-background-color': '#fff', 'text-background-opacity': 0.85,
+        'text-background-padding': '2px', 'text-rotation': 'autorotate',
+        'curve-style': 'bezier', 'target-arrow-shape': 'triangle',
+        'line-color': '#adb5bd', 'target-arrow-color': '#adb5bd', 'width': 1.5
+    }},
+    { selector: '.faded', style: { 'opacity': 0.2 }},
+    { selector: '.highlight', style: {
+        'line-color': '#0d6efd', 'target-arrow-color': '#0d6efd', 'width': 3 }}
+  ]
+});
+cy.on('tap', 'node', evt => {
+  const node = evt.target;
+  cy.elements().addClass('faded');
+  node.removeClass('faded');
+  node.connectedEdges().removeClass('faded').addClass('highlight');
+  node.neighborhood('node').removeClass('faded');
+});
+cy.on('tap', evt => { if (evt.target === cy) cy.elements().removeClass('faded highlight'); });
+</script>
+</body>
+</html>

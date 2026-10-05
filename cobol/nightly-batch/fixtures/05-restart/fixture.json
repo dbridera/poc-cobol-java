@@ -1,0 +1,45 @@
+{
+  "name": "05-restart",
+  "description": "Byte-identical inputs to 01-happy-small. The job is killed right after INTCALC (step 2 of 4) and resumed; the resumed run must skip the completed steps and end with outputs identical to the unbroken run. fixture.env carries the plan.",
+  "source": "../04-full-carddemo/in",
+  "accounts": [
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "date_range": [
+    "2022-07-18",
+    "2022-07-18"
+  ],
+  "edits": [
+    {
+      "file": "acctdata",
+      "where": {
+        "ACCT-ID": 1
+      },
+      "set": {
+        "ACCT-GROUP-ID": "A000000000"
+      }
+    },
+    {
+      "file": "acctdata",
+      "where": {
+        "ACCT-ID": 2
+      },
+      "set": {
+        "ACCT-GROUP-ID": "A000000000"
+      }
+    },
+    {
+      "file": "acctdata",
+      "where": {
+        "ACCT-ID": 3
+      },
+      "set": {
+        "ACCT-CREDIT-LIMIT": "1000.00"
+      }
+    }
+  ]
+}

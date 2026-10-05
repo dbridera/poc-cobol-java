@@ -251,6 +251,8 @@ def run_java_job(module: str, m: dict, jar: Path, sandbox: Path, runs: list[dict
     for run_no, run in enumerate(runs, start=1):
         argv = ["java", "-jar", str(jar),
                 f"--manifest={manifest}", f"--workdir={sandbox}", f"--fixture={fixture}", f"--run={run_no}"]
+        if run_no == len(runs):
+            argv.append("--last-run=true")   # the JVM that writes the JOB ... END MAXRC line
         if run["abend_after"]:
             argv.append(f"--abend-after={run['abend_after']}")
         for k, v in overrides.items():

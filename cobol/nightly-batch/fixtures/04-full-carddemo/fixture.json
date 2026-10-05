@@ -1,0 +1,6 @@
+{
+  "name": "04-full-carddemo",
+  "description": "The complete CardDemo seed set, untouched: 50 accounts, 300 daily transactions. Report range = the pinned processing date.",
+  "source": "../../original/data/normalized",
+  "date_range": ["2022-07-18", "2022-07-18"]
+}

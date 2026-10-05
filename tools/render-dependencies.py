@@ -277,8 +277,13 @@ def parse_used_by(cell: str) -> list[str]:
     return programs
 
 
+PROGRAMS_IN_LOGICAL_RE = re.compile(r'\(([A-Z][A-Z0-9_\-]*(?:\s*,\s*[A-Z][A-Z0-9_\-]*)*)\)')
+
+
 def parse_files(body: str, default_program: str) -> list[tuple[str, str, str, str]]:
-    """Return [(program, file_label, direction, file_kind), ...]."""
+    """Return [(program, file_label, direction, file_kind), ...].
+    Multi-program modules name the programs in the logical-name cell, e.g.
+    '`XREF-FILE` (CBTRN02C, CBACT04C)'; otherwise the first program owns the file."""
     if is_none_section(body):
         return []
     tables = find_tables(body)
@@ -297,7 +302,10 @@ def parse_files(body: str, default_program: str) -> list[tuple[str, str, str, st
             direction, kind = 'in', 'file-in'
         else:
             direction, kind = 'out', 'file-out'
-        out.append((default_program, label, direction, kind))
+        m = PROGRAMS_IN_LOGICAL_RE.search(clean_cell(logical_cell))
+        programs = [p.strip() for p in m.group(1).split(',')] if m else [default_program]
+        for program in programs:
+            out.append((program, label, direction, kind))
     return out
 
 
