@@ -36,6 +36,11 @@ tools/spike/hello-db
 *.mv.db
 *.trace.db
 
+# Multi-step job sandboxes (run-job.py) — defensive: these never leave the sandbox
+*.ksds
+*.ksds.*
+.jobstate
+
 # Logs
 *.log
 

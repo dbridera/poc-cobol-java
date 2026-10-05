@@ -1,0 +1,10 @@
+{
+  "name": "06-abend-discgrp",
+  "description": "A posted transaction with category 9999 has no disclosure-group rate, not even under DEFAULT: CBACT04C's 1200-A-GET-DEFAULT-INT-RATE gets status 23 and abends (CEE3ABD, RC 12). POSTTRAN accepts the transaction (it never validates the category) and creates the TCATBAL row. The job stops after INTCALC; COMBTRAN and TRANREPT are NOT RUN; the always-on capture unloads still run so the diff can see the partially updated files.",
+  "source": "../04-full-carddemo/in",
+  "accounts": [1, 2],
+  "date_range": ["2022-07-18", "2022-07-18"],
+  "edits": [
+    {"file": "dailytran", "append": {"TRAN-ID": "9000000000009999", "TRAN-TYPE-CD": "01", "TRAN-CAT-CD": 9999, "TRAN-SOURCE": "POS TERM", "TRAN-DESC": "Unknown category", "TRAN-AMT": "10.00", "TRAN-MERCHANT-ID": 800000099, "TRAN-MERCHANT-NAME": "Mystery Shop", "TRAN-MERCHANT-CITY": "Limbo", "TRAN-MERCHANT-ZIP": "99999", "TRAN-CARD-NUM": "9680294154603697", "TRAN-ORIG-TS": "2022-06-10 11:00:00.000000"}}
+  ]
+}

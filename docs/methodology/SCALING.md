@@ -10,7 +10,7 @@ Engineering-leadership read of where the PoC scales, where it breaks, and what t
 - **The framework is not yet crystallized.** We have N=1. The "skills + glossary amortize across modules" claim is a *prediction*, not yet evidence. Module 2–3 is when we'll know.
 - **The harness is teeth-unproven.** Negative-control test (deliberately break a `BigDecimal`, confirm the diff fails) is documented but **not yet executed** on module zero. Run it before module 1.
 - **GnuCOBOL is not IBM Enterprise COBOL.** Single-compiler validation is the largest unaddressed risk. Cross-compiler check requires mainframe access.
-- **Several COBOL constructs break this approach today** — see §4. If your modules are heavy CICS dialog, IMS, or deep JCL chains, this PoC does not yet have an answer.
+- **Several COBOL constructs break this approach today** — see §4. If your modules are heavy CICS dialog or IMS, this PoC does not yet have an answer. Multi-step JCL batch is covered since module 3 (restart, abends, in-place VSAM updates), with the limits listed there.
 
 ---
 
@@ -83,13 +83,15 @@ Each entry: **Why it breaks** + **earliest signal you're in this territory**. Us
 **Why it breaks.** [.claude/skills/copybook-to-entity/SKILL.md](../../.claude/skills/copybook-to-entity/SKILL.md) maps copybooks to JPA `@Entity` (relational). IMS DBDs / PSBs / segment hierarchies don't map cleanly — relational tables are a fundamentally different shape.
 **Signal.** Source contains `EXEC DLI` calls or a `PSBNAME` reference. Modules sitting on IMS need a different persistence-mapping strategy before the methodology applies.
 
-### Deep JCL chains
-**Why it breaks.** A JCL job is a graph of step → DD → file → next step. The PoC has no orchestration story — `tools/run-cobol.sh` runs one program against one input file. JCL features like generation data groups (GDG), conditional step execution (`COND=`), and dataset disposition (`DISP=(NEW,KEEP,DELETE)`) have no equivalent in the harness.
-**Signal.** The COBOL is invoked from JCL with multi-step dependencies (more than 2 steps, or any `COND=` / `IF/THEN/ELSE` JCL). Spring Batch is a candidate target but is not yet in the methodology.
+### Deep JCL chains — **now covered, with limits** (module 3)
+**What changed.** Module 3 (`nightly-batch`, [ADR-14](./DECISIONS.md)) models a JCL job as `cobol/<module>/job.json`: datasets, ordered steps with DD→dataset maps, PARM, acceptable return codes and `always` steps. `tools/run-job.py` runs it on GnuCOBOL; the same manifest builds one Spring Batch step per JCL step. Step-level restart (`abend-after=STEP;resume`), abend propagation (RC 12, `NOT RUN` steps) and in-place-updated VSAM files (captured through generated unload steps) are all in the byte-exact diff.
+**Still outside.** GDG generation management (one run = one generation), `COND=` expressions other than "stop after a failing step", dataset disposition, IDCAMS beyond REPRO, and multi-job dependencies managed by a scheduler.
+**Signal that you are past the limit.** JCL `IF/THEN/ELSE` on specific step RCs, `COND=(n,op,STEP)` referring to earlier steps selectively, or GDG arithmetic (`(-1)`, `(+2)`) inside one job.
 
-### EBCDIC at I/O boundaries
-**Why it breaks.** "Byte-exact diff" assumes ASCII text on both sides. Real mainframe data is EBCDIC; ports often encode-convert at I/O boundaries. The diff becomes "encoding-exact" — a converter bug looks identical to a logic bug, and the harness can't tell them apart without an explicit charset assertion.
-**Signal.** Source mentions `CODEPAGE` / `CCSID`, or any data file `cat`-displays as garbled text. Until the harness pins charset per file (planned, not implemented), don't trust diffs on these inputs.
+### EBCDIC at I/O boundaries — **partly covered** (module 3)
+**What changed.** The comparator is now byte-exact for binary fixed-length files with record/column/hex reporting (`compare-outputs.py`, LRECL from `job.json`), and module 3's data carries the EBCDIC overpunched signs (`{A-I}J-R`) end to end under `-fsign=EBCDIC` ([ADR-16](./DECISIONS.md)). `tools/carddemo-fixture.py normalize --ebcdic` decodes CardDemo's true EBCDIC seed files (cp037) and asserts they match the ASCII fixtures. GnuCOBOL's `CODE-SET IS EBCDIC` was verified to read EBCDIC files (compiler warns the feature is "unfinished").
+**Still outside.** A fixture whose *inputs* are EBCDIC through the whole job (planned as `07-ebcdic-input`; the two CardDemo seed sets differ by one byte in two files, so it needs its own golden master), EBCDIC collation in SORT/compare on non-digit keys, and DBCS.
+**Signal.** Source mentions `CODEPAGE` / `CCSID`, SORT keys with letters and symbols, or any data file that `cat`-displays as garbled text.
 
 ### VSAM with alternate indexes (AIX) or sparse keys
 **Why it breaks.** [docs/glossary.yaml `data_layer`](./glossary.yaml) maps KSDS / ESDS / RRDS to Postgres tables, but doesn't cover AIX (multiple keys per row, sparse). Naive translation collapses an AIX into a single PK and silently changes uniqueness semantics.
@@ -140,9 +142,9 @@ Concrete asks. Each one corresponds to a risk in §6 or a gap in §4.
 | Mainframe access for cross-compiler validation (one-time run-through per module) | Closes the GnuCOBOL ↔ Enterprise COBOL gap (§6, [ADR-2](./DECISIONS.md#adr-2--gnucobol-is-the-reference-compiler-for-the-poc)) | High — procurement |
 | Negative-control test in CI | Proves harness teeth on every module (§6, [ADR-1](./DECISIONS.md#adr-1--byte-exact-diff-is-the-validation-contract)) | Low — half a day to wire |
 | SME bandwidth model | Spec review is a per-module bottleneck (§2 "what doesn't amortize") | Medium — staffing |
-| Charset-pinning in the harness | Closes EBCDIC blind spot (§4, §6) | Low — declare codepage per fixture |
+| Charset-pinning in the harness | Partly done in module 3 (binary-safe diff, overpunch signs, EBCDIC seed check); an all-EBCDIC-input fixture is the remaining step (§4, §6) | Low — one fixture + generated CODE-SET converters |
 | CICS dialog story | Otherwise §4 modules are out of scope | High — needs a separate PoC on a CICS module |
-| JCL → orchestration story (Spring Batch?) | Otherwise multi-step jobs are out of scope (§4) | High — separate PoC |
+| JCL → orchestration story | **Done in module 3**: `job.json` manifest + `run-job.py` + Spring Batch, step-level restart ([ADR-14](./DECISIONS.md)); GDG and selective `COND=` remain (§4) | Done — extend per estate |
 | Real package name | Replace `com.example.poc` placeholder ([docs/glossary.yaml](./glossary.yaml) `naming.java_packages.base`) | Low — one config change |
 | Module 1 + module 2 actually translated | Confirms or falsifies the §3 crystallization prediction | Medium — engineering time |
 

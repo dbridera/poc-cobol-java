@@ -277,8 +277,13 @@ def parse_used_by(cell: str) -> list[str]:
     return programs
 
 
+PROGRAMS_IN_LOGICAL_RE = re.compile(r'\(([A-Z][A-Z0-9_\-]*(?:\s*,\s*[A-Z][A-Z0-9_\-]*)*)\)')
+
+
 def parse_files(body: str, default_program: str) -> list[tuple[str, str, str, str]]:
-    """Return [(program, file_label, direction, file_kind), ...]."""
+    """Return [(program, file_label, direction, file_kind), ...].
+    Multi-program modules name the programs in the logical-name cell, e.g.
+    '`XREF-FILE` (CBTRN02C, CBACT04C)'; otherwise the first program owns the file."""
     if is_none_section(body):
         return []
     tables = find_tables(body)
@@ -297,7 +302,10 @@ def parse_files(body: str, default_program: str) -> list[tuple[str, str, str, st
             direction, kind = 'in', 'file-in'
         else:
             direction, kind = 'out', 'file-out'
-        out.append((default_program, label, direction, kind))
+        m = PROGRAMS_IN_LOGICAL_RE.search(clean_cell(logical_cell))
+        programs = [p.strip() for p in m.group(1).split(',')] if m else [default_program]
+        for program in programs:
+            out.append((program, label, direction, kind))
     return out
 
 
@@ -311,6 +319,25 @@ def derive_file_label(logical: str, path: str) -> str:
     if m:
         return m.group(1).rsplit('/', 1)[-1]
     return logical
+
+
+def parse_job_steps(body: str) -> list[tuple[str, str, str]]:
+    """Optional §9 'Job steps (JCL)' of multi-step modules.
+    Table: | Step | Group | PGM | ... |  ->  [(step, group, program), ...] in order."""
+    if is_none_section(body):
+        return []
+    tables = find_tables(body)
+    if not tables:
+        return []
+    out: list[tuple[str, str, str]] = []
+    for r in tables[0][1:]:
+        if len(r) < 3:
+            continue
+        step, group, pgm = clean_cell(r[0]), clean_cell(r[1]), clean_cell(r[2])
+        pgm = re.sub(r'\s*\(.*\)\s*$', '', pgm).strip()
+        if step and pgm:
+            out.append((step, group, pgm))
+    return out
 
 
 def parse_sql(body: str, default_program: str) -> list[tuple[str, str, str]]:
@@ -385,6 +412,19 @@ def build_graph(module: str, md_path: Path) -> Graph:
         g.add_node(issuer, 'program', issuer)
         g.add_edge(issuer, table, verb)
 
+    # §9 (multi-step job modules only): the JCL-like step chain. Steps are
+    # chained with NEXT edges and point at the program they EXEC.
+    prev_step: str | None = None
+    for step, _group, pgm in parse_job_steps(sections.get(9, '')):
+        sid = f'step:{step}'
+        g.add_node(sid, 'job-step', step)
+        if prev_step:
+            g.add_edge(prev_step, sid, 'NEXT')
+        if pgm not in {n.id for n in g.nodes}:
+            g.add_node(pgm, 'program', pgm)
+        g.add_edge(sid, pgm, 'EXEC')
+        prev_step = sid
+
     return g
 
 
@@ -398,7 +438,12 @@ CLASS_MAP = {
     'file-out':       'fileOut',
     'sql-table':      'sqlTable',
     'shim':           'shim',
+    'job-step':       'jobStep',
 }
+
+# Emitted only when a module actually has job-step nodes, so the diagrams of
+# single-program modules stay byte-identical.
+MERMAID_JOBSTEP_CLASSDEF = "classDef jobStep fill:#f8d7da,stroke:#dc3545,stroke-width:2px,color:#58151c"
 
 MERMAID_CLASSDEFS = [
     "classDef program fill:#cfe2ff,stroke:#0d6efd,stroke-width:2px,color:#0a3678",
@@ -419,6 +464,8 @@ def emit_mermaid(g: Graph) -> str:
     out: list[str] = ["```mermaid", "flowchart LR"]
     for cd in MERMAID_CLASSDEFS:
         out.append("    " + cd)
+    if any(n.type == 'job-step' for n in g.nodes):
+        out.append("    " + MERMAID_JOBSTEP_CLASSDEF)
     if not g.nodes:
         out.append('    empty["(no dependencies found)"]')
         out.append("```")

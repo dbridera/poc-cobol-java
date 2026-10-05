@@ -54,11 +54,11 @@ You don't have to memorize these. Naming the module and the phase in plain Engli
 
 ---
 
-## 4. Sanity check — re-run the three reference modules with Claude
+## 4. Sanity check — re-run the reference modules with Claude
 
 Before touching your own module, confirm the harness is green on your machine. Open Claude Code at the repo root and paste:
 
-> Run the `equivalence-validator` subagent for each of these modules in turn — `add-motor-policy`, `add-policy-db`, `add-policy-facade` — and tell me whether each ends in `RESULT: GREEN`.
+> Run the `equivalence-validator` subagent for each of these modules in turn — `add-motor-policy`, `add-policy-db`, `add-policy-facade`, `cci-account-converter`, `nightly-batch` — and tell me whether each ends in `RESULT: GREEN`. Then run `./tools/check-module.sh --all` and tell me whether every module is CONFORMANT.
 
 The subagent runs `tools/run-cobol.sh`, `tools/run-java.sh`, and `tools/compare-outputs.py` for each module, reads `validation/reports/<module>.json`, and emits a per-fixture `[OK]`/`[FAIL]` line followed by `RESULT: GREEN` or `RESULT: RED`. (See [.claude/agents/equivalence-validator.md](../../.claude/agents/equivalence-validator.md) for the exact procedure.)
 

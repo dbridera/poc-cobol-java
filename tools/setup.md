@@ -59,10 +59,17 @@ createdb -O poc poc
 psql -d poc -c "ALTER USER poc WITH PASSWORD 'poc';"
 ```
 
+## Notes for the multi-step batch module (nightly-batch)
+
+- GnuCOBOL must be built with an indexed-file handler (`cobc --info` shows `indexed file handler: BDB` on the Homebrew build). `ORGANIZATION INDEXED` is the VSAM KSDS stand-in.
+- The module's `job.json` compiles with `-fsign=EBCDIC` (overpunched signs in the data) and `-fassign-clause=external` (JCL-like `DD_<name>` resolution); no extra packages needed.
+- Python 3.9 standard library only — no PyYAML, no pip installs.
+
 ## Sanity check after install
 
 From the repo root:
 
 ```bash
 ./tools/run-cobol.sh --self-test    # compiles a hello-world COBOL program
+./tools/jobman.py validate nightly-batch   # manifest of the multi-step module parses
 ```

@@ -1,0 +1,12 @@
+{
+  "name": "01-happy-small",
+  "description": "Accounts 1-5 (30 daily transactions, each account has one type-03 credit so the TCATBAL 'Creating' path runs). Accounts 1-2 get a real disclosure group (direct DISCGRP hit); 3-5 keep the blank group (DEFAULT fallback). Account 3's credit limit is lowered so some purchases reject with 102. Account 5 is the last TCATBAL account: CBACT04C never writes its interest back (faithful defect).",
+  "source": "../04-full-carddemo/in",
+  "accounts": [1, 2, 3, 4, 5],
+  "date_range": ["2022-07-18", "2022-07-18"],
+  "edits": [
+    {"file": "acctdata", "where": {"ACCT-ID": 1}, "set": {"ACCT-GROUP-ID": "A000000000"}},
+    {"file": "acctdata", "where": {"ACCT-ID": 2}, "set": {"ACCT-GROUP-ID": "A000000000"}},
+    {"file": "acctdata", "where": {"ACCT-ID": 3}, "set": {"ACCT-CREDIT-LIMIT": "1000.00"}}
+  ]
+}

@@ -1,6 +1,6 @@
 # Demo — reproduce the full PoC end-to-end
 
-**One file. Everything you need to re-run the four-module COBOL → Java demo on a clean machine and confirm 9 / 9 byte-exact equivalent.**
+**One file. Everything you need to re-run the five-module COBOL → Java demo on a clean machine and confirm 15 / 15 byte-exact equivalent.**
 
 For the *why* behind the methodology (5-phase framework, hard rules, ADRs), see [../methodology/](../methodology/). This doc is the **how** — setup, commands, expected output, and the talking points you'll hit when someone asks "wait, how did that actually work?"
 
@@ -10,11 +10,12 @@ For the *why* behind the methodology (5-phase framework, hard rules, ADRs), see 
 
 | | |
 |---|---|
-| **Modules** | 4 — `add-motor-policy` (VSAM) · `add-policy-db` (DB2/SQL) · `add-policy-facade` (CICS LINK) · `cci-account-converter` (real BCP banking package) |
-| **Fixtures** | 9 — 3 + 2 + 1 + 3 |
-| **Byte differences** | **0** across all 9 fixtures, all output channels (stdout, exit code, files, table dumps) |
-| **Java tests** | 35 unit tests across the 4 modules — all green |
-| **Negative control** | Verified for module 2 — deliberately corrupting one BigDecimal multiplier reproduces a clean `[FAIL]`; reverted to green |
+| **Modules** | 5 — `add-motor-policy` (VSAM) · `add-policy-db` (DB2/SQL) · `add-policy-facade` (CICS LINK) · `cci-account-converter` (real BCP banking package) · `nightly-batch` (4-step JCL nightly close from AWS CardDemo, verbatim) |
+| **Fixtures** | 15 — 3 + 2 + 1 + 3 + 6 |
+| **Byte differences** | **0** across all 15 fixtures, all output channels (stdout, exit code, files, table dumps, binary fixed-length datasets, job log) |
+| **Java tests** | 64 unit tests across the 5 modules — all green |
+| **Negative control** | Module 2: corrupting one BigDecimal multiplier → clean `[FAIL]`. Module 3: flipping `RoundingMode.DOWN` to `HALF_UP` → red at `acctfile.unl` record 1 column 24 (one cent); "fixing" the interest program's unreachable ELSE → red at record 2. All reverted to green |
+| **Process conformance** | `./tools/check-module.sh --all` — every module carries the same Phase A–E artefacts and passed the same tooling |
 | **What this is NOT** | A claim that AI alone produces correct Java. It's a claim that **AI + a byte-exact diff harness** produces *verifiably* correct Java — and the harness has teeth. |
 
 ---
@@ -42,7 +43,7 @@ Repo state should be clean (committed or stashed) — the demo script writes int
 
 ---
 
-## 3. The four modules
+## 3. The five modules
 
 ### Module 0 — `add-motor-policy` (VSAM / file access)
 
@@ -88,6 +89,20 @@ The `BCTITSCV` program from BCP's online interbank-transfer system (Feb 2015). B
 
 Full session report: [../methodology/MODULE-2-REPORT.md](../methodology/MODULE-2-REPORT.md).
 
+### Module 3 — `nightly-batch` (a real 4-step JCL batch job — AWS CardDemo nightly close)
+
+Stakeholder concern this answers: **"how do you handle real batch — JCL with several steps, VSAM files updated in place, sort steps, restart after a crash, abends, and the signed data formats that only exist on the mainframe?"**
+
+Three CardDemo programs **kept byte-for-byte verbatim** (`CBTRN02C` posting, `CBACT04C` interest, `CBTRN03C` report) run as one job of 16 steps described by [`cobol/nightly-batch/job.json`](../../cobol/nightly-batch/job.json), the JCL analogue: six KSDS loads, **post the day's transactions**, back up, **charge monthly interest**, **sort + reload the transaction master**, **unload + sort + print the daily report**, two capture unloads. The Java side is Spring Batch, one Step per JCL step built from the *same* manifest, with the KSDS files as H2 tables accessed through JDBC.
+
+- **6 fixtures**: happy (accounts 1-5), rejects (reason codes 100/101/102/103 and their precedence), numeric boundaries (truncation toward zero, overflow without `ON SIZE ERROR`, a 10-digit cycle total truncated so a 50.00 purchase passes a 100.00 limit), the full seed set (300 transactions, 18 report pages), **restart** (killed after step 2 of 4, resumed — outputs identical to the unbroken run), **abend** (unknown category → `CEE3ABD`, RC 12, later steps `NOT RUN`, capture steps still run).
+- **Channels diffed per fixture**: per-step stdout and return code, the job log, and 9 fixed-length binary datasets (rejects, backups, interest transactions, the sorted master, the report, the unloads of the two files rewritten in place) — 44 files per fixture.
+- **Empirical findings** (four new ADRs): JDBC over JPA for record-at-a-time batch ([ADR-13](../methodology/DECISIONS.md)); a job manifest as the JCL analogue with step-level restart and unload-based capture ([ADR-14](../methodology/DECISIONS.md)); tasklet per program, never chunk-oriented ([ADR-15](../methodology/DECISIONS.md)); determinism pins — pinned clock *with hundredths*, `-fsign=EBCDIC`, sort tie-break ([ADR-16](../methodology/DECISIONS.md)).
+- **Faithful defects, replicated on purpose** (CLAUDE.md rule 5): the interest program never updates the last account (`CBACT04C.cbl:219-221`, unreachable `ELSE`), and the report overstates the grand total by the last amount (`CBTRN03C.cbl:197-204`, stale record at EOF). Both are cited in the Java and on the spec's SME checklist. Say it on stage: *we translate what the bank runs, bugs included — and we tell the bank where they are.*
+- **Honesty note**: the data uses zoned-decimal overpunched signs, not COMP-3 file fields (COMP-3 appears only in the report's counters). The restart proves "same final output", not "same checkpoint mechanism" — the COBOL-side checkpoint is the harness's, the Java side is Spring Batch's `JobRepository`.
+
+Full session report: [../methodology/MODULE-3-REPORT.md](../methodology/MODULE-3-REPORT.md). Module docs: [`cobol/nightly-batch/README.md`](../../cobol/nightly-batch/README.md), [`specs/nightly-batch.md`](../../specs/nightly-batch.md).
+
 ---
 
 ## 4. Running it
@@ -100,7 +115,7 @@ Three equivalent options. Pick whichever fits the audience.
 ./tools/demo-commands.sh all
 ```
 
-Prints phase headers (A / C / D), echoes each command before running it, and finishes with a `proof` block listing all 4 `validation/reports/*.json` files. Total wall time: ~40 seconds on the demo machine.
+Prints phase headers (A / C / D), echoes each command before running it, runs the conformance gate, and finishes with a computed `proof` block over all `validation/reports/*.json`. Total wall time: ~3 minutes on the demo machine (module 3 starts seven JVMs).
 
 Subcommands for running one at a time:
 
@@ -111,8 +126,11 @@ Subcommands for running one at a time:
 | `./tools/demo-commands.sh module-1b` | Module 1B (2 fixtures) |
 | `./tools/demo-commands.sh module-1a` | Module 1A (1 fixture) |
 | `./tools/demo-commands.sh module-2` | Module 2 (3 fixtures) |
-| `./tools/demo-commands.sh proof` | Cat all 4 `validation/reports/*.json` + cross-module summary |
-| `./tools/demo-commands.sh all` | All four modules + proof |
+| `./tools/demo-commands.sh module-3` | Module 3 (6 fixtures) + the two demo moments: the restart job log and the faithful bug |
+| `./tools/demo-commands.sh negative-control` | Sabotage one rounding mode in module 3 → red diff at a named record/column → revert → green |
+| `./tools/demo-commands.sh conformance` | `check-module.sh --all`: same five phases, same tooling, every module |
+| `./tools/demo-commands.sh proof` | Per-fixture summary of all `validation/reports/*.json` + computed cross-module totals |
+| `./tools/demo-commands.sh all` | All five modules + conformance + proof |
 | `--quiet` | (suffix to any subcommand) suppress the narrative phase headers |
 
 ### Option B — raw commands (for live typing on stage)
@@ -139,15 +157,21 @@ Each module is a 3-command triplet: capture COBOL golden master, build + run Jav
 ./tools/run-cobol.sh    cci-account-converter
 ./tools/run-java.sh     cci-account-converter
 ./tools/compare-outputs.py cci-account-converter
+
+# Module 3 — 4-step JCL nightly batch (CardDemo)
+./tools/run-job.sh      nightly-batch                      # or run-cobol.sh — it dispatches on job.json
+./tools/run-job.sh      nightly-batch 05-restart --verbose # the restart moment, step by step
+./tools/run-java.sh     nightly-batch
+./tools/compare-outputs.py nightly-batch
 ```
 
-Note module 0 and module 2 use `run-cobol.sh` (file-only); modules 1A/1B use `run-cobol-db.sh` (loads the SQLite shim).
+Note module 0 and module 2 use `run-cobol.sh` (file-only); modules 1A/1B use `run-cobol-db.sh` (loads the SQLite shim); module 3 uses `run-job.sh` (the multi-step manifest runner).
 
 ### Option C — Claude Code session (for an audience asking "how does Claude drive this?")
 
 In a Claude Code session at the repo root:
 
-> Run the `equivalence-validator` subagent for each of these modules in turn — `add-motor-policy`, `add-policy-db`, `add-policy-facade`, `cci-account-converter` — and tell me whether each ends in `RESULT: GREEN`.
+> Run the `equivalence-validator` subagent for each of these modules in turn — `add-motor-policy`, `add-policy-db`, `add-policy-facade`, `cci-account-converter`, `nightly-batch` — and tell me whether each ends in `RESULT: GREEN`.
 
 The read-only subagent invokes the same 3 commands per module and reports per-fixture `[OK]` / `[FAIL]` plus a final `RESULT: GREEN` line. See [.claude/agents/equivalence-validator.md](../../.claude/agents/equivalence-validator.md) for the spec.
 
@@ -167,11 +191,21 @@ End of `./tools/demo-commands.sh all`:
 [OK ] cci-account-converter/01-cci-to-bcp-impacs
 [OK ] cci-account-converter/02-bcp-to-cci-saving
 [OK ] cci-account-converter/03-validation-error
-
+[OK ] nightly-batch/01-happy-small   (files 44 · records 397 · bytes 77449 · differing 0)
+[OK ] nightly-batch/02-rejects   (files 44 · records 318 · bytes 54090 · differing 0)
+[OK ] nightly-batch/03-numeric-boundaries   (files 44 · records 237 · bytes 33539 · differing 0)
+[OK ] nightly-batch/04-full-carddemo   (files 44 · records 3377 · bytes 792762 · differing 0)
+[OK ] nightly-batch/05-restart   (files 44 · records 408 · bytes 77939 · differing 0)
+[OK ] nightly-batch/06-abend-discgrp   (files 30 · records 115 · bytes 8981 · differing 0)
+...
+RESULT: CONFORMANT (… checks passed, 5 module(s))
+...
 ────────────────────────────────────────────────────────────
-  SUMMARY: 9 / 9 fixtures byte-exact equivalent across modules 0, 1A, 1B, 2
+  TOTAL 15/15 fixtures byte-exact · records 4875 · bytes 1045…  · differing 0
 ────────────────────────────────────────────────────────────
 ```
+
+The `TOTAL` line is computed from the JSON reports by `./tools/compare-outputs.py --summary` — nothing in the proof block is hard-coded.
 
 The per-fixture JSON proof artifacts in `validation/reports/*.json` each show `"diffs": []` per fixture. **`"diffs": []` is the contract.** Any non-empty `diffs` is a stop-the-demo signal — investigate before continuing.
 
@@ -227,6 +261,16 @@ Each SQLCODE branch maps to a typed exception. The glossary ([../methodology/glo
 
 Same approach. `EXEC CICS LINK` becomes a Spring `@Autowired` service-to-service call. `EXEC CICS ABEND` becomes a typed exception. `EXEC CICS RETURN` becomes a method return. All in the glossary's `orchestration` section. [ADR-10](../methodology/DECISIONS.md) covers the same-JVM-only scope of this PoC.
 
+### How do you handle JCL, multi-step batch, restart?
+
+> *"Module 3 is a real four-step nightly close from a public card-processing sample. The job is described once, in a manifest that plays the role of the JCL; the same file drives the COBOL run on GnuCOBOL and builds the Spring Batch job, so step order, file mapping and return-code rules cannot drift. One fixture kills the job after step 2 and resumes it; the resumed run must produce the same bytes as the unbroken one, on both sides — the checker enforces it. Another fixture abends: the job stops, the later steps are marked NOT RUN, the capture steps still run, exit code 12 on both sides."*
+
+What we don't claim: GDG generations, selective `COND=` expressions and an all-EBCDIC input run are not modelled (see [SCALING.md §4](../methodology/SCALING.md)).
+
+### You translated a bug on purpose?
+
+> *"Yes — two of them, and we can show you the exact line. The interest program never updates the last account; the report overstates its grand total by the last amount. Rule 5 of our methodology says: don't refine the COBOL before the diff is green. The Java reproduces both, cites both, and the spec's SME checklist asks the bank whether they are intended. When we 'fixed' the first one as a negative control, the diff went red at account 5 — the harness protects the bank from well-meaning improvements too."*
+
 ### Why not use a commercial COBOL-to-Java tool?
 
 Commercial tools translate syntax — they produce compilable Java that looks like the COBOL. They don't prove behavioral equivalence. We do, by running both and diffing the bytes. The three empirical bugs we caught would have shipped with a commercial-tool translation.
@@ -246,14 +290,15 @@ Hard rule 3 from [CLAUDE.md](../../CLAUDE.md): **COBOL is ground truth, not the 
 Before the demo:
 
 1. **Pull latest.** `git pull`. Working tree should be clean.
-2. **Preflight.** `./tools/demo-commands.sh preflight` — runs the toolchain check, cleans `java-run/` and per-module `bin/`, then warms up all four modules end-to-end. Total ~50 s. Output ends with `Pre-flight complete. Nine fixtures byte-exact equivalent.`
-3. **Spot-check one report.** `cat validation/reports/cci-account-converter.json | python3 -m json.tool` — confirm three `"diffs": []` lines.
+2. **Preflight.** `./tools/demo-commands.sh preflight` — runs the toolchain check, cleans `java-run/` and per-module `bin/`, then warms up all five modules end-to-end. Total ~3 min. Output ends with `Pre-flight complete. Fifteen fixtures byte-exact equivalent.`
+3. **Spot-check one report.** `./tools/compare-outputs.py --summary` — one line per module, `TOTAL 15/15`. For the raw JSON: `python3 -m json.tool validation/reports/nightly-batch.json`.
+3b. **Rehearse the negative control once** (`./tools/demo-commands.sh negative-control`, ~1 min) so the red diff is not a surprise on stage.
 4. **Confirm Claude Code can see the skills.** Open Claude Code at the repo root. The five skills under `.claude/skills/` and the one subagent under `.claude/agents/` load automatically.
 
 During the demo:
 
 5. Run `./tools/demo-commands.sh all` (or per-module subcommands if pacing). Narrate per §3 above.
-6. Open `validation/reports/cci-account-converter.json` to show `"diffs": []` × 3 in raw JSON.
+6. Open `validation/reports/nightly-batch.json` to show `"diffs": []` × 6 with the `summary` counts, then `./tools/demo-commands.sh negative-control` for the red-then-green moment.
 7. Hit Q&A from §6 above.
 
 If anything fails on stage:

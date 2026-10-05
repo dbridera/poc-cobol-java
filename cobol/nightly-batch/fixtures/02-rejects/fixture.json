@@ -1,0 +1,15 @@
+{
+  "name": "02-rejects",
+  "description": "Every rejection reason of CBTRN02C once, plus the precedence rule: 100 unknown card, 101 card whose cross-reference points to a non-existent account, 102 over credit limit, 103 account expired before the transaction date. Account 4 is both over limit and expired: the 103 check runs last and overwrites the 102 reason. Accounts 1 and 5 post normally.",
+  "source": "../04-full-carddemo/in",
+  "accounts": [1, 2, 3, 4, 5],
+  "date_range": ["2022-07-18", "2022-07-18"],
+  "edits": [
+    {"file": "dailytran", "where": {"TRAN-ID": "0000000503557384"}, "set": {"TRAN-CARD-NUM": "9999999999999999"}},
+    {"file": "cardxref", "append": {"XREF-CARD-NUM": "1111222233334444", "XREF-CUST-ID": 999999999, "XREF-ACCT-ID": 99999999999}},
+    {"file": "dailytran", "append": {"TRAN-ID": "9000000000000101", "TRAN-TYPE-CD": "01", "TRAN-CAT-CD": 1, "TRAN-SOURCE": "POS TERM", "TRAN-DESC": "Purchase on a card with no account", "TRAN-AMT": "12.34", "TRAN-MERCHANT-ID": 800000001, "TRAN-MERCHANT-NAME": "Orphan Store", "TRAN-MERCHANT-CITY": "Nowhere", "TRAN-MERCHANT-ZIP": "00000", "TRAN-CARD-NUM": "1111222233334444", "TRAN-ORIG-TS": "2022-06-10 12:00:00.000000"}},
+    {"file": "acctdata", "where": {"ACCT-ID": 3}, "set": {"ACCT-CREDIT-LIMIT": "500.00"}},
+    {"file": "acctdata", "where": {"ACCT-ID": 2}, "set": {"ACCT-EXPIRAION-DATE": "2022-01-01"}},
+    {"file": "acctdata", "where": {"ACCT-ID": 4}, "set": {"ACCT-CREDIT-LIMIT": "100.00", "ACCT-EXPIRAION-DATE": "2022-06-09"}}
+  ]
+}

@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
  * commarea" maps to "policy_num is zero" — see
  * [cobol/add-policy-facade/README.md] for why.
  */
+// COBOL: lgapol01.cbl:80-126 (MAINLINE SECTION)
 @Service
 public class PolicyFacadeService {
 

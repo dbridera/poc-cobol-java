@@ -32,6 +32,7 @@ import java.util.List;
  *   PROCESSED=NNNNNN INSERTED=NNNNNN REJECTED=NNNNNN
  * </pre>
  */
+// COBOL: ADDPFCD.cbl:78-119 (MAIN)
 @Component
 public class BatchRunner implements CommandLineRunner {
 

@@ -20,12 +20,15 @@ The output is `specs/<module>.md`. The COBOL source remains the ground truth —
 9. **Out of scope**: anything dropped vs the original (CICS, DB2 transactions, other policy types, etc.).
 10. **Traceability**: a Java symbol → COBOL paragraph + line range table.
 11. **SME review checklist**: 4–8 yes/no items the analyst can answer without reading COBOL.
+12. **Faithful defects register** (when the module has any): each real bug in the source with its line range, observable effect and the fixture that shows it. The translation replicates them (rule 5); the SME checklist asks whether they are intended.
+
+For **job modules** (`job.json` present): §3 lists datasets with LRECL, key and offsets plus the PARM and the pinned clock; §4 has one subsection per step in job order (loaders/sorts included) with the step's DISPLAY lines; §7 lists every captured dataset with its order (key order for unloads, input order for sequential writes) and the `run-log.txt` lines; §8 states the failure/restart semantics (RC outside `rc_ok`, `NOT RUN`, `always`, MAXRC, resumed ≡ unbroken). Template: `specs/nightly-batch.md`.
 
 ## Hard rules
 
 - Never paraphrase a COBOL idiom into vague English. "Validates inputs" is wrong; list the rules in order.
 - Never invent business meaning. If you don't know what a field means, mark it `TBD — ask SME`.
-- The numeric calculations section must explicitly state the **rounding mode**. Default COBOL `ROUNDED` is HALF_UP. Verify by grepping the source for `ROUNDED MODE`.
+- The numeric calculations section must explicitly state the **rounding mode**. Default COBOL `ROUNDED` is HALF_UP. Verify by grepping the source for `ROUNDED MODE`. A COMPUTE/DIVIDE **without** ROUNDED into a field with decimals truncates toward zero (`RoundingMode.DOWN`), and an ADD without `ON SIZE ERROR` keeps the low-order digits — say which applies to every statement (glossary `numerics`).
 - Every overflow trap (`ON SIZE ERROR`) must be listed with its reason string (verbatim from COBOL).
 - The output formats section is the BYTE-EXACT contract for `equivalence-validate`. If you handwave here, the diff will fail.
 

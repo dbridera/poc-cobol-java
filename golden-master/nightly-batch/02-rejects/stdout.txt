@@ -1,0 +1,83 @@
+=== 01-LOAD-ACCTFILE RC=0000 ===
+LOAD-ACCTFILE: LOADED 000000005 RECORDS
+=== 02-LOAD-XREFFILE RC=0000 ===
+LOAD-XREFFILE: LOADED 000000006 RECORDS
+=== 03-LOAD-TCATBALF RC=0000 ===
+LOAD-TCATBALF: LOADED 000000005 RECORDS
+=== 04-LOAD-DISCGRP RC=0000 ===
+LOAD-DISCGRP: LOADED 000000051 RECORDS
+=== 05-LOAD-TRANTYPE RC=0000 ===
+LOAD-TRANTYPE: LOADED 000000007 RECORDS
+=== 06-LOAD-TRANCATG RC=0000 ===
+LOAD-TRANCATG: LOADED 000000018 RECORDS
+=== 07-POSTTRAN RC=0004 ===
+START OF EXECUTION OF PROGRAM CBTRN02C
+TCATBAL record not found for key : 00000000005030001.. Creating.
+TCATBAL record not found for key : 00000000001030001.. Creating.
+TCATBAL record not found for key : 00000000003030001.. Creating.
+TRANSACTIONS PROCESSED :000000031
+TRANSACTIONS REJECTED  :000000020
+END OF EXECUTION OF PROGRAM CBTRN02C
+=== 08-TRANBKP RC=0000 ===
+UNLD-TRANSACT: UNLOADED 000000011 RECORDS
+=== 09-INTCALC RC=0000 ===
+START OF EXECUTION OF PROGRAM CBACT04C
+000000000010100010000010834C0000000000000000000000
+DISCLOSURE GROUP RECORD MISSING
+TRY WITH DEFAULT GROUP CODE
+000000000010300010000000707P0000000000000000000000
+DISCLOSURE GROUP RECORD MISSING
+TRY WITH DEFAULT GROUP CODE
+000000000020100010000000000{0000000000000000000000
+DISCLOSURE GROUP RECORD MISSING
+TRY WITH DEFAULT GROUP CODE
+000000000030100010000001151A0000000000000000000000
+DISCLOSURE GROUP RECORD MISSING
+TRY WITH DEFAULT GROUP CODE
+000000000030300010000008802K0000000000000000000000
+DISCLOSURE GROUP RECORD MISSING
+TRY WITH DEFAULT GROUP CODE
+000000000040100010000000000{0000000000000000000000
+DISCLOSURE GROUP RECORD MISSING
+TRY WITH DEFAULT GROUP CODE
+000000000050100010000012668E0000000000000000000000
+DISCLOSURE GROUP RECORD MISSING
+TRY WITH DEFAULT GROUP CODE
+000000000050300010000004289R0000000000000000000000
+DISCLOSURE GROUP RECORD MISSING
+TRY WITH DEFAULT GROUP CODE
+END OF EXECUTION OF PROGRAM CBACT04C
+=== 10-COMBSORT RC=0000 ===
+CBSORT01: SORT COMPLETE
+=== 11-COMBLOAD RC=0000 ===
+LOAD-TRANSACT: LOADED 000000016 RECORDS
+=== 12-REPTUNLD RC=0000 ===
+UNLD-TRANSACT: UNLOADED 000000016 RECORDS
+=== 13-REPTSORT RC=0000 ===
+CBSORT02: SELECTED 000000016 OF 000000016 RECORDS FOR 2022-07-18 TO 2022-07-18
+=== 14-TRANREPT RC=0000 ===
+START OF EXECUTION OF PROGRAM CBTRN03C
+Reporting from 2022-07-18 to 2022-07-18
+2022071800000002010005System    Int. for a/c 00000000002                                                                            0000000000{000000000                                                                                                              09238771932473302022-07-18-00.00.00.0000002022-07-18-00.00.00.000000                    
+2022071800000004010005System    Int. for a/c 00000000004                                                                            0000000000{000000000                                                                                                              29880913530943122022-07-18-00.00.00.0000002022-07-18-00.00.00.000000                    
+0000000375247552010001POS TERM  Purchase at Guann Group                                                                             0000001151A800000000Guann Group                                       Port Grant                                        76360-645739991692463758852022-06-10 19:27:53.0000002022-07-18-00.00.00.000000                    
+0000000540260014030001OPERATOR  Return item at McCullough-Gottlieb                                                                  0000008802K800000000McCullough-Gottlieb                               Clarissaside                                      80982-407239991692463758852022-06-10 19:27:53.0000002022-07-18-00.00.00.000000                    
+2022071800000003010005System    Int. for a/c 00000000003                                                                            0000000014C000000000                                                                                                              39991692463758852022-07-18-00.00.00.0000002022-07-18-00.00.00.000000                    
+0000000006292564010001POS TERM  Purchase at Ernser, Roob and Gleason                                                                0000000678H800000000Ernser, Roob and Gleason                          North Makenziemouth                               78487-796560096191506745262022-06-10 19:27:53.0000002022-07-18-00.00.00.000000                    
+0000000226849749030001OPERATOR  Return item at Smith, Cummings and Medhurst                                                         0000004289R800000000Smith, Cummings and Medhurst                      South Adriannaland                                54229-745960096191506745262022-06-10 19:27:53.0000002022-07-18-00.00.00.000000                    
+0000000250062442010001POS TERM  Purchase at Willms, Abshire and Daugherty                                                           0000003469I800000000Willms, Abshire and Daugherty                     Shieldston                                        97909-123360096191506745262022-06-10 19:27:53.0000002022-07-18-00.00.00.000000                    
+0000000399296572010001POS TERM  Purchase at McGlynn Inc                                                                             0000002547G800000000McGlynn Inc                                       New Berenice                                      76608     60096191506745262022-06-10 19:27:53.0000002022-07-18-00.00.00.000000                    
+0000000570880433010001POS TERM  Purchase at Kuvalis-Leffler                                                                         0000001617G800000000Kuvalis-Leffler                                   East Tiffany                                      09856-174960096191506745262022-06-10 19:27:53.0000002022-07-18-00.00.00.000000                    
+0000000585883106010001POS TERM  Purchase at Heathcote Inc                                                                           0000004354D800000000Heathcote Inc                                     Marlenemouth                                      72239-507160096191506745262022-06-10 19:27:53.0000002022-07-18-00.00.00.000000                    
+2022071800000005010005System    Int. for a/c 00000000005                                                                            0000000158C000000000                                                                                                              60096191506745262022-07-18-00.00.00.0000002022-07-18-00.00.00.000000                    
+0000000532120892030001OPERATOR  Return item at Frami-Hyatt                                                                          0000000707P800000000Frami-Hyatt                                       Jamilside                                         14372-179096802941546036972022-06-10 19:27:53.0000002022-07-18-00.00.00.000000                    
+0000000555363230010001POS TERM  Purchase at Metz, Blanda and Homenick                                                               0000004849I800000000Metz, Blanda and Homenick                         North Linwood                                     41398     96802941546036972022-06-10 19:27:53.0000002022-07-18-00.00.00.000000                    
+0000000624335286010001POS TERM  Purchase at Crona, Turner and Hane                                                                  0000005984D800000000Crona, Turner and Hane                            Glenton                                           32966-635996802941546036972022-06-10 19:27:53.0000002022-07-18-00.00.00.000000                    
+2022071800000001010005System    Int. for a/c 00000000001                                                                            0000000135D000000000                                                                                                              96802941546036972022-07-18-00.00.00.0000002022-07-18-00.00.00.000000                    
+TRAN-AMT +000000013.54
+WS-PAGE-TOTAL+000001477.47
+END OF EXECUTION OF PROGRAM CBTRN03C
+=== 15-UNLD-ACCTFILE RC=0000 ===
+UNLD-ACCTFILE: UNLOADED 000000005 RECORDS
+=== 16-UNLD-TCATBALF RC=0000 ===
+UNLD-TCATBALF: UNLOADED 000000008 RECORDS

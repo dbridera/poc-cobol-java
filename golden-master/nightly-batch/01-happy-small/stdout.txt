@@ -1,0 +1,96 @@
+=== 01-LOAD-ACCTFILE RC=0000 ===
+LOAD-ACCTFILE: LOADED 000000005 RECORDS
+=== 02-LOAD-XREFFILE RC=0000 ===
+LOAD-XREFFILE: LOADED 000000005 RECORDS
+=== 03-LOAD-TCATBALF RC=0000 ===
+LOAD-TCATBALF: LOADED 000000005 RECORDS
+=== 04-LOAD-DISCGRP RC=0000 ===
+LOAD-DISCGRP: LOADED 000000051 RECORDS
+=== 05-LOAD-TRANTYPE RC=0000 ===
+LOAD-TRANTYPE: LOADED 000000007 RECORDS
+=== 06-LOAD-TRANCATG RC=0000 ===
+LOAD-TRANCATG: LOADED 000000018 RECORDS
+=== 07-POSTTRAN RC=0004 ===
+START OF EXECUTION OF PROGRAM CBTRN02C
+TCATBAL record not found for key : 00000000005030001.. Creating.
+TCATBAL record not found for key : 00000000002030001.. Creating.
+TCATBAL record not found for key : 00000000001030001.. Creating.
+TCATBAL record not found for key : 00000000003030001.. Creating.
+TCATBAL record not found for key : 00000000004030001.. Creating.
+TRANSACTIONS PROCESSED :000000030
+TRANSACTIONS REJECTED  :000000006
+END OF EXECUTION OF PROGRAM CBTRN02C
+=== 08-TRANBKP RC=0000 ===
+UNLD-TRANSACT: UNLOADED 000000024 RECORDS
+=== 09-INTCALC RC=0000 ===
+START OF EXECUTION OF PROGRAM CBACT04C
+000000000010100010000011648G0000000000000000000000
+000000000010300010000000707P0000000000000000000000
+000000000020100010000023399G0000000000000000000000
+000000000020300010000007630}0000000000000000000000
+000000000030100010000009997G0000000000000000000000
+DISCLOSURE GROUP RECORD MISSING
+TRY WITH DEFAULT GROUP CODE
+000000000030300010000008802K0000000000000000000000
+DISCLOSURE GROUP RECORD MISSING
+TRY WITH DEFAULT GROUP CODE
+000000000040100010000019456E0000000000000000000000
+DISCLOSURE GROUP RECORD MISSING
+TRY WITH DEFAULT GROUP CODE
+000000000040300010000003229R0000000000000000000000
+DISCLOSURE GROUP RECORD MISSING
+TRY WITH DEFAULT GROUP CODE
+000000000050100010000012668E0000000000000000000000
+DISCLOSURE GROUP RECORD MISSING
+TRY WITH DEFAULT GROUP CODE
+000000000050300010000004289R0000000000000000000000
+DISCLOSURE GROUP RECORD MISSING
+TRY WITH DEFAULT GROUP CODE
+END OF EXECUTION OF PROGRAM CBACT04C
+=== 10-COMBSORT RC=0000 ===
+CBSORT01: SORT COMPLETE
+=== 11-COMBLOAD RC=0000 ===
+LOAD-TRANSACT: LOADED 000000029 RECORDS
+=== 12-REPTUNLD RC=0000 ===
+UNLD-TRANSACT: UNLOADED 000000029 RECORDS
+=== 13-REPTSORT RC=0000 ===
+CBSORT02: SELECTED 000000029 OF 000000029 RECORDS FOR 2022-07-18 TO 2022-07-18
+=== 14-TRANREPT RC=0000 ===
+START OF EXECUTION OF PROGRAM CBTRN03C
+Reporting from 2022-07-18 to 2022-07-18
+0000000070754800010001POS TERM  Purchase at Blick, Kris and Gerlach                                                                 0000003551A800000000Blick, Kris and Gerlach                           Lake Shawnabury                                   65183-096309238771932473302022-06-10 19:27:53.0000002022-07-18-00.00.00.000000                    
+0000000274427056030001OPERATOR  Return item at Gibson-Maggio                                                                        0000007630}800000000Gibson-Maggio                                     Port Genevieveberg                                92794-645709238771932473302022-06-10 19:27:53.0000002022-07-18-00.00.00.000000                    
+0000000325686503010001POS TERM  Purchase at Cruickshank-Marvin                                                                      0000005699I800000000Cruickshank-Marvin                                Russelshire                                       66858     09238771932473302022-06-10 19:27:53.0000002022-07-18-00.00.00.000000                    
+0000000504099546010001POS TERM  Purchase at Jewess, Sauer and Runolfsson                                                            0000006551A800000000Jewess, Sauer and Runolfsson                      Parkermouth                                       00391     09238771932473302022-06-10 19:27:53.0000002022-07-18-00.00.00.000000                    
+0000000519935575010001POS TERM  Purchase at Gaylord, Kuhlman and Reichert                                                           0000001649I800000000Gaylord, Kuhlman and Reichert                     West Reillymouth                                  05765     09238771932473302022-06-10 19:27:53.0000002022-07-18-00.00.00.000000                    
+0000000824152956010001POS TERM  Purchase at Weissnat-Sanford                                                                        0000005947G800000000Weissnat-Sanford                                  Schuppeton                                        25158-324209238771932473302022-06-10 19:27:53.0000002022-07-18-00.00.00.000000                    
+2022071800000002010005System    Int. for a/c 00000000002                                                                            0000000292D000000000                                                                                                              09238771932473302022-07-18-00.00.00.0000002022-07-18-00.00.00.000000                    
+0000000450622695010001POS TERM  Purchase at Schmitt, Kohler and Skiles                                                              0000000283C800000000Schmitt, Kohler and Skiles                        Farrellhaven                                      00796     29880913530943122022-06-10 19:27:53.0000002022-07-18-00.00.00.000000                    
+0000000458331136010001POS TERM  Purchase at Howe, Rippin and Watsica                                                                0000004371A800000000Howe, Rippin and Watsica                          West Kianachester                                 75201     29880913530943122022-06-10 19:27:53.0000002022-07-18-00.00.00.000000                    
+0000000600564499010001POS TERM  Purchase at Schmeler, Crooks and Barton                                                             0000007363C800000000Schmeler, Crooks and Barton                       Hodkiewiczville                                   09147-969029880913530943122022-06-10 19:27:53.0000002022-07-18-00.00.00.000000                    
+0000000841555701010001POS TERM  Purchase at Kub, Gislason and Haraann                                                               0000002815E800000000Kub, Gislason and Haraann                         Port Bryonfurt                                    16314-373129880913530943122022-06-10 19:27:53.0000002022-07-18-00.00.00.000000                    
+0000000865987685030001OPERATOR  Return item at Kovacek-Beatty                                                                       0000003229R800000000Kovacek-Beatty                                    Cecilemouth                                       18917     29880913530943122022-06-10 19:27:53.0000002022-07-18-00.00.00.000000                    
+0000000899241176010001POS TERM  Purchase at Beier, Larson and Schultz                                                               0000004623C800000000Beier, Larson and Schultz                         North Gudrunville                                 59436-847029880913530943122022-06-10 19:27:53.0000002022-07-18-00.00.00.000000                    
+2022071800000004010005System    Int. for a/c 00000000004                                                                            0000000243B000000000                                                                                                              29880913530943122022-07-18-00.00.00.0000002022-07-18-00.00.00.000000                    
+0000000085824369010001POS TERM  Purchase at Pollich-Mosciski                                                                        0000009997G800000000Pollich-Mosciski                                  Georgettemouth                                    85890     39991692463758852022-06-10 19:27:53.0000002022-07-18-00.00.00.000000                    
+0000000540260014030001OPERATOR  Return item at McCullough-Gottlieb                                                                  0000008802K800000000McCullough-Gottlieb                               Clarissaside                                      80982-407239991692463758852022-06-10 19:27:53.0000002022-07-18-00.00.00.000000                    
+2022071800000003010005System    Int. for a/c 00000000003                                                                            0000000124I000000000                                                                                                              39991692463758852022-07-18-00.00.00.0000002022-07-18-00.00.00.000000                    
+0000000006292564010001POS TERM  Purchase at Ernser, Roob and Gleason                                                                0000000678H800000000Ernser, Roob and Gleason                          North Makenziemouth                               78487-796560096191506745262022-06-10 19:27:53.0000002022-07-18-00.00.00.000000                    
+0000000226849749030001OPERATOR  Return item at Smith, Cummings and Medhurst                                                         0000004289R800000000Smith, Cummings and Medhurst                      South Adriannaland                                54229-745960096191506745262022-06-10 19:27:53.0000002022-07-18-00.00.00.000000                    
+0000000250062442010001POS TERM  Purchase at Willms, Abshire and Daugherty                                                           0000003469I800000000Willms, Abshire and Daugherty                     Shieldston                                        97909-123360096191506745262022-06-10 19:27:53.0000002022-07-18-00.00.00.000000                    
+0000000399296572010001POS TERM  Purchase at McGlynn Inc                                                                             0000002547G800000000McGlynn Inc                                       New Berenice                                      76608     60096191506745262022-06-10 19:27:53.0000002022-07-18-00.00.00.000000                    
+0000000570880433010001POS TERM  Purchase at Kuvalis-Leffler                                                                         0000001617G800000000Kuvalis-Leffler                                   East Tiffany                                      09856-174960096191506745262022-06-10 19:27:53.0000002022-07-18-00.00.00.000000                    
+0000000585883106010001POS TERM  Purchase at Heathcote Inc                                                                           0000004354D800000000Heathcote Inc                                     Marlenemouth                                      72239-507160096191506745262022-06-10 19:27:53.0000002022-07-18-00.00.00.000000                    
+2022071800000005010005System    Int. for a/c 00000000005                                                                            0000000158C000000000                                                                                                              60096191506745262022-07-18-00.00.00.0000002022-07-18-00.00.00.000000                    
+0000000503557384010001POS TERM  Purchase at Casper Group                                                                            0000000814D800000000Casper Group                                      Millsborough                                      57690     96802941546036972022-06-10 19:27:53.0000002022-07-18-00.00.00.000000                    
+0000000532120892030001OPERATOR  Return item at Frami-Hyatt                                                                          0000000707P800000000Frami-Hyatt                                       Jamilside                                         14372-179096802941546036972022-06-10 19:27:53.0000002022-07-18-00.00.00.000000                    
+0000000555363230010001POS TERM  Purchase at Metz, Blanda and Homenick                                                               0000004849I800000000Metz, Blanda and Homenick                         North Linwood                                     41398     96802941546036972022-06-10 19:27:53.0000002022-07-18-00.00.00.000000                    
+0000000624335286010001POS TERM  Purchase at Crona, Turner and Hane                                                                  0000005984D800000000Crona, Turner and Hane                            Glenton                                           32966-635996802941546036972022-06-10 19:27:53.0000002022-07-18-00.00.00.000000                    
+2022071800000001010005System    Int. for a/c 00000000001                                                                            0000000145F000000000                                                                                                              96802941546036972022-07-18-00.00.00.0000002022-07-18-00.00.00.000000                    
+TRAN-AMT +000000014.56
+WS-PAGE-TOTAL+000000014.56
+END OF EXECUTION OF PROGRAM CBTRN03C
+=== 15-UNLD-ACCTFILE RC=0000 ===
+UNLD-ACCTFILE: UNLOADED 000000005 RECORDS
+=== 16-UNLD-TCATBALF RC=0000 ===
+UNLD-TCATBALF: UNLOADED 000000010 RECORDS

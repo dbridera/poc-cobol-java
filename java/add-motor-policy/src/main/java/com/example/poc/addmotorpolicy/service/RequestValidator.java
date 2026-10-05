@@ -12,6 +12,7 @@ import java.util.Optional;
  * <p>Rules are evaluated in order and the FIRST failing rule is returned —
  * matching COBOL's EVALUATE TRUE short-circuit. See spec §4.
  */
+// COBOL: ADDMPOL.cbl:199-225 (CHECK-REQUEST-ID + VALIDATE-REQUEST)
 @Component
 public class RequestValidator {
 

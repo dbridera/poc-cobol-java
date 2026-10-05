@@ -174,6 +174,62 @@ Flat file by design — convert to `docs/decisions/` once entries exceed ~15.
 
 ---
 
+## ADR-13 — JDBC (`JdbcTemplate`) over JPA for record-at-a-time batch access to KSDS files
+
+**Context.** Batch COBOL works one record at a time: `READ` by key, change a few fields in working storage, `REWRITE`, and the very next `READ` of the same file must see that change. Module 1B mapped `EXEC SQL INSERT` to JPA and immediately hit the `save()`-is-MERGE trap (ADR-9); a KSDS updated in place inside a loop is the same trap multiplied: an identity map that hands back a stale managed entity, a deferred flush that reorders writes, and `@Transactional` boundaries that have no COBOL counterpart. The report program also needs `READ NEXT` in key order while another file is being rewritten.
+
+**Decision.** For multi-step batch modules the KSDS files are relational tables accessed with `JdbcTemplate` and explicit SQL (`INSERT` = `WRITE`, `UPDATE … WHERE pk` = `REWRITE`, `SELECT … WHERE pk` = `READ`, `SELECT … ORDER BY pk` = `READ NEXT`, a secondary index = the VSAM alternate index). One `KsdsTable` class maps a copybook layout to a table (alphanumerics and unsigned numerics as `VARCHAR` so key padding and byte order are preserved, signed amounts as `DECIMAL(p,s)`, FILLER as its own column so a record round-trips byte for byte). JPA remains the target for online, request-scoped services (modules 1A/1B).
+
+**Consequences.** Every file verb has a visible SQL twin; no hidden caching or flush ordering. `ORDER BY` on the padded key columns reproduces BDB/VSAM key order without a collation clause. The cost is hand-written DDL per layout — generated from the layout descriptor, so one class covers all nine copybooks of module 3.
+
+**Alternatives considered.** JPA with `flush()`/`clear()` after every record — rejected: it re-creates the COBOL semantics by fighting the framework, and the identity map still bites on `READ NEXT`. Raw record tables (`KEY VARCHAR, REC VARCHAR(lrecl)`) — rejected: byte-faithful but defeats the point of showing "VSAM becomes a relational table"; the demo must show real columns.
+
+**Evidence.** [java/nightly-batch/.../io/KsdsTable.java](../../java/nightly-batch/src/main/java/com/example/poc/nightlybatch/io/KsdsTable.java). [specs/nightly-batch.md §8](../../specs/nightly-batch.md). [validation/reports/nightly-batch.json](../../validation/reports/nightly-batch.json) — 6/6 byte-exact including `acctfile.unl` and `tcatbal.unl`, the unloads of the two files rewritten in place.
+
+---
+
+## ADR-14 — A job manifest is the JCL analogue; restart is step-level; in-place-updated files are captured by unload steps
+
+**Context.** SCALING.md §4 listed "deep JCL chains" as a construct that breaks the approach: the harness ran one program against one input. A real nightly close is a chain of steps sharing files, with `COND=`-style failure handling, checkpoint/restart, and VSAM files that are *modified* rather than produced — the single-program harness would never have captured them (it only moved files that were not staged inputs).
+
+**Decision.** A multi-step module declares `cobol/<module>/job.json`: datasets (organization, LRECL, key, sandbox path, `input`/`capture` flags) and an ordered step list (program, DD→dataset map, PARM, `rc_ok`, `always`). `tools/run-job.py` executes it on the COBOL side with `DD_<name>` environment variables (GnuCOBOL `-fassign-clause=external`); the Spring Batch application reads the **same file** and builds one Step per manifest step. Semantics are identical on both sides: a RC outside `rc_ok` fails the job, later steps are `NOT RUN` except `always` steps, the exit code is MAXRC over the job instance, a killed job (`abend-after=STEP;resume`) is resumed by skipping completed steps (`.jobstate` on the COBOL side, the `JobRepository` on the Java side), and both write the same `run-log.txt`. Only datasets flagged `capture: true` leave the sandbox; KSDS files are never captured — generated `UNLD-*` steps (IDCAMS REPRO stand-ins, `always: true`) write their sequential twins so in-place updates are diffed.
+
+**Consequences.** Step order, DD mapping and failure rules cannot drift between the two sides because there is one source of truth. The restart demo is a fixture (`05-restart`) with an invariant enforced by `tools/check-module.sh`: its outputs equal the unbroken run's. The job log is part of the byte-exact contract. GDG generations are not modelled (one run = one generation).
+
+**Alternatives considered.** Translate the JCL to a shell script per module — rejected: nothing would tie the Java step list to it. Spring Batch XML/Java config written by hand — rejected: same drift risk, and the COBOL side would still need its own driver. A commercial JCL-to-Spring-Batch converter — out of scope for the PoC and would not solve capture.
+
+**Evidence.** [cobol/nightly-batch/job.json](../../cobol/nightly-batch/job.json). [tools/run-job.py](../../tools/run-job.py), [tools/jobman.py](../../tools/jobman.py). [java/nightly-batch/.../batch/NightlyJobConfig.java](../../java/nightly-batch/src/main/java/com/example/poc/nightlybatch/batch/NightlyJobConfig.java), [RunLogListener.java](../../java/nightly-batch/src/main/java/com/example/poc/nightlybatch/batch/RunLogListener.java). [golden-master/nightly-batch/05-restart/out/run-log.txt](../../golden-master/nightly-batch/05-restart/out/run-log.txt). README spike i (Spring Batch 5 + H2 file database restarts across two JVM runs).
+
+---
+
+## ADR-15 — One Spring Batch tasklet per COBOL program, not chunk-oriented steps
+
+**Context.** Spring Batch's idiomatic step is chunk-oriented: read N items, process, write, commit. CBTRN02C reads a transaction, reads the account, rewrites it, and the next transaction of the same account must see the new balance; CBACT04C accumulates interest across a control break and rewrites at the break. A chunk boundary between two transactions of one account would make the second one read a stale balance (or a flushed-then-reread one, depending on configuration) — a translation that is correct for chunk size 1 and wrong for chunk size 10 is not a translation.
+
+**Decision.** Each manifest step is a `Tasklet` that runs the whole program in one transaction, exactly as the COBOL executable runs: open, loop, close, return code. Chunk-oriented steps may be introduced later *per program* once the byte-exact diff is green, as an optimisation under rule 5 ("refactor after green, never before").
+
+**Consequences.** No batch-level parallelism or partitioning for now; stdout ordering and record-at-a-time visibility are exact. The performance story (SCALING.md, colleague's §5) stays separate from the correctness story.
+
+**Alternatives considered.** Chunk size 1 — works but misleads: it looks tunable and is not. `ItemReader`/`ItemWriter` with a custom `ItemStream` reading KSDS — rejected for the same visibility reason.
+
+**Evidence.** [java/nightly-batch/.../batch/NightlyJobConfig.java](../../java/nightly-batch/src/main/java/com/example/poc/nightlybatch/batch/NightlyJobConfig.java) (tasklet factory). [specs/nightly-batch.md §4.2, §4.4](../../specs/nightly-batch.md).
+
+---
+
+## ADR-16 — Determinism pins: pinned clock with hundredths, EBCDIC overpunch flag, explicit sort tie-break
+
+**Context.** The nightly close has three sources of non-determinism that the single-program modules never had: `FUNCTION CURRENT-DATE` stamped into every transaction (including hundredths of a second), signed zoned data whose sign is an EBCDIC overpunch (`{A-I}J-R`) that GnuCOBOL misreads by default, and a DFSORT step whose order among equal keys is unspecified.
+
+**Decision.** (1) `COB_CURRENT_DATE="2022/07/18 00:00:00.00"` in the manifest env — the fractional form is required: without it the hundredths keep ticking (README spike d). The Java side derives a fixed `LocalDateTime` from the same string. (2) `-fsign=EBCDIC` in the manifest's compiler flags; `ZonedDecimal` implements the same table on the Java side. (3) The sort stand-in adds TRAN-ID as a secondary key where DFSORT ran without `OPTION EQUALS`; documented as an adaptation in the module README.
+
+**Consequences.** Golden masters are reproducible run to run (verified by re-running fixture 04 and diffing). The pins are data, not source changes: the three CardDemo programs stay verbatim. Any new module with a clock must declare its pin in the manifest; the spec names it in §8.
+
+**Alternatives considered.** Masking timestamps in the comparator — rejected (ADR-1: never weaken the diff). Editing `Z-GET-DB2-FORMAT-TIMESTAMP` to a constant — rejected once the fractional `COB_CURRENT_DATE` form proved to work; it would have cost the "kept verbatim" claim.
+
+**Evidence.** [cobol/nightly-batch/job.json](../../cobol/nightly-batch/job.json) `env` and `build.cobc_flags`. [cobol/nightly-batch/README.md §8-9](../../cobol/nightly-batch/README.md) (spike log a, d, g; determinism pins). [java/nightly-batch/.../batch/JobRun.java](../../java/nightly-batch/src/main/java/com/example/poc/nightlybatch/batch/JobRun.java) `parseCobCurrentDate`, [io/ZonedDecimal.java](../../java/nightly-batch/src/main/java/com/example/poc/nightlybatch/io/ZonedDecimal.java).
+
+---
+
 ## How to add an ADR
 
 1. Append the next entry below with the same five-section shape.

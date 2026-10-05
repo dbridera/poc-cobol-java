@@ -30,6 +30,19 @@ Document every:
 - `OPEN`/`READ`/`WRITE`/`CLOSE` → which sequential/indexed file, fixed/variable length
 - `DISPLAY` / `ACCEPT` / terminal I/O
 
+## 3.5 Multi-step jobs (JCL) → `cobol/<module>/job.json`
+
+If the programs are run from JCL with more than one step, or share files between steps, the module is a **job module**. Author the manifest before fixtures (canonical example: [cobol/nightly-batch/job.json](../../../cobol/nightly-batch/job.json), ADR-14):
+
+- `datasets`: every file with `org` (`seq` fixed-length / `ksds`), `lrecl`, `key` `[offset, length]` and `alt_keys` for KSDS, the sandbox `path`, and `input: true` (staged from the fixture) or `capture: true` (leaves the sandbox for the diff). **KSDS files are never captured** — add `UNLD-<DS>` steps (`always: true`) and capture their sequential twins; that is how in-place `REWRITE`s become visible.
+- `steps`: one per `EXEC PGM=` / SORT / REPRO, in order, with the DD→dataset map, `parm`, `rc_ok` (JCL COND analogue) and `always`.
+- `build.cobc_flags`: at least `-fassign-clause=external` (unquoted `ASSIGN TO DDNAME` resolves through `DD_<name>`); add `-fsign=EBCDIC` when the data carries overpunched signs.
+- `env`: pin every clock (`COB_CURRENT_DATE="YYYY/MM/DD HH:MM:SS.hh"` — the fractional part is required to freeze hundredths).
+- Mainframe services the programs call but GnuCOBOL lacks (`CEE3ABD`, PARM via LINKAGE, IDCAMS REPRO, DFSORT) get tiny **added** programs, documented in README Provenance → Added, never edits to the business programs. KSDS loaders/unloaders are generated: `./tools/gen-ksds-io.py <module>` (`--check` is the drift gate).
+- Validate with `./tools/jobman.py validate <module>`; capture with `./tools/run-job.sh <module>` (`run-cobol.sh` dispatches to it).
+
+Record in the README a **spike log** (what GnuCOBOL does with each unusual construct, with pass/fail) and a **faithful-defects register** (real bugs in the source, cited by line, with the fixture that shows them). Rule 5: they are replicated, not fixed.
+
 ## 4. Control-flow map
 
 Produce a paragraph-level call graph:
@@ -53,6 +66,7 @@ A standalone, machine-grokkable asset doc. Hand-authored during this phase. Fixe
 | 6 | **EXEC SQL / database dependencies** | table: `Statement type \| Table \| Columns or cursor \| Host variables`. For modules using the libcob_sqlite shim, list shim symbols (`cob_sqlite_open` / `_exec` / `_dump` / `_close`) and cite [tools/spike/cob_sqlite.c](../../tools/spike/cob_sqlite.c) |
 | 7 | **EXEC CICS / runtime calls** | table: `Paragraph \| EXEC verb + operands \| Adaptation status (preserved / removed / replaced)`. Cite the adaptation number from the module's README provenance section |
 | 8 | **Entry points** | table: `Entry \| Invoked by \| Parameters / input contract` |
+| 9 | **Job steps (JCL)** — job modules only | table: `Step \| Group \| PGM \| DD → dataset (in) \| DD → dataset (out) \| RC ok`, mirroring `job.json`; the renderer draws the step chain |
 
 **Empty sections still appear** with a one-line `none — <why>` note (e.g., `none — pure compute module, no DB access`). Uniform structure across modules is the point.
 
@@ -81,7 +95,9 @@ Plan ≥3 fixtures:
 2. **Validation errors**: one record per validation rule that fails it; ideally one record that passes through.
 3. **Numeric boundaries**: CC/value/accidents/etc. at PIC boundaries; at least one record that should trigger `ON SIZE ERROR`.
 
-Every fixture record must be parseable. Use `tools/make-fixture.py` if the format is fixed-width.
+Every fixture record must be parseable. Use `tools/make-fixture.py` if the format is fixed-width (it knows signed overpunch fields and the CardDemo layouts; `--dump` reads binary files back as JSON).
+
+For **job modules** add: (4) a full-data fixture, (5) a **restart** fixture — byte-copy of a small fixture plus `fixture.env` with `JOB_PLAN="abend-after=<STEP>;resume"` and `RESTART_EQUIVALENT_TO=<that fixture>`, and (6) an **abend** fixture that reaches a `CEE3ABD` path (RC 12, later steps `NOT RUN`, capture steps still run). Keep each fixture regenerable from a `fixture.json` recipe (`tools/carddemo-fixture.py build` for CardDemo data). Every numeric edge case belongs in one fixture: it is the negative-control target.
 
 ## 8. Output of this phase
 

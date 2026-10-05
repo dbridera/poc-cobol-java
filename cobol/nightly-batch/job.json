@@ -1,0 +1,90 @@
+{
+  "job": "NIGHTLY",
+  "source": "AWS CardDemo app/jcl: POSTTRAN -> TRANBKP -> INTCALC -> COMBTRAN -> TRANREPT (see original/jcl/)",
+  "env": {
+    "COB_CURRENT_DATE": "2022/07/18 00:00:00.00"
+  },
+  "build": {
+    "cobc_flags": ["-x", "-O", "-Wall", "-fsign=EBCDIC", "-fassign-clause=external", "-I", "copybooks"],
+    "executables": {
+      "CBTRN02C":      ["src/CBTRN02C.cbl", "src/CEE3ABD.cbl"],
+      "INTCALC":       ["src/INTCALC.cbl", "src/CBACT04C.cbl", "src/CEE3ABD.cbl"],
+      "CBTRN03C":      ["src/CBTRN03C.cbl", "src/CEE3ABD.cbl"],
+      "CBSORT01":      ["src/CBSORT01.cbl"],
+      "CBSORT02":      ["src/CBSORT02.cbl"],
+      "LOAD-ACCTFILE": ["src/ksds/LOAD-ACCTFILE.cbl"],
+      "LOAD-XREFFILE": ["src/ksds/LOAD-XREFFILE.cbl"],
+      "LOAD-TCATBALF": ["src/ksds/LOAD-TCATBALF.cbl"],
+      "LOAD-DISCGRP":  ["src/ksds/LOAD-DISCGRP.cbl"],
+      "LOAD-TRANTYPE": ["src/ksds/LOAD-TRANTYPE.cbl"],
+      "LOAD-TRANCATG": ["src/ksds/LOAD-TRANCATG.cbl"],
+      "LOAD-TRANSACT": ["src/ksds/LOAD-TRANSACT.cbl"],
+      "UNLD-TRANSACT": ["src/ksds/UNLD-TRANSACT.cbl"],
+      "UNLD-ACCTFILE": ["src/ksds/UNLD-ACCTFILE.cbl"],
+      "UNLD-TCATBALF": ["src/ksds/UNLD-TCATBALF.cbl"]
+    }
+  },
+  "datasets": {
+    "ACCTDATA":  {"org": "seq",  "lrecl": 300, "path": "acctdata.dat",  "input": true,  "copybook": "CVACT01Y", "note": "seed for ACCTFILE (IDCAMS REPRO input)"},
+    "CARDXREF":  {"org": "seq",  "lrecl": 50,  "path": "cardxref.dat",  "input": true,  "copybook": "CVACT03Y"},
+    "TCATBAL":   {"org": "seq",  "lrecl": 50,  "path": "tcatbal.dat",   "input": true,  "copybook": "CVTRA01Y"},
+    "DISCGRPS":  {"org": "seq",  "lrecl": 50,  "path": "discgrp.dat",   "input": true,  "copybook": "CVTRA02Y"},
+    "TRANTYPES": {"org": "seq",  "lrecl": 60,  "path": "trantype.dat",  "input": true,  "copybook": "CVTRA03Y"},
+    "TRANCATGS": {"org": "seq",  "lrecl": 60,  "path": "trancatg.dat",  "input": true,  "copybook": "CVTRA04Y"},
+    "DALYTRAN":  {"org": "seq",  "lrecl": 350, "path": "dailytran.dat", "input": true,  "copybook": "CVTRA06Y", "note": "the day's card transactions"},
+    "DATEPARM":  {"org": "seq",  "lrecl": 80,  "path": "dateparm.dat",  "input": true,  "note": "report date range: X(10) start, X(1), X(10) end"},
+
+    "ACCTFILE":  {"org": "ksds", "lrecl": 300, "key": [0, 11],  "path": "acctfile.ksds", "copybook": "CVACT01Y", "note": "AWS.M2.CARDDEMO.ACCTDATA.VSAM.KSDS"},
+    "XREFFILE":  {"org": "ksds", "lrecl": 50,  "key": [0, 16],  "alt_keys": [[25, 11]], "path": "xreffile.ksds", "copybook": "CVACT03Y", "note": "CARDXREF.VSAM.KSDS + AIX on account id (CBACT04C reads by the alternate key)"},
+    "TCATBALF":  {"org": "ksds", "lrecl": 50,  "key": [0, 17],  "path": "tcatbal.ksds",  "copybook": "CVTRA01Y", "note": "TCATBALF.VSAM.KSDS"},
+    "DISCGRP":   {"org": "ksds", "lrecl": 50,  "key": [0, 16],  "path": "discgrp.ksds",  "copybook": "CVTRA02Y", "note": "DISCGRP.VSAM.KSDS"},
+    "TRANTYPE":  {"org": "ksds", "lrecl": 60,  "key": [0, 2],   "path": "trantype.ksds", "copybook": "CVTRA03Y", "note": "TRANTYPE.VSAM.KSDS"},
+    "TRANCATG":  {"org": "ksds", "lrecl": 60,  "key": [0, 6],   "path": "trancatg.ksds", "copybook": "CVTRA04Y", "note": "TRANCATG.VSAM.KSDS"},
+    "TRANSACT":  {"org": "ksds", "lrecl": 350, "key": [0, 16],  "path": "transact.ksds", "copybook": "CVTRA05Y", "note": "TRANSACT.VSAM.KSDS — created by POSTTRAN (OPEN OUTPUT), reloaded by COMBTRAN"},
+
+    "DALYREJS":  {"org": "seq",  "lrecl": 430, "path": "dalyrejs.dat",  "capture": true, "note": "rejected transactions: 350-byte record + 4-digit reason + 76-char text"},
+    "TRANBKP":   {"org": "seq",  "lrecl": 350, "path": "tranbkp.dat",   "capture": true, "copybook": "CVTRA05Y", "note": "TRANSACT.BKUP(+1): posted transactions unloaded after step 1"},
+    "SYSTRAN":   {"org": "seq",  "lrecl": 350, "path": "systran.dat",   "capture": true, "copybook": "CVTRA05Y", "note": "SYSTRAN(+1): interest transactions written by step 2"},
+    "COMBINED":  {"org": "seq",  "lrecl": 350, "path": "combined.dat",  "capture": true, "copybook": "CVTRA05Y", "note": "TRANSACT.COMBINED(+1): sorted merge of TRANBKP + SYSTRAN"},
+    "TRANBKP2":  {"org": "seq",  "lrecl": 350, "path": "tranbkp2.dat",  "capture": true, "copybook": "CVTRA05Y", "note": "TRANSACT.BKUP(+1) taken by TRANREPT.jcl step 1 (REPROC)"},
+    "TRANDALY":  {"org": "seq",  "lrecl": 350, "path": "trandaly.dat",  "capture": true, "copybook": "CVTRA05Y", "note": "TRANSACT.DALY(+1): date-filtered, sorted by card number"},
+    "TRANREPT":  {"org": "seq",  "lrecl": 133, "path": "tranrept.dat",  "capture": true, "note": "the printed report, 133-byte lines"},
+    "ACCTUNL":   {"org": "seq",  "lrecl": 300, "path": "acctfile.unl",  "capture": true, "copybook": "CVACT01Y", "note": "ACCTFILE after the job (in-place updates made visible for the diff)"},
+    "TCATUNL":   {"org": "seq",  "lrecl": 50,  "path": "tcatbal.unl",   "capture": true, "copybook": "CVTRA01Y", "note": "TCATBALF after the job"}
+  },
+  "steps": [
+    {"name": "LOAD-ACCTFILE", "group": "SETUP",    "exec": "LOAD-ACCTFILE", "dd": {"SEQIN": "ACCTDATA",  "KSDS": "ACCTFILE"}},
+    {"name": "LOAD-XREFFILE", "group": "SETUP",    "exec": "LOAD-XREFFILE", "dd": {"SEQIN": "CARDXREF",  "KSDS": "XREFFILE"}},
+    {"name": "LOAD-TCATBALF", "group": "SETUP",    "exec": "LOAD-TCATBALF", "dd": {"SEQIN": "TCATBAL",   "KSDS": "TCATBALF"}},
+    {"name": "LOAD-DISCGRP",  "group": "SETUP",    "exec": "LOAD-DISCGRP",  "dd": {"SEQIN": "DISCGRPS",  "KSDS": "DISCGRP"}},
+    {"name": "LOAD-TRANTYPE", "group": "SETUP",    "exec": "LOAD-TRANTYPE", "dd": {"SEQIN": "TRANTYPES", "KSDS": "TRANTYPE"}},
+    {"name": "LOAD-TRANCATG", "group": "SETUP",    "exec": "LOAD-TRANCATG", "dd": {"SEQIN": "TRANCATGS", "KSDS": "TRANCATG"}},
+
+    {"name": "POSTTRAN",      "group": "POSTTRAN", "exec": "CBTRN02C", "rc_ok": [0, 4],
+     "dd": {"DALYTRAN": "DALYTRAN", "TRANFILE": "TRANSACT", "XREFFILE": "XREFFILE", "DALYREJS": "DALYREJS", "ACCTFILE": "ACCTFILE", "TCATBALF": "TCATBALF"},
+     "jcl": "POSTTRAN.jcl STEP15 PGM=CBTRN02C"},
+
+    {"name": "TRANBKP",       "group": "TRANBKP",  "exec": "UNLD-TRANSACT", "dd": {"KSDS": "TRANSACT", "SEQOUT": "TRANBKP"},
+     "jcl": "TRANBKP.jcl REPROC (TRANSACT.VSAM.KSDS -> TRANSACT.BKUP(+1))"},
+
+    {"name": "INTCALC",       "group": "INTCALC",  "exec": "INTCALC", "parm": "2022071800",
+     "dd": {"TCATBALF": "TCATBALF", "XREFFILE": "XREFFILE", "ACCTFILE": "ACCTFILE", "DISCGRP": "DISCGRP", "TRANSACT": "SYSTRAN"},
+     "jcl": "INTCALC.jcl STEP15 PGM=CBACT04C,PARM='2022071800'"},
+
+    {"name": "COMBSORT",      "group": "COMBTRAN", "exec": "CBSORT01", "dd": {"SORTIN1": "TRANBKP", "SORTIN2": "SYSTRAN", "SORTOUT": "COMBINED"},
+     "jcl": "COMBTRAN.jcl STEP05R PGM=SORT"},
+    {"name": "COMBLOAD",      "group": "COMBTRAN", "exec": "LOAD-TRANSACT", "dd": {"SEQIN": "COMBINED", "KSDS": "TRANSACT"},
+     "jcl": "COMBTRAN.jcl STEP10 PGM=IDCAMS REPRO"},
+
+    {"name": "REPTUNLD",      "group": "TRANREPT", "exec": "UNLD-TRANSACT", "dd": {"KSDS": "TRANSACT", "SEQOUT": "TRANBKP2"},
+     "jcl": "TRANREPT.jcl STEP05R PROC=REPROC"},
+    {"name": "REPTSORT",      "group": "TRANREPT", "exec": "CBSORT02", "dd": {"SORTIN": "TRANBKP2", "DATEPARM": "DATEPARM", "SORTOUT": "TRANDALY"},
+     "jcl": "TRANREPT.jcl STEP05R PGM=SORT"},
+    {"name": "TRANREPT",      "group": "TRANREPT", "exec": "CBTRN03C",
+     "dd": {"TRANFILE": "TRANDALY", "CARDXREF": "XREFFILE", "TRANTYPE": "TRANTYPE", "TRANCATG": "TRANCATG", "DATEPARM": "DATEPARM", "TRANREPT": "TRANREPT"},
+     "jcl": "TRANREPT.jcl STEP10R PGM=CBTRN03C"},
+
+    {"name": "UNLD-ACCTFILE", "group": "CAPTURE",  "exec": "UNLD-ACCTFILE", "always": true, "dd": {"KSDS": "ACCTFILE", "SEQOUT": "ACCTUNL"}},
+    {"name": "UNLD-TCATBALF", "group": "CAPTURE",  "exec": "UNLD-TCATBALF", "always": true, "dd": {"KSDS": "TCATBALF", "SEQOUT": "TCATUNL"}}
+  ]
+}

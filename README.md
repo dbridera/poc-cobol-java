@@ -4,10 +4,10 @@
 
 | | |
 |---|---|
-| Status | Modules **0**, **1A** (CICS facade), **1B** (DB / EXEC SQL), **2** (real BCP banking package) all end-to-end **GREEN** |
-| Toolchain | GnuCOBOL 3.2 + Java 21 + Maven 3.9 + Spring Boot 3.3 + JPA + H2 (+ SQLite shim for COBOL EXEC SQL) |
-| Tests | 35 / 35 Java unit tests · **9 / 9 fixtures byte-exact equivalent** across 4 modules |
-| Sample source | Adapted from public [`cicsdev/cics-genapp`](https://github.com/cicsdev/cics-genapp) (modules 0/1A/1B) + Banco de Crédito del Perú `BCTITSCV` (module 2, real banking) |
+| Status | Modules **0**, **1A** (CICS facade), **1B** (DB / EXEC SQL), **2** (real BCP banking package), **3** (4-step JCL nightly batch, restart + abend) all end-to-end **GREEN** |
+| Toolchain | GnuCOBOL 3.2 (BDB indexed files) + Java 21 + Maven 3.9 + Spring Boot 3.3 + JPA / Spring Batch + JDBC + H2 (+ SQLite shim for COBOL EXEC SQL) |
+| Tests | 64 / 64 Java unit tests · **15 / 15 fixtures byte-exact equivalent** across 5 modules · 2 negative controls red-then-green · `check-module.sh --all` CONFORMANT |
+| Sample source | Adapted from public [`cicsdev/cics-genapp`](https://github.com/cicsdev/cics-genapp) (modules 0/1A/1B) + Banco de Crédito del Perú `BCTITSCV` (module 2, real banking) + [AWS CardDemo](https://github.com/aws-samples/aws-mainframe-modernization-carddemo) nightly close, **verbatim** (module 3, Apache-2.0) |
 
 ---
 
@@ -27,13 +27,13 @@ If the diff is green, the translation is correct.
 
 ## 2. 60-second quickstart
 
-Pre-requisite: toolchain (see §8). After that, from the repo root, **one command runs all four modules end-to-end**:
+Pre-requisite: toolchain (see §8). After that, from the repo root, **one command runs all five modules end-to-end**:
 
 ```bash
 ./tools/demo-commands.sh all
 ```
 
-Prints phase headers (A / C / D), echoes each command, ends with a proof block confirming 9 / 9 fixtures byte-exact equivalent across modules 0, 1A, 1B, 2.
+Prints phase headers (A / C / D), echoes each command, runs the conformance gate, and ends with a computed proof block: 15 / 15 fixtures byte-exact equivalent across modules 0, 1A, 1B, 2, 3.
 
 Per-module subcommands are below. For the full narrative + talking points, see [`docs/demo/DEMO.md`](./docs/demo/DEMO.md).
 
@@ -59,9 +59,14 @@ Per-module subcommands are below. For the full narrative + talking points, see [
 ./tools/run-cobol.sh    cci-account-converter
 ./tools/run-java.sh     cci-account-converter
 ./tools/compare-outputs.py cci-account-converter
+
+# Module 3 — 4-step JCL nightly batch (CardDemo), 16 manifest steps, restart + abend fixtures
+./tools/run-job.sh      nightly-batch          # == run-cobol.sh (dispatches on job.json)
+./tools/run-java.sh     nightly-batch
+./tools/compare-outputs.py nightly-batch
 ```
 
-Expected output across all 4 modules:
+Expected output across all 5 modules:
 
 ```
 [OK ] add-motor-policy/01-happy-small
@@ -73,13 +78,19 @@ Expected output across all 4 modules:
 [OK ] cci-account-converter/01-cci-to-bcp-impacs
 [OK ] cci-account-converter/02-bcp-to-cci-saving
 [OK ] cci-account-converter/03-validation-error
+[OK ] nightly-batch/01-happy-small   (files 44 · records 397 · bytes 77449 · differing 0)
+[OK ] nightly-batch/02-rejects   (files 44 · records 318 · bytes 54090 · differing 0)
+[OK ] nightly-batch/03-numeric-boundaries   (files 44 · records 237 · bytes 33539 · differing 0)
+[OK ] nightly-batch/04-full-carddemo   (files 44 · records 3377 · bytes 792762 · differing 0)
+[OK ] nightly-batch/05-restart   (files 44 · records 408 · bytes 77939 · differing 0)
+[OK ] nightly-batch/06-abend-discgrp   (files 30 · records 115 · bytes 8981 · differing 0)
 ```
 
-Plus JSON proof artifacts under `validation/reports/` — `"diffs": []` per fixture.
+Plus JSON proof artifacts under `validation/reports/` — `"diffs": []` per fixture, with a `summary` of records and bytes compared.
 
 ---
 
-## 2.5. Running the four example modules
+## 2.5. Running the five example modules
 
 | Module | What it proves | Command |
 |---|---|---|
@@ -87,7 +98,10 @@ Plus JSON proof artifacts under `validation/reports/` — `"diffs": []` per fixt
 | 1B | DB2 / EXEC SQL → JPA | `./tools/demo-commands.sh module-1b` |
 | 1A | CICS LINK → Spring service-to-service DI | `./tools/demo-commands.sh module-1a` |
 | 2 | Real banking package + mod-10 check digits | `./tools/demo-commands.sh module-2` |
-| **all** | the above × 4 + cross-module proof block | `./tools/demo-commands.sh all` |
+| 3 | 4-step JCL nightly batch: VSAM updated in place, sorts, step-level restart, abend | `./tools/demo-commands.sh module-3` |
+| NC | Negative control: flip one rounding mode → red diff at a named record/column → revert | `./tools/demo-commands.sh negative-control` |
+| — | Conformance: every module went through the same five phases with the same tooling | `./tools/demo-commands.sh conformance` |
+| **all** | the five modules + conformance + computed cross-module proof block | `./tools/demo-commands.sh all` |
 
 Each subcommand prints a per-phase narrative (A / C / D) and a RESULT summary citing the ADR(s) that module surfaced. Add `--quiet` to suppress narration. Full talking points + Q&A: [`docs/demo/DEMO.md`](./docs/demo/DEMO.md).
 
@@ -124,7 +138,7 @@ poc-cobol-java/
 ├── docs/
 │   ├── methodology/                   permanent framework docs (10 files)
 │   │   ├── METHODOLOGY.md             why the 5-phase shape
-│   │   ├── DECISIONS.md               12 ADRs (load-bearing methodology choices)
+│   │   ├── DECISIONS.md               16 ADRs (load-bearing methodology choices)
 │   │   ├── glossary.yaml              COBOL → Java idiom + naming map (the "RAG")
 │   │   ├── SKILLS-GUIDE.md            handoff contracts between phases
 │   │   ├── SCALING.md                 what the green diff does + doesn't prove
@@ -132,7 +146,8 @@ poc-cobol-java/
 │   │   ├── PRESENTATION.md            5-minute stakeholder explainer
 │   │   ├── EXECUTIVE-REPORT.md        executive summary
 │   │   ├── POC-COMPLETION-REPORT.md   full completion report
-│   │   └── MODULE-2-REPORT.md         module 2 session report
+│   │   ├── MODULE-2-REPORT.md         module 2 session report
+│   │   └── MODULE-3-REPORT.md         module 3 session report (multi-step batch)
 │   ├── demo/
 │   │   └── DEMO.md                    reproduce the full demo end-to-end
 │   └── reference/                     drop the Anthropic playbook PDF here
@@ -186,8 +201,9 @@ VS Code suggestions:
 | Layer | Command | Result |
 |---|---|---|
 | Toolchain self-test | `./tools/run-cobol.sh --self-test` | OK (compiles + runs hello-world COBOL) |
-| Java unit tests | `mvn -B test` per module | **35 / 35 passed across 4 modules** |
-| Behavioral equivalence | `./tools/demo-commands.sh all` | **9 fixtures · 4 modules · 0 bytes diverging** |
+| Java unit tests | `mvn -B test` per module | **64 / 64 passed across 5 modules** (35 + 29) |
+| Behavioral equivalence | `./tools/demo-commands.sh all` | **15 fixtures · 5 modules · 0 bytes diverging** (module 3 alone: 44 files, ~4 850 records, ~1.04 MB compared per full run) |
+| Process conformance | `./tools/check-module.sh --all` | **5 / 5 modules CONFORMANT** |
 
 ### Cross-module result table
 
@@ -197,7 +213,8 @@ VS Code suggestions:
 | 1B — `add-policy-db` | DB2 / EXEC SQL → JPA + H2 | 2 | 0 | `em.persist + flush` over `JpaRepository.save` ([ADR-9](./docs/methodology/DECISIONS.md)) |
 | 1A — `add-policy-facade` | CICS LINK → Spring DI | 1 | 0 | same-JVM Spring DI for PoC scope ([ADR-10](./docs/methodology/DECISIONS.md)) |
 | 2 — `cci-account-converter` | Real BCP banking package + mod-10 check digits | 3 | 0 | Integer-division `RoundingMode.DOWN` ([ADR-11](./docs/methodology/DECISIONS.md)) + PIC narrow-store truncation as algorithm ([ADR-12](./docs/methodology/DECISIONS.md)) |
-| **Total** | — | **9** | **0** | 5 ADRs across 4 modules — pattern is converging |
+| 3 — `nightly-batch` | 4-step JCL nightly close (CardDemo, verbatim): KSDS updated in place, sorts, restart, abend, overpunched signs | 6 | 0 | JDBC over JPA for batch ([ADR-13](./docs/methodology/DECISIONS.md)) · job manifest + step-level restart ([ADR-14](./docs/methodology/DECISIONS.md)) · tasklet per program ([ADR-15](./docs/methodology/DECISIONS.md)) · determinism pins ([ADR-16](./docs/methodology/DECISIONS.md)) |
+| **Total** | — | **15** | **0** | 9 ADRs across 5 modules |
 
 ### Equivalence proofs
 
@@ -234,12 +251,17 @@ These are *not* theoretical — every one was caught by running the diff:
 7. **Integer-division arithmetic uses `RoundingMode.DOWN`, not `HALF_UP`.** Caught by module 2 — the mod-10 check-digit calculation breaks if HALF_UP rounds `sum/10` upward. Distinct from ADR-4 (which governs `ROUNDED`). → [ADR-11](./docs/methodology/DECISIONS.md).
 8. **PIC narrow-store truncation is part of the algorithm, not an overflow.** Module 2's mod-10 relies on `WS-UNO-NUMERO PIC 9(01) := 10 → 0` to compute `(10 - sum%10) % 10`. Java must reproduce explicitly with `result.remainder(BigDecimal.TEN)`. → [ADR-12](./docs/methodology/DECISIONS.md).
 9. **Negative-control test confirmed (module 2).** Deliberately changing the `×2` multiplier in `CheckDigitCalculator` to `×1` produced a clean `[FAIL]` on fixture 02 (`CUENTA-ITE: ...28 → ...09`, exit 1). Reverted to green. The harness has teeth.
+10. **`COMPUTE` without `ROUNDED` truncates toward zero** (module 3: `(balance × rate) / 1200` → 0.09575 becomes 0.09, −11.4875 becomes −11.48). Flipping the Java to `HALF_UP` turns fixture 03 red at `acctfile.unl` record 1 column 24 (`E` → `F`, one cent). Reverted.
+11. **COBOL `INITIALIZE` leaves FILLER untouched.** The first Java run of module 3 was red on exactly 22 bytes per created category-balance row: the seed rows carry zero-filled FILLER, `READ … INTO` copies it into working storage, `INITIALIZE` keeps it, `WRITE` persists it. Verified on GnuCOBOL, fixed in `CobolRecord.initialize()`.
+12. **Real legacy defects survive translation on purpose.** CardDemo's interest program never updates the last account (`CBACT04C.cbl:219-221`, unreachable `ELSE`) and its report overstates the grand total by the last amount (`CBTRN03C.cbl:197-204`, stale record at EOF). Both are replicated, cited in the Java, listed in the spec's SME checklist; "fixing" the first one turns fixture 01 red at `acctfile.unl` record 2.
+13. **The pinned clock needs hundredths.** `COB_CURRENT_DATE="2022/07/18 00:00:00"` froze the seconds but the DB2 timestamps kept ticking in the hundredths; the fractional form `…:00.00` makes `FUNCTION CURRENT-DATE` constant. No source change needed.
 
 ### What we did NOT yet run (honest disclaimer)
 
 - **Property-based tests** (jqwik dependency is in module 0's `pom.xml`) — still a placeholder; only module 2 has hand-pinned mod-10 cases.
 - **Cross-COBOL-implementation check.** Only GnuCOBOL was used. A real migration should also run the original on the mainframe at least once and confirm GnuCOBOL produces the same golden master.
-- **Negative-control on the other three modules.** Module 2 proved teeth; modules 0/1A/1B still trust the harness without a same-module proof.
+- **Negative-control on modules 0 / 1A / 1B.** Modules 2 and 3 proved teeth (module 3 twice); the other three still trust the harness without a same-module proof.
+- **An all-EBCDIC-input fixture for module 3.** The EBCDIC seed files are decoded and checked against the ASCII fixtures, and `CODE-SET IS EBCDIC` was verified on GnuCOBOL, but no job run reads EBCDIC end to end yet.
 
 ---
 
@@ -333,7 +355,7 @@ PostgreSQL is **not** required for module zero (the Java side writes flat files 
 ## 9. Limitations + next steps
 
 ### Out of scope for this PoC
-JCL → Spring Batch · cross-JVM CICS LINK (REST/RPC equivalents) · EBCDIC ↔ ASCII at I/O boundaries · vector-DB RAG · production CI/CD · mainframe deployment.
+Cross-JVM CICS LINK (REST/RPC equivalents) · CICS online dialog / BMS · DB2 cursors in batch · GDG generation management · an all-EBCDIC-input job run (the overpunch, binary diff and seed check are done) · vector-DB RAG · production CI/CD · mainframe deployment · performance (see `docs/methodology/SCALING.md`).
 
 ### Recommended next moves
 
@@ -357,9 +379,10 @@ JCL → Spring Batch · cross-JVM CICS LINK (REST/RPC equivalents) · EBCDIC ↔
 | Handoff contracts between phases (skill ↔ skill) | [`docs/methodology/SKILLS-GUIDE.md`](./docs/methodology/SKILLS-GUIDE.md) |
 | What the green diff does NOT prove (honesty) | [`docs/methodology/SCALING.md`](./docs/methodology/SCALING.md) |
 | Naming + idiom map for the translator | [`docs/methodology/glossary.yaml`](./docs/methodology/glossary.yaml) |
-| 12 ADRs — load-bearing methodology choices | [`docs/methodology/DECISIONS.md`](./docs/methodology/DECISIONS.md) |
+| 16 ADRs — load-bearing methodology choices | [`docs/methodology/DECISIONS.md`](./docs/methodology/DECISIONS.md) |
 | Full completion + executive reports | [`docs/methodology/POC-COMPLETION-REPORT.md`](./docs/methodology/POC-COMPLETION-REPORT.md) · [`docs/methodology/EXECUTIVE-REPORT.md`](./docs/methodology/EXECUTIVE-REPORT.md) |
 | Module 2 session report (real-banking deep dive) | [`docs/methodology/MODULE-2-REPORT.md`](./docs/methodology/MODULE-2-REPORT.md) |
+| Module 3 session report (multi-step batch, restart, faithful defects) | [`docs/methodology/MODULE-3-REPORT.md`](./docs/methodology/MODULE-3-REPORT.md) |
 | Per-module spec (byte-exact contract) | `specs/<module>.md` |
 | Per-module asset / dependency map | `cobol/<module>/DEPENDENCIES.md` |
 | Approved methodology plan | `~/.claude/plans/breezy-tinkering-mccarthy.md` |
