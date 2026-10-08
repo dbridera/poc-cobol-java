@@ -56,6 +56,15 @@ check_module() {
     else
       fail "2 render-dependencies.py --check reports drift (run ./tools/render-dependencies.py $m)"
     fi
+    if [[ -f "$cdir/traceability.html" ]]; then
+      if ./tools/render-traceability.py "$m" --check >/dev/null 2>&1; then
+        pass "2 traceability.html / traceability.json in sync with the sources"
+      else
+        fail "2 traceability viewer drifted (run ./tools/render-traceability.py $m)"
+      fi
+    else
+      warn "2 no traceability.html (run ./tools/render-traceability.py $m)"
+    fi
   else
     fail "2 $cdir/DEPENDENCIES.md missing"
   fi

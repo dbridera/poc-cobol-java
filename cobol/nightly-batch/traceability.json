@@ -1,0 +1,1977 @@
+{
+ "module": "nightly-batch",
+ "stats": {
+  "cobol_files": 26,
+  "java_files": 31,
+  "paragraphs": 86,
+  "cited": 86,
+  "covered": 82,
+  "links": 79,
+  "unresolved_links": 0,
+  "fixtures": [
+   "01-happy-small",
+   "02-rejects",
+   "03-numeric-boundaries",
+   "04-full-carddemo",
+   "05-restart",
+   "06-abend-discgrp"
+  ]
+ },
+ "cobol": [
+  {
+   "path": "src/CBACT04C.cbl",
+   "paragraphs": [
+    {
+     "program": "CBACT04C",
+     "name": "0000-TCATBALF-OPEN",
+     "start": 234,
+     "end": 251,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/IntCalcProgram.java",
+       "line": 39
+      }
+     ],
+     "covered": 6
+    },
+    {
+     "program": "CBACT04C",
+     "name": "0100-XREFFILE-OPEN",
+     "start": 252,
+     "end": 269,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/IntCalcProgram.java",
+       "line": 39
+      }
+     ],
+     "covered": 6
+    },
+    {
+     "program": "CBACT04C",
+     "name": "0200-DISCGRP-OPEN",
+     "start": 270,
+     "end": 288,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/IntCalcProgram.java",
+       "line": 39
+      }
+     ],
+     "covered": 6
+    },
+    {
+     "program": "CBACT04C",
+     "name": "0300-ACCTFILE-OPEN",
+     "start": 289,
+     "end": 306,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/IntCalcProgram.java",
+       "line": 39
+      }
+     ],
+     "covered": 6
+    },
+    {
+     "program": "CBACT04C",
+     "name": "0400-TRANFILE-OPEN",
+     "start": 307,
+     "end": 324,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/IntCalcProgram.java",
+       "line": 39
+      }
+     ],
+     "covered": 6
+    },
+    {
+     "program": "CBACT04C",
+     "name": "1000-TCATBALF-GET-NEXT",
+     "start": 325,
+     "end": 349,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/IntCalcProgram.java",
+       "line": 65
+      }
+     ],
+     "covered": 6
+    },
+    {
+     "program": "CBACT04C",
+     "name": "1050-UPDATE-ACCOUNT",
+     "start": 350,
+     "end": 371,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/service/InterestCalculator.java",
+       "line": 93
+      }
+     ],
+     "covered": 5
+    },
+    {
+     "program": "CBACT04C",
+     "name": "1100-GET-ACCT-DATA",
+     "start": 372,
+     "end": 392,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/IntCalcProgram.java",
+       "line": 78
+      }
+     ],
+     "covered": 6
+    },
+    {
+     "program": "CBACT04C",
+     "name": "1110-GET-XREF-DATA",
+     "start": 393,
+     "end": 414,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/IntCalcProgram.java",
+       "line": 88
+      }
+     ],
+     "covered": 6
+    },
+    {
+     "program": "CBACT04C",
+     "name": "1200-GET-INTEREST-RATE",
+     "start": 415,
+     "end": 442,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/IntCalcProgram.java",
+       "line": 99
+      },
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/service/InterestCalculator.java",
+       "line": 39
+      }
+     ],
+     "covered": 6
+    },
+    {
+     "program": "CBACT04C",
+     "name": "1200-A-GET-DEFAULT-INT-RATE",
+     "start": 443,
+     "end": 461,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/IntCalcProgram.java",
+       "line": 99
+      },
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/service/InterestCalculator.java",
+       "line": 39
+      }
+     ],
+     "covered": 6
+    },
+    {
+     "program": "CBACT04C",
+     "name": "1300-COMPUTE-INTEREST",
+     "start": 462,
+     "end": 472,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/IntCalcProgram.java",
+       "line": 108
+      },
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/service/InterestCalculator.java",
+       "line": 64
+      }
+     ],
+     "covered": 6
+    },
+    {
+     "program": "CBACT04C",
+     "name": "1300-B-WRITE-TX",
+     "start": 473,
+     "end": 517,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/IntCalcProgram.java",
+       "line": 113
+      },
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/service/InterestCalculator.java",
+       "line": 74
+      }
+     ],
+     "covered": 6
+    },
+    {
+     "program": "CBACT04C",
+     "name": "1400-COMPUTE-FEES",
+     "start": 518,
+     "end": 521,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/IntCalcProgram.java",
+       "line": 119
+      }
+     ],
+     "covered": 6
+    },
+    {
+     "program": "CBACT04C",
+     "name": "9000-TCATBALF-CLOSE",
+     "start": 522,
+     "end": 540,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/IntCalcProgram.java",
+       "line": 127
+      }
+     ],
+     "covered": 5
+    },
+    {
+     "program": "CBACT04C",
+     "name": "9100-XREFFILE-CLOSE",
+     "start": 541,
+     "end": 558,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/IntCalcProgram.java",
+       "line": 127
+      }
+     ],
+     "covered": 5
+    },
+    {
+     "program": "CBACT04C",
+     "name": "9200-DISCGRP-CLOSE",
+     "start": 559,
+     "end": 576,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/IntCalcProgram.java",
+       "line": 127
+      }
+     ],
+     "covered": 5
+    },
+    {
+     "program": "CBACT04C",
+     "name": "9300-ACCTFILE-CLOSE",
+     "start": 577,
+     "end": 594,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/IntCalcProgram.java",
+       "line": 127
+      }
+     ],
+     "covered": 5
+    },
+    {
+     "program": "CBACT04C",
+     "name": "9400-TRANFILE-CLOSE",
+     "start": 595,
+     "end": 612,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/IntCalcProgram.java",
+       "line": 127
+      }
+     ],
+     "covered": 5
+    },
+    {
+     "program": "CBACT04C",
+     "name": "Z-GET-DB2-FORMAT-TIMESTAMP",
+     "start": 613,
+     "end": 627,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/service/CobolTimestamp.java",
+       "line": 17
+      }
+     ],
+     "covered": 6
+    },
+    {
+     "program": "CBACT04C",
+     "name": "9999-ABEND-PROGRAM",
+     "start": 628,
+     "end": 634,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/CobolRuntime.java",
+       "line": 24
+      }
+     ],
+     "covered": 1
+    },
+    {
+     "program": "CBACT04C",
+     "name": "9910-DISPLAY-IO-STATUS",
+     "start": 635,
+     "end": 652,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/CobolRuntime.java",
+       "line": 17
+      }
+     ],
+     "covered": 1
+    }
+   ]
+  },
+  {
+   "path": "src/CBSORT01.cbl",
+   "paragraphs": []
+  },
+  {
+   "path": "src/CBSORT02.cbl",
+   "paragraphs": [
+    {
+     "program": "CBSORT02",
+     "name": "MAIN",
+     "start": 65,
+     "end": 92,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/CardSortProgram.java",
+       "line": 21
+      }
+     ],
+     "covered": 5
+    },
+    {
+     "program": "CBSORT02",
+     "name": "SELECT-RECORDS",
+     "start": 93,
+     "end": 114,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/CardSortProgram.java",
+       "line": 21
+      }
+     ],
+     "covered": 5
+    }
+   ]
+  },
+  {
+   "path": "src/CBTRN02C.cbl",
+   "paragraphs": [
+    {
+     "program": "CBTRN02C",
+     "name": "0000-DALYTRAN-OPEN",
+     "start": 236,
+     "end": 253,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/PostTranProgram.java",
+       "line": 33
+      }
+     ],
+     "covered": 6
+    },
+    {
+     "program": "CBTRN02C",
+     "name": "0100-TRANFILE-OPEN",
+     "start": 254,
+     "end": 272,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/PostTranProgram.java",
+       "line": 33
+      }
+     ],
+     "covered": 6
+    },
+    {
+     "program": "CBTRN02C",
+     "name": "0200-XREFFILE-OPEN",
+     "start": 273,
+     "end": 290,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/PostTranProgram.java",
+       "line": 33
+      }
+     ],
+     "covered": 6
+    },
+    {
+     "program": "CBTRN02C",
+     "name": "0300-DALYREJS-OPEN",
+     "start": 291,
+     "end": 308,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/PostTranProgram.java",
+       "line": 33
+      }
+     ],
+     "covered": 6
+    },
+    {
+     "program": "CBTRN02C",
+     "name": "0400-ACCTFILE-OPEN",
+     "start": 309,
+     "end": 326,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/PostTranProgram.java",
+       "line": 33
+      }
+     ],
+     "covered": 6
+    },
+    {
+     "program": "CBTRN02C",
+     "name": "0500-TCATBALF-OPEN",
+     "start": 327,
+     "end": 344,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/PostTranProgram.java",
+       "line": 33
+      }
+     ],
+     "covered": 6
+    },
+    {
+     "program": "CBTRN02C",
+     "name": "1000-DALYTRAN-GET-NEXT",
+     "start": 345,
+     "end": 369,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/PostTranProgram.java",
+       "line": 59
+      }
+     ],
+     "covered": 6
+    },
+    {
+     "program": "CBTRN02C",
+     "name": "1500-VALIDATE-TRAN",
+     "start": 370,
+     "end": 379,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/service/TransactionValidator.java",
+       "line": 39
+      }
+     ],
+     "covered": 6
+    },
+    {
+     "program": "CBTRN02C",
+     "name": "1500-A-LOOKUP-XREF",
+     "start": 380,
+     "end": 392,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/service/TransactionValidator.java",
+       "line": 39
+      },
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/service/TransactionValidator.java",
+       "line": 42
+      }
+     ],
+     "covered": 6
+    },
+    {
+     "program": "CBTRN02C",
+     "name": "1500-B-LOOKUP-ACCT",
+     "start": 393,
+     "end": 423,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/service/TransactionValidator.java",
+       "line": 39
+      },
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/service/TransactionValidator.java",
+       "line": 50
+      }
+     ],
+     "covered": 6
+    },
+    {
+     "program": "CBTRN02C",
+     "name": "2000-POST-TRANSACTION",
+     "start": 424,
+     "end": 445,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/service/TransactionPoster.java",
+       "line": 49
+      }
+     ],
+     "covered": 6
+    },
+    {
+     "program": "CBTRN02C",
+     "name": "2500-WRITE-REJECT-REC",
+     "start": 446,
+     "end": 466,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/PostTranProgram.java",
+       "line": 75
+      }
+     ],
+     "covered": 6
+    },
+    {
+     "program": "CBTRN02C",
+     "name": "2700-UPDATE-TCATBAL",
+     "start": 467,
+     "end": 502,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/service/TransactionPoster.java",
+       "line": 72
+      }
+     ],
+     "covered": 6
+    },
+    {
+     "program": "CBTRN02C",
+     "name": "2700-A-CREATE-TCATBAL-REC",
+     "start": 503,
+     "end": 525,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/service/TransactionPoster.java",
+       "line": 72
+      }
+     ],
+     "covered": 5
+    },
+    {
+     "program": "CBTRN02C",
+     "name": "2700-B-UPDATE-TCATBAL-REC",
+     "start": 526,
+     "end": 544,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/service/TransactionPoster.java",
+       "line": 72
+      }
+     ],
+     "covered": 6
+    },
+    {
+     "program": "CBTRN02C",
+     "name": "2800-UPDATE-ACCOUNT-REC",
+     "start": 545,
+     "end": 561,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/service/TransactionPoster.java",
+       "line": 98
+      }
+     ],
+     "covered": 6
+    },
+    {
+     "program": "CBTRN02C",
+     "name": "2900-WRITE-TRANSACTION-FILE",
+     "start": 562,
+     "end": 581,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/service/TransactionPoster.java",
+       "line": 111
+      }
+     ],
+     "covered": 6
+    },
+    {
+     "program": "CBTRN02C",
+     "name": "9000-DALYTRAN-CLOSE",
+     "start": 582,
+     "end": 599,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/PostTranProgram.java",
+       "line": 84
+      }
+     ],
+     "covered": 6
+    },
+    {
+     "program": "CBTRN02C",
+     "name": "9100-TRANFILE-CLOSE",
+     "start": 600,
+     "end": 618,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/PostTranProgram.java",
+       "line": 84
+      }
+     ],
+     "covered": 6
+    },
+    {
+     "program": "CBTRN02C",
+     "name": "9200-XREFFILE-CLOSE",
+     "start": 619,
+     "end": 636,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/PostTranProgram.java",
+       "line": 84
+      }
+     ],
+     "covered": 6
+    },
+    {
+     "program": "CBTRN02C",
+     "name": "9300-DALYREJS-CLOSE",
+     "start": 637,
+     "end": 654,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/PostTranProgram.java",
+       "line": 84
+      }
+     ],
+     "covered": 6
+    },
+    {
+     "program": "CBTRN02C",
+     "name": "9400-ACCTFILE-CLOSE",
+     "start": 655,
+     "end": 673,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/PostTranProgram.java",
+       "line": 84
+      }
+     ],
+     "covered": 6
+    },
+    {
+     "program": "CBTRN02C",
+     "name": "9500-TCATBALF-CLOSE",
+     "start": 674,
+     "end": 691,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/PostTranProgram.java",
+       "line": 84
+      }
+     ],
+     "covered": 6
+    },
+    {
+     "program": "CBTRN02C",
+     "name": "Z-GET-DB2-FORMAT-TIMESTAMP",
+     "start": 692,
+     "end": 706,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/service/CobolTimestamp.java",
+       "line": 17
+      }
+     ],
+     "covered": 6
+    },
+    {
+     "program": "CBTRN02C",
+     "name": "9999-ABEND-PROGRAM",
+     "start": 707,
+     "end": 713,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/CobolRuntime.java",
+       "line": 24
+      }
+     ],
+     "covered": 0
+    },
+    {
+     "program": "CBTRN02C",
+     "name": "9910-DISPLAY-IO-STATUS",
+     "start": 714,
+     "end": 731,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/CobolRuntime.java",
+       "line": 17
+      }
+     ],
+     "covered": 0
+    }
+   ]
+  },
+  {
+   "path": "src/CBTRN03C.cbl",
+   "paragraphs": [
+    {
+     "program": "CBTRN03C",
+     "name": "0550-DATEPARM-READ",
+     "start": 220,
+     "end": 247,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/TranReptProgram.java",
+       "line": 50
+      }
+     ],
+     "covered": 5
+    },
+    {
+     "program": "CBTRN03C",
+     "name": "1000-TRANFILE-GET-NEXT",
+     "start": 248,
+     "end": 273,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/TranReptProgram.java",
+       "line": 60
+      }
+     ],
+     "covered": 5
+    },
+    {
+     "program": "CBTRN03C",
+     "name": "1100-WRITE-TRANSACTION-REPORT",
+     "start": 274,
+     "end": 292,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/service/ReportWriter.java",
+       "line": 49
+      }
+     ],
+     "covered": 5
+    },
+    {
+     "program": "CBTRN03C",
+     "name": "1110-WRITE-PAGE-TOTALS",
+     "start": 293,
+     "end": 305,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/service/ReportWriter.java",
+       "line": 70
+      }
+     ],
+     "covered": 5
+    },
+    {
+     "program": "CBTRN03C",
+     "name": "1120-WRITE-ACCOUNT-TOTALS",
+     "start": 306,
+     "end": 317,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/service/ReportWriter.java",
+       "line": 82
+      }
+     ],
+     "covered": 5
+    },
+    {
+     "program": "CBTRN03C",
+     "name": "1110-WRITE-GRAND-TOTALS",
+     "start": 318,
+     "end": 323,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/service/ReportWriter.java",
+       "line": 93
+      }
+     ],
+     "covered": 5
+    },
+    {
+     "program": "CBTRN03C",
+     "name": "1120-WRITE-HEADERS",
+     "start": 324,
+     "end": 342,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/service/ReportWriter.java",
+       "line": 100
+      }
+     ],
+     "covered": 5
+    },
+    {
+     "program": "CBTRN03C",
+     "name": "1111-WRITE-REPORT-REC",
+     "start": 343,
+     "end": 360,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/service/ReportWriter.java",
+       "line": 131
+      }
+     ],
+     "covered": 5
+    },
+    {
+     "program": "CBTRN03C",
+     "name": "1120-WRITE-DETAIL",
+     "start": 361,
+     "end": 375,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/service/ReportWriter.java",
+       "line": 115
+      }
+     ],
+     "covered": 5
+    },
+    {
+     "program": "CBTRN03C",
+     "name": "0000-TRANFILE-OPEN",
+     "start": 376,
+     "end": 393,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/TranReptProgram.java",
+       "line": 32
+      }
+     ],
+     "covered": 5
+    },
+    {
+     "program": "CBTRN03C",
+     "name": "0100-REPTFILE-OPEN",
+     "start": 394,
+     "end": 411,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/TranReptProgram.java",
+       "line": 32
+      }
+     ],
+     "covered": 5
+    },
+    {
+     "program": "CBTRN03C",
+     "name": "0200-CARDXREF-OPEN",
+     "start": 412,
+     "end": 429,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/TranReptProgram.java",
+       "line": 32
+      }
+     ],
+     "covered": 5
+    },
+    {
+     "program": "CBTRN03C",
+     "name": "0300-TRANTYPE-OPEN",
+     "start": 430,
+     "end": 447,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/TranReptProgram.java",
+       "line": 32
+      }
+     ],
+     "covered": 5
+    },
+    {
+     "program": "CBTRN03C",
+     "name": "0400-TRANCATG-OPEN",
+     "start": 448,
+     "end": 465,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/TranReptProgram.java",
+       "line": 32
+      }
+     ],
+     "covered": 5
+    },
+    {
+     "program": "CBTRN03C",
+     "name": "0500-DATEPARM-OPEN",
+     "start": 466,
+     "end": 483,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/TranReptProgram.java",
+       "line": 32
+      }
+     ],
+     "covered": 5
+    },
+    {
+     "program": "CBTRN03C",
+     "name": "1500-A-LOOKUP-XREF",
+     "start": 484,
+     "end": 493,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/TranReptProgram.java",
+       "line": 71
+      }
+     ],
+     "covered": 5
+    },
+    {
+     "program": "CBTRN03C",
+     "name": "1500-B-LOOKUP-TRANTYPE",
+     "start": 494,
+     "end": 503,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/TranReptProgram.java",
+       "line": 81
+      }
+     ],
+     "covered": 5
+    },
+    {
+     "program": "CBTRN03C",
+     "name": "1500-C-LOOKUP-TRANCATG",
+     "start": 504,
+     "end": 513,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/TranReptProgram.java",
+       "line": 90
+      }
+     ],
+     "covered": 5
+    },
+    {
+     "program": "CBTRN03C",
+     "name": "9000-TRANFILE-CLOSE",
+     "start": 514,
+     "end": 531,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/TranReptProgram.java",
+       "line": 114
+      }
+     ],
+     "covered": 5
+    },
+    {
+     "program": "CBTRN03C",
+     "name": "9100-REPTFILE-CLOSE",
+     "start": 532,
+     "end": 550,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/TranReptProgram.java",
+       "line": 114
+      }
+     ],
+     "covered": 5
+    },
+    {
+     "program": "CBTRN03C",
+     "name": "9200-CARDXREF-CLOSE",
+     "start": 551,
+     "end": 568,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/TranReptProgram.java",
+       "line": 114
+      }
+     ],
+     "covered": 5
+    },
+    {
+     "program": "CBTRN03C",
+     "name": "9300-TRANTYPE-CLOSE",
+     "start": 569,
+     "end": 586,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/TranReptProgram.java",
+       "line": 114
+      }
+     ],
+     "covered": 5
+    },
+    {
+     "program": "CBTRN03C",
+     "name": "9400-TRANCATG-CLOSE",
+     "start": 587,
+     "end": 604,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/TranReptProgram.java",
+       "line": 114
+      }
+     ],
+     "covered": 5
+    },
+    {
+     "program": "CBTRN03C",
+     "name": "9500-DATEPARM-CLOSE",
+     "start": 605,
+     "end": 625,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/TranReptProgram.java",
+       "line": 114
+      }
+     ],
+     "covered": 5
+    },
+    {
+     "program": "CBTRN03C",
+     "name": "9999-ABEND-PROGRAM",
+     "start": 626,
+     "end": 632,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/CobolRuntime.java",
+       "line": 24
+      }
+     ],
+     "covered": 0
+    },
+    {
+     "program": "CBTRN03C",
+     "name": "9910-DISPLAY-IO-STATUS",
+     "start": 633,
+     "end": 649,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/CobolRuntime.java",
+       "line": 17
+      }
+     ],
+     "covered": 0
+    }
+   ]
+  },
+  {
+   "path": "src/CEE3ABD.cbl",
+   "paragraphs": []
+  },
+  {
+   "path": "src/INTCALC.cbl",
+   "paragraphs": []
+  },
+  {
+   "path": "src/ksds/LOAD-ACCTFILE.cbl",
+   "paragraphs": [
+    {
+     "program": "LOAD-ACCTFILE",
+     "name": "MAIN",
+     "start": 34,
+     "end": 67,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/KsdsLoadProgram.java",
+       "line": 17
+      }
+     ],
+     "covered": 6
+    }
+   ]
+  },
+  {
+   "path": "src/ksds/LOAD-DISCGRP.cbl",
+   "paragraphs": [
+    {
+     "program": "LOAD-DISCGRP",
+     "name": "MAIN",
+     "start": 34,
+     "end": 67,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/KsdsLoadProgram.java",
+       "line": 17
+      }
+     ],
+     "covered": 6
+    }
+   ]
+  },
+  {
+   "path": "src/ksds/LOAD-TCATBALF.cbl",
+   "paragraphs": [
+    {
+     "program": "LOAD-TCATBALF",
+     "name": "MAIN",
+     "start": 34,
+     "end": 67,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/KsdsLoadProgram.java",
+       "line": 17
+      }
+     ],
+     "covered": 6
+    }
+   ]
+  },
+  {
+   "path": "src/ksds/LOAD-TRANCATG.cbl",
+   "paragraphs": [
+    {
+     "program": "LOAD-TRANCATG",
+     "name": "MAIN",
+     "start": 34,
+     "end": 67,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/KsdsLoadProgram.java",
+       "line": 17
+      }
+     ],
+     "covered": 6
+    }
+   ]
+  },
+  {
+   "path": "src/ksds/LOAD-TRANSACT.cbl",
+   "paragraphs": [
+    {
+     "program": "LOAD-TRANSACT",
+     "name": "MAIN",
+     "start": 34,
+     "end": 67,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/KsdsLoadProgram.java",
+       "line": 17
+      }
+     ],
+     "covered": 5
+    }
+   ]
+  },
+  {
+   "path": "src/ksds/LOAD-TRANTYPE.cbl",
+   "paragraphs": [
+    {
+     "program": "LOAD-TRANTYPE",
+     "name": "MAIN",
+     "start": 34,
+     "end": 67,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/KsdsLoadProgram.java",
+       "line": 17
+      }
+     ],
+     "covered": 6
+    }
+   ]
+  },
+  {
+   "path": "src/ksds/LOAD-XREFFILE.cbl",
+   "paragraphs": [
+    {
+     "program": "LOAD-XREFFILE",
+     "name": "MAIN",
+     "start": 39,
+     "end": 72,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/KsdsLoadProgram.java",
+       "line": 17
+      }
+     ],
+     "covered": 6
+    }
+   ]
+  },
+  {
+   "path": "src/ksds/UNLD-ACCTFILE.cbl",
+   "paragraphs": [
+    {
+     "program": "UNLD-ACCTFILE",
+     "name": "MAIN",
+     "start": 33,
+     "end": 59,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/KsdsUnloadProgram.java",
+       "line": 15
+      }
+     ],
+     "covered": 6
+    }
+   ]
+  },
+  {
+   "path": "src/ksds/UNLD-TCATBALF.cbl",
+   "paragraphs": [
+    {
+     "program": "UNLD-TCATBALF",
+     "name": "MAIN",
+     "start": 33,
+     "end": 59,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/KsdsUnloadProgram.java",
+       "line": 15
+      }
+     ],
+     "covered": 6
+    }
+   ]
+  },
+  {
+   "path": "src/ksds/UNLD-TRANSACT.cbl",
+   "paragraphs": [
+    {
+     "program": "UNLD-TRANSACT",
+     "name": "MAIN",
+     "start": 33,
+     "end": 59,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/KsdsUnloadProgram.java",
+       "line": 15
+      }
+     ],
+     "covered": 6
+    }
+   ]
+  },
+  {
+   "path": "copybooks/CVACT01Y.cpy",
+   "paragraphs": []
+  },
+  {
+   "path": "copybooks/CVACT03Y.cpy",
+   "paragraphs": []
+  },
+  {
+   "path": "copybooks/CVTRA01Y.cpy",
+   "paragraphs": []
+  },
+  {
+   "path": "copybooks/CVTRA02Y.cpy",
+   "paragraphs": []
+  },
+  {
+   "path": "copybooks/CVTRA03Y.cpy",
+   "paragraphs": []
+  },
+  {
+   "path": "copybooks/CVTRA04Y.cpy",
+   "paragraphs": []
+  },
+  {
+   "path": "copybooks/CVTRA05Y.cpy",
+   "paragraphs": []
+  },
+  {
+   "path": "copybooks/CVTRA06Y.cpy",
+   "paragraphs": []
+  },
+  {
+   "path": "copybooks/CVTRA07Y.cpy",
+   "paragraphs": []
+  }
+ ],
+ "java": [
+  {
+   "path": "src/main/java/com/example/poc/nightlybatch/NightlyBatchApplication.java",
+   "links": []
+  },
+  {
+   "path": "src/main/java/com/example/poc/nightlybatch/batch/AbendException.java",
+   "links": [
+    {
+     "line": 7,
+     "cobol": "src/CEE3ABD.cbl",
+     "start": 17,
+     "end": 25,
+     "resolved": true
+    }
+   ]
+  },
+  {
+   "path": "src/main/java/com/example/poc/nightlybatch/batch/JobManifest.java",
+   "links": []
+  },
+  {
+   "path": "src/main/java/com/example/poc/nightlybatch/batch/JobRun.java",
+   "links": []
+  },
+  {
+   "path": "src/main/java/com/example/poc/nightlybatch/batch/JobStateDao.java",
+   "links": []
+  },
+  {
+   "path": "src/main/java/com/example/poc/nightlybatch/batch/NightlyJobConfig.java",
+   "links": [
+    {
+     "line": 79,
+     "cobol": "src/CEE3ABD.cbl",
+     "start": 23,
+     "end": 25,
+     "resolved": true
+    }
+   ]
+  },
+  {
+   "path": "src/main/java/com/example/poc/nightlybatch/batch/RunLogListener.java",
+   "links": []
+  },
+  {
+   "path": "src/main/java/com/example/poc/nightlybatch/batch/StepProgram.java",
+   "links": []
+  },
+  {
+   "path": "src/main/java/com/example/poc/nightlybatch/batch/programs/CardSortProgram.java",
+   "links": [
+    {
+     "line": 21,
+     "cobol": "src/CBSORT02.cbl",
+     "start": 66,
+     "end": 117,
+     "resolved": true
+    }
+   ]
+  },
+  {
+   "path": "src/main/java/com/example/poc/nightlybatch/batch/programs/CobolRuntime.java",
+   "links": [
+    {
+     "line": 17,
+     "cobol": "src/CBTRN02C.cbl",
+     "start": 714,
+     "end": 727,
+     "resolved": true
+    },
+    {
+     "line": 17,
+     "cobol": "src/CBACT04C.cbl",
+     "start": 635,
+     "end": 648,
+     "resolved": true
+    },
+    {
+     "line": 17,
+     "cobol": "src/CBTRN03C.cbl",
+     "start": 633,
+     "end": 646,
+     "resolved": true
+    },
+    {
+     "line": 24,
+     "cobol": "src/CBTRN02C.cbl",
+     "start": 707,
+     "end": 712,
+     "resolved": true
+    },
+    {
+     "line": 24,
+     "cobol": "src/CBACT04C.cbl",
+     "start": 628,
+     "end": 633,
+     "resolved": true
+    },
+    {
+     "line": 24,
+     "cobol": "src/CBTRN03C.cbl",
+     "start": 626,
+     "end": 631,
+     "resolved": true
+    }
+   ]
+  },
+  {
+   "path": "src/main/java/com/example/poc/nightlybatch/batch/programs/IntCalcProgram.java",
+   "links": [
+    {
+     "line": 23,
+     "cobol": "src/INTCALC.cbl",
+     "start": 17,
+     "end": 32,
+     "resolved": true
+    },
+    {
+     "line": 39,
+     "cobol": "src/CBACT04C.cbl",
+     "start": 182,
+     "end": 186,
+     "resolved": true
+    },
+    {
+     "line": 39,
+     "cobol": "src/CBACT04C.cbl",
+     "start": 234,
+     "end": 324,
+     "resolved": true
+    },
+    {
+     "line": 50,
+     "cobol": "src/CBACT04C.cbl",
+     "start": 95,
+     "end": 174,
+     "resolved": true
+    },
+    {
+     "line": 65,
+     "cobol": "src/CBACT04C.cbl",
+     "start": 325,
+     "end": 349,
+     "resolved": true
+    },
+    {
+     "line": 78,
+     "cobol": "src/CBACT04C.cbl",
+     "start": 372,
+     "end": 392,
+     "resolved": true
+    },
+    {
+     "line": 88,
+     "cobol": "src/CBACT04C.cbl",
+     "start": 393,
+     "end": 414,
+     "resolved": true
+    },
+    {
+     "line": 99,
+     "cobol": "src/CBACT04C.cbl",
+     "start": 207,
+     "end": 212,
+     "resolved": true
+    },
+    {
+     "line": 99,
+     "cobol": "src/CBACT04C.cbl",
+     "start": 415,
+     "end": 461,
+     "resolved": true
+    },
+    {
+     "line": 108,
+     "cobol": "src/CBACT04C.cbl",
+     "start": 462,
+     "end": 472,
+     "resolved": true
+    },
+    {
+     "line": 113,
+     "cobol": "src/CBACT04C.cbl",
+     "start": 473,
+     "end": 517,
+     "resolved": true
+    },
+    {
+     "line": 119,
+     "cobol": "src/CBACT04C.cbl",
+     "start": 518,
+     "end": 521,
+     "resolved": true
+    },
+    {
+     "line": 123,
+     "cobol": "src/CBACT04C.cbl",
+     "start": 219,
+     "end": 221,
+     "resolved": true
+    },
+    {
+     "line": 127,
+     "cobol": "src/CBACT04C.cbl",
+     "start": 226,
+     "end": 230,
+     "resolved": true
+    },
+    {
+     "line": 127,
+     "cobol": "src/CBACT04C.cbl",
+     "start": 522,
+     "end": 612,
+     "resolved": true
+    }
+   ]
+  },
+  {
+   "path": "src/main/java/com/example/poc/nightlybatch/batch/programs/KsdsLoadProgram.java",
+   "links": [
+    {
+     "line": 17,
+     "cobol": "src/ksds/LOAD-ACCTFILE.cbl",
+     "start": 34,
+     "end": 67,
+     "resolved": true
+    },
+    {
+     "line": 17,
+     "cobol": "src/ksds/LOAD-XREFFILE.cbl",
+     "start": 34,
+     "end": 67,
+     "resolved": true
+    },
+    {
+     "line": 17,
+     "cobol": "src/ksds/LOAD-TCATBALF.cbl",
+     "start": 34,
+     "end": 67,
+     "resolved": true
+    },
+    {
+     "line": 17,
+     "cobol": "src/ksds/LOAD-DISCGRP.cbl",
+     "start": 34,
+     "end": 67,
+     "resolved": true
+    },
+    {
+     "line": 17,
+     "cobol": "src/ksds/LOAD-TRANTYPE.cbl",
+     "start": 34,
+     "end": 67,
+     "resolved": true
+    },
+    {
+     "line": 17,
+     "cobol": "src/ksds/LOAD-TRANCATG.cbl",
+     "start": 34,
+     "end": 67,
+     "resolved": true
+    },
+    {
+     "line": 17,
+     "cobol": "src/ksds/LOAD-TRANSACT.cbl",
+     "start": 34,
+     "end": 67,
+     "resolved": true
+    }
+   ]
+  },
+  {
+   "path": "src/main/java/com/example/poc/nightlybatch/batch/programs/KsdsUnloadProgram.java",
+   "links": [
+    {
+     "line": 15,
+     "cobol": "src/ksds/UNLD-TRANSACT.cbl",
+     "start": 33,
+     "end": 59,
+     "resolved": true
+    },
+    {
+     "line": 15,
+     "cobol": "src/ksds/UNLD-ACCTFILE.cbl",
+     "start": 33,
+     "end": 59,
+     "resolved": true
+    },
+    {
+     "line": 15,
+     "cobol": "src/ksds/UNLD-TCATBALF.cbl",
+     "start": 33,
+     "end": 59,
+     "resolved": true
+    }
+   ]
+  },
+  {
+   "path": "src/main/java/com/example/poc/nightlybatch/batch/programs/MergeSortProgram.java",
+   "links": [
+    {
+     "line": 18,
+     "cobol": "src/CBSORT01.cbl",
+     "start": 36,
+     "end": 45,
+     "resolved": true
+    }
+   ]
+  },
+  {
+   "path": "src/main/java/com/example/poc/nightlybatch/batch/programs/PostTranProgram.java",
+   "links": [
+    {
+     "line": 21,
+     "cobol": "src/CBTRN02C.cbl",
+     "start": 193,
+     "end": 234,
+     "resolved": true
+    },
+    {
+     "line": 33,
+     "cobol": "src/CBTRN02C.cbl",
+     "start": 195,
+     "end": 200,
+     "resolved": true
+    },
+    {
+     "line": 33,
+     "cobol": "src/CBTRN02C.cbl",
+     "start": 236,
+     "end": 344,
+     "resolved": true
+    },
+    {
+     "line": 45,
+     "cobol": "src/CBTRN02C.cbl",
+     "start": 100,
+     "end": 192,
+     "resolved": true
+    },
+    {
+     "line": 59,
+     "cobol": "src/CBTRN02C.cbl",
+     "start": 345,
+     "end": 369,
+     "resolved": true
+    },
+    {
+     "line": 75,
+     "cobol": "src/CBTRN02C.cbl",
+     "start": 446,
+     "end": 466,
+     "resolved": true
+    },
+    {
+     "line": 84,
+     "cobol": "src/CBTRN02C.cbl",
+     "start": 221,
+     "end": 226,
+     "resolved": true
+    },
+    {
+     "line": 84,
+     "cobol": "src/CBTRN02C.cbl",
+     "start": 582,
+     "end": 691,
+     "resolved": true
+    }
+   ]
+  },
+  {
+   "path": "src/main/java/com/example/poc/nightlybatch/batch/programs/Programs.java",
+   "links": []
+  },
+  {
+   "path": "src/main/java/com/example/poc/nightlybatch/batch/programs/TranReptProgram.java",
+   "links": [
+    {
+     "line": 20,
+     "cobol": "src/CBTRN03C.cbl",
+     "start": 157,
+     "end": 218,
+     "resolved": true
+    },
+    {
+     "line": 32,
+     "cobol": "src/CBTRN03C.cbl",
+     "start": 159,
+     "end": 164,
+     "resolved": true
+    },
+    {
+     "line": 32,
+     "cobol": "src/CBTRN03C.cbl",
+     "start": 376,
+     "end": 483,
+     "resolved": true
+    },
+    {
+     "line": 42,
+     "cobol": "src/CBTRN03C.cbl",
+     "start": 93,
+     "end": 155,
+     "resolved": true
+    },
+    {
+     "line": 50,
+     "cobol": "src/CBTRN03C.cbl",
+     "start": 220,
+     "end": 246,
+     "resolved": true
+    },
+    {
+     "line": 60,
+     "cobol": "src/CBTRN03C.cbl",
+     "start": 248,
+     "end": 272,
+     "resolved": true
+    },
+    {
+     "line": 71,
+     "cobol": "src/CBTRN03C.cbl",
+     "start": 484,
+     "end": 492,
+     "resolved": true
+    },
+    {
+     "line": 81,
+     "cobol": "src/CBTRN03C.cbl",
+     "start": 494,
+     "end": 502,
+     "resolved": true
+    },
+    {
+     "line": 90,
+     "cobol": "src/CBTRN03C.cbl",
+     "start": 504,
+     "end": 512,
+     "resolved": true
+    },
+    {
+     "line": 103,
+     "cobol": "src/CBTRN03C.cbl",
+     "start": 197,
+     "end": 204,
+     "resolved": true
+    },
+    {
+     "line": 112,
+     "cobol": "src/CBTRN03C.cbl",
+     "start": 166,
+     "end": 209,
+     "resolved": true
+    },
+    {
+     "line": 114,
+     "cobol": "src/CBTRN03C.cbl",
+     "start": 211,
+     "end": 216,
+     "resolved": true
+    },
+    {
+     "line": 114,
+     "cobol": "src/CBTRN03C.cbl",
+     "start": 514,
+     "end": 625,
+     "resolved": true
+    }
+   ]
+  },
+  {
+   "path": "src/main/java/com/example/poc/nightlybatch/domain/CobolRecord.java",
+   "links": []
+  },
+  {
+   "path": "src/main/java/com/example/poc/nightlybatch/domain/Layout.java",
+   "links": []
+  },
+  {
+   "path": "src/main/java/com/example/poc/nightlybatch/domain/Layouts.java",
+   "links": [
+    {
+     "line": 62,
+     "cobol": "src/CBTRN03C.cbl",
+     "start": 123,
+     "end": 126,
+     "resolved": true
+    },
+    {
+     "line": 68,
+     "cobol": "src/CBTRN02C.cbl",
+     "start": 176,
+     "end": 182,
+     "resolved": true
+    }
+   ]
+  },
+  {
+   "path": "src/main/java/com/example/poc/nightlybatch/io/CobolDisplay.java",
+   "links": []
+  },
+  {
+   "path": "src/main/java/com/example/poc/nightlybatch/io/FixedRecordFile.java",
+   "links": []
+  },
+  {
+   "path": "src/main/java/com/example/poc/nightlybatch/io/KsdsTable.java",
+   "links": []
+  },
+  {
+   "path": "src/main/java/com/example/poc/nightlybatch/io/PicEditor.java",
+   "links": []
+  },
+  {
+   "path": "src/main/java/com/example/poc/nightlybatch/io/StepIo.java",
+   "links": []
+  },
+  {
+   "path": "src/main/java/com/example/poc/nightlybatch/io/ZonedDecimal.java",
+   "links": []
+  },
+  {
+   "path": "src/main/java/com/example/poc/nightlybatch/service/CobolTimestamp.java",
+   "links": [
+    {
+     "line": 17,
+     "cobol": "src/CBTRN02C.cbl",
+     "start": 692,
+     "end": 706,
+     "resolved": true
+    },
+    {
+     "line": 17,
+     "cobol": "src/CBACT04C.cbl",
+     "start": 613,
+     "end": 627,
+     "resolved": true
+    }
+   ]
+  },
+  {
+   "path": "src/main/java/com/example/poc/nightlybatch/service/InterestCalculator.java",
+   "links": [
+    {
+     "line": 39,
+     "cobol": "src/CBACT04C.cbl",
+     "start": 415,
+     "end": 461,
+     "resolved": true
+    },
+    {
+     "line": 64,
+     "cobol": "src/CBACT04C.cbl",
+     "start": 462,
+     "end": 467,
+     "resolved": true
+    },
+    {
+     "line": 74,
+     "cobol": "src/CBACT04C.cbl",
+     "start": 473,
+     "end": 498,
+     "resolved": true
+    },
+    {
+     "line": 93,
+     "cobol": "src/CBACT04C.cbl",
+     "start": 350,
+     "end": 371,
+     "resolved": true
+    }
+   ]
+  },
+  {
+   "path": "src/main/java/com/example/poc/nightlybatch/service/ReportWriter.java",
+   "links": [
+    {
+     "line": 42,
+     "cobol": "src/CBTRN03C.cbl",
+     "start": 200,
+     "end": 202,
+     "resolved": true
+    },
+    {
+     "line": 49,
+     "cobol": "src/CBTRN03C.cbl",
+     "start": 274,
+     "end": 292,
+     "resolved": true
+    },
+    {
+     "line": 70,
+     "cobol": "src/CBTRN03C.cbl",
+     "start": 293,
+     "end": 305,
+     "resolved": true
+    },
+    {
+     "line": 82,
+     "cobol": "src/CBTRN03C.cbl",
+     "start": 306,
+     "end": 317,
+     "resolved": true
+    },
+    {
+     "line": 93,
+     "cobol": "src/CBTRN03C.cbl",
+     "start": 318,
+     "end": 323,
+     "resolved": true
+    },
+    {
+     "line": 100,
+     "cobol": "src/CBTRN03C.cbl",
+     "start": 324,
+     "end": 342,
+     "resolved": true
+    },
+    {
+     "line": 115,
+     "cobol": "src/CBTRN03C.cbl",
+     "start": 361,
+     "end": 375,
+     "resolved": true
+    },
+    {
+     "line": 131,
+     "cobol": "src/CBTRN03C.cbl",
+     "start": 343,
+     "end": 360,
+     "resolved": true
+    }
+   ]
+  },
+  {
+   "path": "src/main/java/com/example/poc/nightlybatch/service/TransactionPoster.java",
+   "links": [
+    {
+     "line": 49,
+     "cobol": "src/CBTRN02C.cbl",
+     "start": 424,
+     "end": 445,
+     "resolved": true
+    },
+    {
+     "line": 72,
+     "cobol": "src/CBTRN02C.cbl",
+     "start": 467,
+     "end": 544,
+     "resolved": true
+    },
+    {
+     "line": 98,
+     "cobol": "src/CBTRN02C.cbl",
+     "start": 545,
+     "end": 561,
+     "resolved": true
+    },
+    {
+     "line": 111,
+     "cobol": "src/CBTRN02C.cbl",
+     "start": 562,
+     "end": 581,
+     "resolved": true
+    }
+   ]
+  },
+  {
+   "path": "src/main/java/com/example/poc/nightlybatch/service/TransactionValidator.java",
+   "links": [
+    {
+     "line": 39,
+     "cobol": "src/CBTRN02C.cbl",
+     "start": 370,
+     "end": 423,
+     "resolved": true
+    },
+    {
+     "line": 42,
+     "cobol": "src/CBTRN02C.cbl",
+     "start": 380,
+     "end": 392,
+     "resolved": true
+    },
+    {
+     "line": 50,
+     "cobol": "src/CBTRN02C.cbl",
+     "start": 393,
+     "end": 423,
+     "resolved": true
+    }
+   ]
+  }
+ ]
+}

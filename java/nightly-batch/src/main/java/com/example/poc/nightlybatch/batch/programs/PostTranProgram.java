@@ -56,7 +56,7 @@ final class PostTranProgram implements StepProgram {
         TransactionPoster poster = new TransactionPoster(tcatbal, accounts, transact, run.clock(), io);
 
         try (FixedRecordFile.Writer rejects = FixedRecordFile.openOutput(run.dd(step, "DALYREJS"), Layouts.REJECT.lrecl())) {
-            for (String raw : daily) {                                    // 1000-DALYTRAN-GET-NEXT until status 10
+            for (String raw : daily) {                                    // 1000-DALYTRAN-GET-NEXT until status 10 — COBOL: CBTRN02C.cbl:345-369
                 io.paragraph("CBTRN02C", "1000-DALYTRAN-GET-NEXT");
                 transactionCount++;
                 dalytran.moveFrom(CobolRecord.of(Layouts.TRAN, raw));     // READ … INTO DALYTRAN-RECORD
@@ -81,7 +81,7 @@ final class PostTranProgram implements StepProgram {
             }
         }
         io.paragraph("CBTRN02C", "1000-DALYTRAN-GET-NEXT");                 // the read that returns status 10
-        // 9000-…-9500 closes — COBOL: CBTRN02C.cbl:221-226
+        // 9000-…-9500 closes — COBOL: CBTRN02C.cbl:221-226, 582-691
         for (String close : new String[]{"9000-DALYTRAN-CLOSE", "9100-TRANFILE-CLOSE", "9200-XREFFILE-CLOSE",
                                          "9300-DALYREJS-CLOSE", "9400-ACCTFILE-CLOSE", "9500-TCATBALF-CLOSE"}) {
             io.paragraph("CBTRN02C", close);

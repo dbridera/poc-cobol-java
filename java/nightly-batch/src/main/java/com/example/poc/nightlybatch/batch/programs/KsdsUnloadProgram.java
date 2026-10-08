@@ -12,7 +12,7 @@ import com.example.poc.nightlybatch.io.StepIo;
 /**
  * {@code UNLD-<DS>} — IDCAMS REPRO stand-in: KSDS → sequential file, key order.
  */
-// COBOL: src/ksds/UNLD-ACCTFILE.cbl:33-59 (MAIN; every generated UNLD-*.cbl has the same shape)
+// COBOL: src/ksds/UNLD-TRANSACT.cbl:33-59, src/ksds/UNLD-ACCTFILE.cbl:33-59, src/ksds/UNLD-TCATBALF.cbl:33-59 (MAIN of every generated unloader)
 final class KsdsUnloadProgram implements StepProgram {
     private final Programs programs;
     private final String name;

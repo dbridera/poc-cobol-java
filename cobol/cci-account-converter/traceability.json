@@ -1,0 +1,696 @@
+{
+ "module": "cci-account-converter",
+ "stats": {
+  "cobol_files": 2,
+  "java_files": 8,
+  "paragraphs": 19,
+  "cited": 16,
+  "covered": 0,
+  "links": 32,
+  "unresolved_links": 0,
+  "fixtures": []
+ },
+ "cobol": [
+  {
+   "path": "src/BCTITSCV-RUN.cbl",
+   "paragraphs": [
+    {
+     "program": "DRIVER-BCTITSCV",
+     "name": "MAIN-DRIVER",
+     "start": 44,
+     "end": 60,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/cciaccountconverter/batch/BatchRunner.java",
+       "line": 26
+      },
+      {
+       "java": "src/main/java/com/example/poc/cciaccountconverter/batch/BatchRunner.java",
+       "line": 58
+      }
+     ],
+     "covered": null
+    },
+    {
+     "program": "DRIVER-BCTITSCV",
+     "name": "READ-INPUT",
+     "start": 61,
+     "end": 65,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/cciaccountconverter/batch/BatchRunner.java",
+       "line": 26
+      },
+      {
+       "java": "src/main/java/com/example/poc/cciaccountconverter/batch/BatchRunner.java",
+       "line": 58
+      }
+     ],
+     "covered": null
+    },
+    {
+     "program": "DRIVER-BCTITSCV",
+     "name": "CALL-BCTITSCV",
+     "start": 66,
+     "end": 82,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/cciaccountconverter/batch/BatchRunner.java",
+       "line": 26
+      },
+      {
+       "java": "src/main/java/com/example/poc/cciaccountconverter/batch/BatchRunner.java",
+       "line": 92
+      }
+     ],
+     "covered": null
+    },
+    {
+     "program": "DRIVER-BCTITSCV",
+     "name": "DISPLAY-RESULT",
+     "start": 83,
+     "end": 91,
+     "cited_by": [],
+     "covered": null
+    },
+    {
+     "program": "BCTITSCV",
+     "name": "0100-INICIO",
+     "start": 153,
+     "end": 157,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/cciaccountconverter/service/BctitscvService.java",
+       "line": 19
+      },
+      {
+       "java": "src/main/java/com/example/poc/cciaccountconverter/service/BctitscvService.java",
+       "line": 43
+      },
+      {
+       "java": "src/main/java/com/example/poc/cciaccountconverter/service/BctitscvService.java",
+       "line": 58
+      }
+     ],
+     "covered": null
+    },
+    {
+     "program": "BCTITSCV",
+     "name": "0120-RECIBE-COMMAREA",
+     "start": 158,
+     "end": 163,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/cciaccountconverter/service/BctitscvService.java",
+       "line": 19
+      },
+      {
+       "java": "src/main/java/com/example/poc/cciaccountconverter/service/BctitscvService.java",
+       "line": 58
+      }
+     ],
+     "covered": null
+    },
+    {
+     "program": "BCTITSCV",
+     "name": "0500-EVALUA-PROCESO",
+     "start": 164,
+     "end": 179,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/cciaccountconverter/service/BctitscvService.java",
+       "line": 19
+      },
+      {
+       "java": "src/main/java/com/example/poc/cciaccountconverter/service/BctitscvService.java",
+       "line": 58
+      },
+      {
+       "java": "src/main/java/com/example/poc/cciaccountconverter/service/BctitscvService.java",
+       "line": 77
+      },
+      {
+       "java": "src/main/java/com/example/poc/cciaccountconverter/service/CciDecoder.java",
+       "line": 27
+      },
+      {
+       "java": "src/main/java/com/example/poc/cciaccountconverter/service/CciDecoder.java",
+       "line": 32
+      },
+      {
+       "java": "src/main/java/com/example/poc/cciaccountconverter/service/CciDecoder.java",
+       "line": 35
+      }
+     ],
+     "covered": null
+    },
+    {
+     "program": "BCTITSCV",
+     "name": "0600-CALCULA-CTA-COMERCIAL",
+     "start": 180,
+     "end": 205,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/cciaccountconverter/service/BctitscvValidator.java",
+       "line": 19
+      },
+      {
+       "java": "src/main/java/com/example/poc/cciaccountconverter/service/BctitscvValidator.java",
+       "line": 32
+      },
+      {
+       "java": "src/main/java/com/example/poc/cciaccountconverter/service/BctitscvValidator.java",
+       "line": 37
+      },
+      {
+       "java": "src/main/java/com/example/poc/cciaccountconverter/service/CciDecoder.java",
+       "line": 27
+      },
+      {
+       "java": "src/main/java/com/example/poc/cciaccountconverter/service/CciDecoder.java",
+       "line": 32
+      },
+      {
+       "java": "src/main/java/com/example/poc/cciaccountconverter/service/CciDecoder.java",
+       "line": 35
+      },
+      {
+       "java": "src/main/java/com/example/poc/cciaccountconverter/service/CciDecoder.java",
+       "line": 41
+      },
+      {
+       "java": "src/main/java/com/example/poc/cciaccountconverter/service/CciDecoder.java",
+       "line": 46
+      }
+     ],
+     "covered": null
+    },
+    {
+     "program": "BCTITSCV",
+     "name": "1000-VALIDA-ARGUMENTOS",
+     "start": 206,
+     "end": 250,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/cciaccountconverter/service/BctitscvValidator.java",
+       "line": 19
+      },
+      {
+       "java": "src/main/java/com/example/poc/cciaccountconverter/service/BctitscvValidator.java",
+       "line": 37
+      },
+      {
+       "java": "src/main/java/com/example/poc/cciaccountconverter/service/BctitscvValidator.java",
+       "line": 44
+      },
+      {
+       "java": "src/main/java/com/example/poc/cciaccountconverter/service/BctitscvValidator.java",
+       "line": 51
+      },
+      {
+       "java": "src/main/java/com/example/poc/cciaccountconverter/service/CciEncoder.java",
+       "line": 20
+      },
+      {
+       "java": "src/main/java/com/example/poc/cciaccountconverter/service/CciEncoder.java",
+       "line": 32
+      },
+      {
+       "java": "src/main/java/com/example/poc/cciaccountconverter/service/CciEncoder.java",
+       "line": 35
+      },
+      {
+       "java": "src/main/java/com/example/poc/cciaccountconverter/service/CciEncoder.java",
+       "line": 46
+      }
+     ],
+     "covered": null
+    },
+    {
+     "program": "BCTITSCV",
+     "name": "1000-FINVALIDA",
+     "start": 251,
+     "end": 253,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/cciaccountconverter/service/CciEncoder.java",
+       "line": 20
+      },
+      {
+       "java": "src/main/java/com/example/poc/cciaccountconverter/service/CciEncoder.java",
+       "line": 32
+      },
+      {
+       "java": "src/main/java/com/example/poc/cciaccountconverter/service/CciEncoder.java",
+       "line": 46
+      },
+      {
+       "java": "src/main/java/com/example/poc/cciaccountconverter/service/CciEncoder.java",
+       "line": 51
+      }
+     ],
+     "covered": null
+    },
+    {
+     "program": "BCTITSCV",
+     "name": "1500-CALCULA-CHEQUEO-INT",
+     "start": 254,
+     "end": 277,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/cciaccountconverter/service/CciEncoder.java",
+       "line": 20
+      },
+      {
+       "java": "src/main/java/com/example/poc/cciaccountconverter/service/CciEncoder.java",
+       "line": 32
+      },
+      {
+       "java": "src/main/java/com/example/poc/cciaccountconverter/service/CciEncoder.java",
+       "line": 46
+      },
+      {
+       "java": "src/main/java/com/example/poc/cciaccountconverter/service/CciEncoder.java",
+       "line": 51
+      },
+      {
+       "java": "src/main/java/com/example/poc/cciaccountconverter/service/CciEncoder.java",
+       "line": 56
+      },
+      {
+       "java": "src/main/java/com/example/poc/cciaccountconverter/service/CciEncoder.java",
+       "line": 59
+      },
+      {
+       "java": "src/main/java/com/example/poc/cciaccountconverter/service/CciEncoder.java",
+       "line": 70
+      },
+      {
+       "java": "src/main/java/com/example/poc/cciaccountconverter/service/CheckDigitCalculator.java",
+       "line": 37
+      },
+      {
+       "java": "src/main/java/com/example/poc/cciaccountconverter/service/CheckDigitCalculator.java",
+       "line": 49
+      }
+     ],
+     "covered": null
+    },
+    {
+     "program": "BCTITSCV",
+     "name": "1500-FININT",
+     "start": 278,
+     "end": 280,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/cciaccountconverter/service/CciEncoder.java",
+       "line": 70
+      },
+      {
+       "java": "src/main/java/com/example/poc/cciaccountconverter/service/CheckDigitCalculator.java",
+       "line": 37
+      },
+      {
+       "java": "src/main/java/com/example/poc/cciaccountconverter/service/CheckDigitCalculator.java",
+       "line": 49
+      }
+     ],
+     "covered": null
+    },
+    {
+     "program": "BCTITSCV",
+     "name": "2000-CALCULA-DIGCHEQ-BANOFI",
+     "start": 281,
+     "end": 291,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/cciaccountconverter/service/CciEncoder.java",
+       "line": 70
+      },
+      {
+       "java": "src/main/java/com/example/poc/cciaccountconverter/service/CciEncoder.java",
+       "line": 76
+      },
+      {
+       "java": "src/main/java/com/example/poc/cciaccountconverter/service/CheckDigitCalculator.java",
+       "line": 37
+      },
+      {
+       "java": "src/main/java/com/example/poc/cciaccountconverter/service/CheckDigitCalculator.java",
+       "line": 49
+      }
+     ],
+     "covered": null
+    },
+    {
+     "program": "BCTITSCV",
+     "name": "3000-CALCULA-DIGCHEQ-CUENTA",
+     "start": 292,
+     "end": 302,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/cciaccountconverter/service/CciEncoder.java",
+       "line": 76
+      },
+      {
+       "java": "src/main/java/com/example/poc/cciaccountconverter/service/CheckDigitCalculator.java",
+       "line": 37
+      },
+      {
+       "java": "src/main/java/com/example/poc/cciaccountconverter/service/CheckDigitCalculator.java",
+       "line": 58
+      },
+      {
+       "java": "src/main/java/com/example/poc/cciaccountconverter/service/CheckDigitCalculator.java",
+       "line": 66
+      }
+     ],
+     "covered": null
+    },
+    {
+     "program": "BCTITSCV",
+     "name": "2500-SUMA-NUM-IMP",
+     "start": 303,
+     "end": 306,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/cciaccountconverter/service/CheckDigitCalculator.java",
+       "line": 37
+      }
+     ],
+     "covered": null
+    },
+    {
+     "program": "BCTITSCV",
+     "name": "2550-SUMA-NUM-PAR",
+     "start": 307,
+     "end": 310,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/cciaccountconverter/service/BctitscvService.java",
+       "line": 84
+      }
+     ],
+     "covered": null
+    },
+    {
+     "program": "BCTITSCV",
+     "name": "3500-SUMA-NUM-IMP2",
+     "start": 311,
+     "end": 314,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/cciaccountconverter/service/BctitscvService.java",
+       "line": 84
+      }
+     ],
+     "covered": null
+    },
+    {
+     "program": "BCTITSCV",
+     "name": "3550-SUMA-NUM-PAR2",
+     "start": 315,
+     "end": 319,
+     "cited_by": [],
+     "covered": null
+    },
+    {
+     "program": "BCTITSCV",
+     "name": "3000-FINAL",
+     "start": 320,
+     "end": 324,
+     "cited_by": [],
+     "covered": null
+    }
+   ]
+  },
+  {
+   "path": "copybooks/BCTIYRCV.cpy",
+   "paragraphs": []
+  }
+ ],
+ "java": [
+  {
+   "path": "src/main/java/com/example/poc/cciaccountconverter/CciAccountConverterApplication.java",
+   "links": []
+  },
+  {
+   "path": "src/main/java/com/example/poc/cciaccountconverter/batch/BatchRunner.java",
+   "links": [
+    {
+     "line": 26,
+     "cobol": "src/BCTITSCV-RUN.cbl",
+     "start": 31,
+     "end": 73,
+     "resolved": true
+    },
+    {
+     "line": 58,
+     "cobol": "src/BCTITSCV-RUN.cbl",
+     "start": 50,
+     "end": 63,
+     "resolved": true
+    },
+    {
+     "line": 92,
+     "cobol": "src/BCTITSCV-RUN.cbl",
+     "start": 66,
+     "end": 73,
+     "resolved": true
+    }
+   ]
+  },
+  {
+   "path": "src/main/java/com/example/poc/cciaccountconverter/domain/Commarea.java",
+   "links": []
+  },
+  {
+   "path": "src/main/java/com/example/poc/cciaccountconverter/service/BctitscvService.java",
+   "links": [
+    {
+     "line": 19,
+     "cobol": "src/BCTITSCV-RUN.cbl",
+     "start": 138,
+     "end": 171,
+     "resolved": true
+    },
+    {
+     "line": 34,
+     "cobol": "src/BCTITSCV-RUN.cbl",
+     "start": 138,
+     "end": 142,
+     "resolved": true
+    },
+    {
+     "line": 43,
+     "cobol": "src/BCTITSCV-RUN.cbl",
+     "start": 144,
+     "end": 155,
+     "resolved": true
+    },
+    {
+     "line": 58,
+     "cobol": "src/BCTITSCV-RUN.cbl",
+     "start": 157,
+     "end": 171,
+     "resolved": true
+    },
+    {
+     "line": 77,
+     "cobol": "src/BCTITSCV-RUN.cbl",
+     "start": 167,
+     "end": 170,
+     "resolved": true
+    },
+    {
+     "line": 84,
+     "cobol": "src/BCTITSCV-RUN.cbl",
+     "start": 308,
+     "end": 312,
+     "resolved": true
+    }
+   ]
+  },
+  {
+   "path": "src/main/java/com/example/poc/cciaccountconverter/service/BctitscvValidator.java",
+   "links": [
+    {
+     "line": 19,
+     "cobol": "src/BCTITSCV-RUN.cbl",
+     "start": 198,
+     "end": 245,
+     "resolved": true
+    },
+    {
+     "line": 32,
+     "cobol": "src/BCTITSCV-RUN.cbl",
+     "start": 198,
+     "end": 198,
+     "resolved": true
+    },
+    {
+     "line": 37,
+     "cobol": "src/BCTITSCV-RUN.cbl",
+     "start": 200,
+     "end": 206,
+     "resolved": true
+    },
+    {
+     "line": 44,
+     "cobol": "src/BCTITSCV-RUN.cbl",
+     "start": 209,
+     "end": 215,
+     "resolved": true
+    },
+    {
+     "line": 51,
+     "cobol": "src/BCTITSCV-RUN.cbl",
+     "start": 218,
+     "end": 242,
+     "resolved": true
+    }
+   ]
+  },
+  {
+   "path": "src/main/java/com/example/poc/cciaccountconverter/service/CciDecoder.java",
+   "links": [
+    {
+     "line": 27,
+     "cobol": "src/BCTITSCV-RUN.cbl",
+     "start": 173,
+     "end": 196,
+     "resolved": true
+    },
+    {
+     "line": 32,
+     "cobol": "src/BCTITSCV-RUN.cbl",
+     "start": 174,
+     "end": 195,
+     "resolved": true
+    },
+    {
+     "line": 35,
+     "cobol": "src/BCTITSCV-RUN.cbl",
+     "start": 177,
+     "end": 183,
+     "resolved": true
+    },
+    {
+     "line": 41,
+     "cobol": "src/BCTITSCV-RUN.cbl",
+     "start": 185,
+     "end": 191,
+     "resolved": true
+    },
+    {
+     "line": 46,
+     "cobol": "src/BCTITSCV-RUN.cbl",
+     "start": 193,
+     "end": 199,
+     "resolved": true
+    }
+   ]
+  },
+  {
+   "path": "src/main/java/com/example/poc/cciaccountconverter/service/CciEncoder.java",
+   "links": [
+    {
+     "line": 20,
+     "cobol": "src/BCTITSCV-RUN.cbl",
+     "start": 247,
+     "end": 270,
+     "resolved": true
+    },
+    {
+     "line": 32,
+     "cobol": "src/BCTITSCV-RUN.cbl",
+     "start": 247,
+     "end": 270,
+     "resolved": true
+    },
+    {
+     "line": 35,
+     "cobol": "src/BCTITSCV-RUN.cbl",
+     "start": 248,
+     "end": 248,
+     "resolved": true
+    },
+    {
+     "line": 46,
+     "cobol": "src/BCTITSCV-RUN.cbl",
+     "start": 249,
+     "end": 258,
+     "resolved": true
+    },
+    {
+     "line": 51,
+     "cobol": "src/BCTITSCV-RUN.cbl",
+     "start": 252,
+     "end": 254,
+     "resolved": true
+    },
+    {
+     "line": 56,
+     "cobol": "src/BCTITSCV-RUN.cbl",
+     "start": 260,
+     "end": 269,
+     "resolved": true
+    },
+    {
+     "line": 59,
+     "cobol": "src/BCTITSCV-RUN.cbl",
+     "start": 262,
+     "end": 265,
+     "resolved": true
+    },
+    {
+     "line": 70,
+     "cobol": "src/BCTITSCV-RUN.cbl",
+     "start": 272,
+     "end": 283,
+     "resolved": true
+    },
+    {
+     "line": 76,
+     "cobol": "src/BCTITSCV-RUN.cbl",
+     "start": 285,
+     "end": 292,
+     "resolved": true
+    }
+   ]
+  },
+  {
+   "path": "src/main/java/com/example/poc/cciaccountconverter/service/CheckDigitCalculator.java",
+   "links": [
+    {
+     "line": 37,
+     "cobol": "src/BCTITSCV-RUN.cbl",
+     "start": 272,
+     "end": 306,
+     "resolved": true
+    },
+    {
+     "line": 49,
+     "cobol": "src/BCTITSCV-RUN.cbl",
+     "start": 272,
+     "end": 283,
+     "resolved": true
+    },
+    {
+     "line": 58,
+     "cobol": "src/BCTITSCV-RUN.cbl",
+     "start": 292,
+     "end": 295,
+     "resolved": true
+    },
+    {
+     "line": 66,
+     "cobol": "src/BCTITSCV-RUN.cbl",
+     "start": 296,
+     "end": 298,
+     "resolved": true
+    }
+   ]
+  }
+ ]
+}

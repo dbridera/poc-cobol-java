@@ -36,8 +36,9 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 MARKER_BEGIN = "<!-- BEGIN AUTO-GENERATED COVERAGE (gen-coverage.py) -->"
 MARKER_END = "<!-- END AUTO-GENERATED COVERAGE -->"
 
-PROGRAM_ID_RE = re.compile(r"^\s{7}PROGRAM-ID\.\s+([A-Za-z0-9-]+)", re.IGNORECASE)
-LABEL_RE = re.compile(r"^\s{7}([0-9A-Za-z][0-9A-Za-z-]*)(\s+SECTION)?\s*\.\s*$")
+PROGRAM_ID_RE = re.compile(r"^\s*PROGRAM-ID\.\s+([A-Za-z0-9-]+)", re.IGNORECASE)
+# fixed format: label in area A (column 8); free format (`cobc -free`): label at the start of the line
+LABEL_RE = re.compile(r"^(?:\s{7}|(?=\S))([0-9A-Za-z][0-9A-Za-z-]*)(\s+SECTION)?\s*\.\s*$")
 NOT_LABELS = {"PROCEDURE DIVISION", "FILE-CONTROL", "FILE SECTION", "WORKING-STORAGE SECTION", "LINKAGE SECTION",
               "CONFIGURATION SECTION", "INPUT-OUTPUT SECTION", "DATA DIVISION", "ENVIRONMENT DIVISION",
               "IDENTIFICATION DIVISION", "SPECIAL-NAMES", "OBJECT-COMPUTER", "SOURCE-COMPUTER"}
@@ -64,8 +65,9 @@ def parse_programs(src_dir: Path) -> "OrderedDict[str, dict]":
 
         last_line = len(lines)
         for n, raw in enumerate(lines, start=1):
-            line = raw[:72] if len(raw) > 72 else raw      # fixed format: ignore columns 73-80
-            if len(line) > 6 and line[6] in "*/":
+            free = raw.lstrip().startswith("*>") or not raw.startswith("       ")
+            line = raw if free else (raw[:72] if len(raw) > 72 else raw)   # fixed format: ignore columns 73-80
+            if (len(line) > 6 and line[6] in "*/" and not free) or line.lstrip().startswith("*>"):
                 continue
             m = PROGRAM_ID_RE.match(line)
             if m:
@@ -74,10 +76,10 @@ def parse_programs(src_dir: Path) -> "OrderedDict[str, dict]":
                 in_procedure = False
                 labels = []
                 continue
-            if re.match(r"^\s{7}PROCEDURE DIVISION", line, re.IGNORECASE):
+            if re.match(r"^\s*PROCEDURE DIVISION", line, re.IGNORECASE):
                 in_procedure = True
                 continue
-            if re.match(r"^\s{7}END PROGRAM", line, re.IGNORECASE):
+            if re.match(r"^\s*END PROGRAM", line, re.IGNORECASE):
                 last_line = n - 1
                 flush()
                 current = None

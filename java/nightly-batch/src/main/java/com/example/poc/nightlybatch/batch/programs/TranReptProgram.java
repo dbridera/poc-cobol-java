@@ -57,7 +57,7 @@ final class TranReptProgram implements StepProgram {
 
         try (FixedRecordFile.Writer rept = FixedRecordFile.openOutput(run.dd(step, "TRANREPT"), ReportWriter.LINE)) {
             ReportWriter report = new ReportWriter(rept, io);
-            for (String raw : transactions) {                               // 1000-TRANFILE-GET-NEXT, status 00
+            for (String raw : transactions) {                               // 1000-TRANFILE-GET-NEXT, status 00 — COBOL: CBTRN03C.cbl:248-272
                 io.paragraph("CBTRN03C", "1000-TRANFILE-GET-NEXT");
                 tran.moveFrom(CobolRecord.of(Layouts.TRAN, raw));           // READ … INTO TRAN-RECORD
                 // date filter (171-176): always true — REPTSORT applied the same range; the NEXT SENTENCE
@@ -111,7 +111,7 @@ final class TranReptProgram implements StepProgram {
         // L$0: GnuCOBOL's label for the sentence after `END-PERFORM.` (the NEXT SENTENCE target of line 177);
         // traced once when the main loop ends — COBOL: CBTRN03C.cbl:166-209
         io.paragraph("CBTRN03C", "L$0");
-        // 9000-…-9500 closes — COBOL: CBTRN03C.cbl:211-216
+        // 9000-…-9500 closes — COBOL: CBTRN03C.cbl:211-216, 514-625
         for (String close : new String[]{"9000-TRANFILE-CLOSE", "9100-REPTFILE-CLOSE", "9200-CARDXREF-CLOSE",
                                          "9300-TRANTYPE-CLOSE", "9400-TRANCATG-CLOSE", "9500-DATEPARM-CLOSE"}) {
             io.paragraph("CBTRN03C", close);

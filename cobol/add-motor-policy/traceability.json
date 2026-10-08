@@ -1,0 +1,261 @@
+{
+ "module": "add-motor-policy",
+ "stats": {
+  "cobol_files": 2,
+  "java_files": 9,
+  "paragraphs": 12,
+  "cited": 7,
+  "covered": 0,
+  "links": 7,
+  "unresolved_links": 0,
+  "fixtures": []
+ },
+ "cobol": [
+  {
+   "path": "src/ADDMPOL.cbl",
+   "paragraphs": [
+    {
+     "program": "ADDMPOL",
+     "name": "MAIN-LOGIC",
+     "start": 161,
+     "end": 168,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/addmotorpolicy/batch/BatchRunner.java",
+       "line": 31
+      }
+     ],
+     "covered": null
+    },
+    {
+     "program": "ADDMPOL",
+     "name": "INITIALIZE-RUN",
+     "start": 169,
+     "end": 181,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/addmotorpolicy/batch/BatchRunner.java",
+       "line": 31
+      }
+     ],
+     "covered": null
+    },
+    {
+     "program": "ADDMPOL",
+     "name": "PROCESS-REQUESTS",
+     "start": 182,
+     "end": 191,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/addmotorpolicy/batch/BatchRunner.java",
+       "line": 31
+      }
+     ],
+     "covered": null
+    },
+    {
+     "program": "ADDMPOL",
+     "name": "HANDLE-ONE-REQUEST",
+     "start": 192,
+     "end": 218,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/addmotorpolicy/batch/BatchRunner.java",
+       "line": 31
+      },
+      {
+       "java": "src/main/java/com/example/poc/addmotorpolicy/service/RequestValidator.java",
+       "line": 15
+      }
+     ],
+     "covered": null
+    },
+    {
+     "program": "ADDMPOL",
+     "name": "CHECK-REQUEST-ID",
+     "start": 219,
+     "end": 225,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/addmotorpolicy/service/RequestValidator.java",
+       "line": 15
+      }
+     ],
+     "covered": null
+    },
+    {
+     "program": "ADDMPOL",
+     "name": "VALIDATE-REQUEST",
+     "start": 226,
+     "end": 248,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/addmotorpolicy/service/MotorPremiumCalculator.java",
+       "line": 24
+      },
+      {
+       "java": "src/main/java/com/example/poc/addmotorpolicy/service/PremiumOverflowException.java",
+       "line": 8
+      }
+     ],
+     "covered": null
+    },
+    {
+     "program": "ADDMPOL",
+     "name": "CALC-MOTOR-PREMIUM",
+     "start": 249,
+     "end": 278,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/addmotorpolicy/service/MotorPremiumCalculator.java",
+       "line": 24
+      },
+      {
+       "java": "src/main/java/com/example/poc/addmotorpolicy/service/PremiumOverflowException.java",
+       "line": 8
+      }
+     ],
+     "covered": null
+    },
+    {
+     "program": "ADDMPOL",
+     "name": "INSERT-POLICY",
+     "start": 279,
+     "end": 294,
+     "cited_by": [],
+     "covered": null
+    },
+    {
+     "program": "ADDMPOL",
+     "name": "INSERT-MOTOR",
+     "start": 295,
+     "end": 312,
+     "cited_by": [],
+     "covered": null
+    },
+    {
+     "program": "ADDMPOL",
+     "name": "REPORT-ERROR",
+     "start": 313,
+     "end": 321,
+     "cited_by": [],
+     "covered": null
+    },
+    {
+     "program": "ADDMPOL",
+     "name": "FINALIZE-RUN",
+     "start": 322,
+     "end": 328,
+     "cited_by": [],
+     "covered": null
+    },
+    {
+     "program": "ADDMPOL",
+     "name": "PRINT-SUMMARY",
+     "start": 329,
+     "end": 332,
+     "cited_by": [],
+     "covered": null
+    }
+   ]
+  },
+  {
+   "path": "copybooks/lgpolicy.cpy",
+   "paragraphs": []
+  }
+ ],
+ "java": [
+  {
+   "path": "src/main/java/com/example/poc/addmotorpolicy/AddMotorPolicyApplication.java",
+   "links": []
+  },
+  {
+   "path": "src/main/java/com/example/poc/addmotorpolicy/batch/BatchRunner.java",
+   "links": [
+    {
+     "line": 31,
+     "cobol": "src/ADDMPOL.cbl",
+     "start": 158,
+     "end": 198,
+     "resolved": true
+    }
+   ]
+  },
+  {
+   "path": "src/main/java/com/example/poc/addmotorpolicy/batch/RecordCodec.java",
+   "links": [
+    {
+     "line": 24,
+     "cobol": "src/ADDMPOL.cbl",
+     "start": 44,
+     "end": 95,
+     "resolved": true
+    }
+   ]
+  },
+  {
+   "path": "src/main/java/com/example/poc/addmotorpolicy/domain/MotorEntity.java",
+   "links": [
+    {
+     "line": 14,
+     "cobol": "src/ADDMPOL.cbl",
+     "start": 75,
+     "end": 86,
+     "resolved": true
+    }
+   ]
+  },
+  {
+   "path": "src/main/java/com/example/poc/addmotorpolicy/domain/MotorPolicyRequest.java",
+   "links": []
+  },
+  {
+   "path": "src/main/java/com/example/poc/addmotorpolicy/domain/PolicyEntity.java",
+   "links": [
+    {
+     "line": 14,
+     "cobol": "src/ADDMPOL.cbl",
+     "start": 60,
+     "end": 72,
+     "resolved": true
+    }
+   ]
+  },
+  {
+   "path": "src/main/java/com/example/poc/addmotorpolicy/service/MotorPremiumCalculator.java",
+   "links": [
+    {
+     "line": 24,
+     "cobol": "src/ADDMPOL.cbl",
+     "start": 232,
+     "end": 264,
+     "resolved": true
+    }
+   ]
+  },
+  {
+   "path": "src/main/java/com/example/poc/addmotorpolicy/service/PremiumOverflowException.java",
+   "links": [
+    {
+     "line": 8,
+     "cobol": "src/ADDMPOL.cbl",
+     "start": 232,
+     "end": 264,
+     "resolved": true
+    }
+   ]
+  },
+  {
+   "path": "src/main/java/com/example/poc/addmotorpolicy/service/RequestValidator.java",
+   "links": [
+    {
+     "line": 15,
+     "cobol": "src/ADDMPOL.cbl",
+     "start": 199,
+     "end": 225,
+     "resolved": true
+    }
+   ]
+  }
+ ]
+}

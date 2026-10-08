@@ -62,7 +62,7 @@ final class IntCalcProgram implements StepProgram {
         String timestamp = CobolTimestamp.db2Format(run.clock());
 
         try (FixedRecordFile.Writer systran = FixedRecordFile.openOutput(run.dd(step, "TRANSACT"), Layouts.TRAN.lrecl())) {
-            for (CobolRecord next : balances) {                             // 1000-TCATBALF-GET-NEXT until status 10
+            for (CobolRecord next : balances) {                             // 1000-TCATBALF-GET-NEXT until status 10 — COBOL: CBACT04C.cbl:325-349
                 io.paragraph("CBACT04C", "1000-TCATBALF-GET-NEXT");
                 tcatbalWs.moveFrom(next);
                 io.display(tcatbalWs.toString());                           // DISPLAY TRAN-CAT-BAL-RECORD
@@ -124,7 +124,7 @@ final class IntCalcProgram implements StepProgram {
             // the last account's interest is never written back (faithful defect D1, CLAUDE.md rule 5).
         }
         io.paragraph("CBACT04C", "1000-TCATBALF-GET-NEXT");                 // the read that returns status 10
-        // 9000-…-9400 closes — COBOL: CBACT04C.cbl:226-230
+        // 9000-…-9400 closes — COBOL: CBACT04C.cbl:226-230, 522-612
         for (String close : new String[]{"9000-TCATBALF-CLOSE", "9100-XREFFILE-CLOSE", "9200-DISCGRP-CLOSE",
                                          "9300-ACCTFILE-CLOSE", "9400-TRANFILE-CLOSE"}) {
             io.paragraph("CBACT04C", close);
