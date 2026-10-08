@@ -118,6 +118,8 @@ Three equivalent options. Pick whichever fits the audience.
 
 Prints phase headers (A / C / D), echoes each command before running it, runs the conformance gate, and finishes with a computed `proof` block over all `validation/reports/*.json`. Total wall time: ~3 minutes on the demo machine (module 3 starts seven JVMs).
 
+**On stage, add `--step`.** The script then narrates in Spanish (the deck's language; `--en` keeps English), pauses for Enter after every explanation and before every command and "moment", and after each phase lists the **intermediate artifacts** it just produced or used as clickable `file://` links (Terminal.app, iTerm2 and the VS Code terminal all open them) with a number to open one from the keyboard: the verbatim COBOL, the spec, `PARAGRAPHS.md`, the test cases, the COBOL reference output, the Java, the Java output, the agentic eval report, the side-by-side viewer, the coverage, the ADRs. `explore <module>` prints that whole trail on its own.
+
 Subcommands for running one at a time:
 
 | Command | What runs |
@@ -128,11 +130,16 @@ Subcommands for running one at a time:
 | `./tools/demo-commands.sh module-1a` | Module 1A (1 fixture) |
 | `./tools/demo-commands.sh module-2` | Module 2 (3 fixtures) |
 | `./tools/demo-commands.sh module-3` | Module 3 (6 fixtures) + three demo moments: the restart job log, the faithful bug, and coverage + the side-by-side viewer |
-| `./tools/demo-commands.sh negative-control` | Two sabotages in module 3: a rounding mode → `ACCT-CURR-BAL cobol=201.75 java=201.76`; "fixing" the legacy bug → `cobol 1000-TCATBALF-GET-NEXT vs java 1050-UPDATE-ACCOUNT` at trace entry 68 + account 5 → both reverted → green |
+| `./tools/demo-commands.sh negative-control` | Two sabotages in module 3: a rounding mode → `ACCT-CURR-BAL cobol=201.75 java=201.76`; "fixing" the legacy bug → `cobol 1000-TCATBALF-GET-NEXT vs java 1050-UPDATE-ACCOUNT` at trace entry 68 + account 5 → both reverted → green. Shows the `git diff` of each sabotage and repeats the red lines on their own |
+| `./tools/demo-commands.sh agentic-eval [module]` | **The agentic eval as an agent.** Prints the validator's definition (tools, constraints), then runs `claude -p "…" --agent equivalence-validator --output-format stream-json` headless with an allow-list of commands, rendered live by `tools/demo-agentic-eval.py`: what the agent says, each command it runs, the tail of each result, its final report, `RESULT: GREEN`. About 70 s for module 3. `--replay` (or no `claude`, or a non-green live call) plays the recorded transcript in `docs/demo/transcripts/` at stage pace; `RECORD=1` saves a green live run as the new recording |
+| `./tools/demo-commands.sh explore [module]` | Every artifact of a module as a numbered list of clickable links; a number opens it (html in the browser, directories in Finder, text in the editor) |
 | `./tools/demo-commands.sh conformance` | `check-module.sh --all`: same five phases, same tooling, every module |
 | `./tools/demo-commands.sh proof` | Per-fixture summary of all `validation/reports/*.json` + computed cross-module totals |
 | `./tools/demo-commands.sh all` | All five modules + conformance + proof |
+| `--step` | stage mode: pause for Enter after each explanation and before each command / moment; artifact lists accept a number to open |
+| `--en` | narrate in English (default Spanish) |
 | `--quiet` | (suffix to any subcommand) suppress the narrative phase headers |
+| `--replay` | `agentic-eval`: replay the recording instead of calling `claude` |
 
 ### Option B — raw commands (for live typing on stage)
 
@@ -174,7 +181,7 @@ In a Claude Code session at the repo root:
 
 > Run the `equivalence-validator` subagent for each of these modules in turn — `add-motor-policy`, `add-policy-db`, `add-policy-facade`, `cci-account-converter`, `nightly-batch` — and tell me whether each ends in `RESULT: GREEN`.
 
-The read-only subagent invokes the same 3 commands per module and reports per-fixture `[OK]` / `[FAIL]` plus a final `RESULT: GREEN` line. See [.claude/agents/equivalence-validator.md](../../.claude/agents/equivalence-validator.md) for the spec.
+The read-only subagent invokes the same 3 commands per module and reports per-fixture `[OK]` / `[FAIL]` plus a final `RESULT: GREEN` line. See [.claude/agents/equivalence-validator.md](../../.claude/agents/equivalence-validator.md) for the spec. The scripted form of this is `./tools/demo-commands.sh agentic-eval` (Option A), which needs no interactive session: it calls the same agent headless and renders the stream.
 
 ---
 
