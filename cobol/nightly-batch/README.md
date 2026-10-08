@@ -155,6 +155,8 @@ Determinism: running `run-job.sh` twice yields byte-identical golden masters
 
 ## 6. Paragraph → fixture coverage
 
+Business explanation per paragraph (what each one does, in Spanish, with the spec section): [PARAGRAPHS.md](./PARAGRAPHS.md); the viewer [traceability.html](./traceability.html) shows it under each paragraph.
+
 <!-- BEGIN AUTO-GENERATED COVERAGE (gen-coverage.py) -->
 Coverage from the paragraph traces: **82 / 86 paragraphs** of 14 programs are entered by at least one of the 6 fixtures. Full matrix: [COVERAGE.md](./COVERAGE.md).
 

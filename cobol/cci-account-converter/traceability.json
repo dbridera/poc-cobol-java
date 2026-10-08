@@ -8,7 +8,9 @@
   "covered": 0,
   "links": 32,
   "unresolved_links": 0,
-  "fixtures": []
+  "fixtures": [],
+  "described": 0,
+  "guide": false
  },
  "cobol": [
   {
@@ -29,7 +31,9 @@
        "line": 58
       }
      ],
-     "covered": null
+     "covered": null,
+     "what": "",
+     "spec": ""
     },
     {
      "program": "DRIVER-BCTITSCV",
@@ -46,7 +50,9 @@
        "line": 58
       }
      ],
-     "covered": null
+     "covered": null,
+     "what": "",
+     "spec": ""
     },
     {
      "program": "DRIVER-BCTITSCV",
@@ -63,7 +69,9 @@
        "line": 92
       }
      ],
-     "covered": null
+     "covered": null,
+     "what": "",
+     "spec": ""
     },
     {
      "program": "DRIVER-BCTITSCV",
@@ -71,7 +79,9 @@
      "start": 83,
      "end": 91,
      "cited_by": [],
-     "covered": null
+     "covered": null,
+     "what": "",
+     "spec": ""
     },
     {
      "program": "BCTITSCV",
@@ -92,7 +102,9 @@
        "line": 58
       }
      ],
-     "covered": null
+     "covered": null,
+     "what": "",
+     "spec": ""
     },
     {
      "program": "BCTITSCV",
@@ -109,7 +121,9 @@
        "line": 58
       }
      ],
-     "covered": null
+     "covered": null,
+     "what": "",
+     "spec": ""
     },
     {
      "program": "BCTITSCV",
@@ -142,7 +156,9 @@
        "line": 35
       }
      ],
-     "covered": null
+     "covered": null,
+     "what": "",
+     "spec": ""
     },
     {
      "program": "BCTITSCV",
@@ -183,7 +199,9 @@
        "line": 46
       }
      ],
-     "covered": null
+     "covered": null,
+     "what": "",
+     "spec": ""
     },
     {
      "program": "BCTITSCV",
@@ -224,7 +242,9 @@
        "line": 46
       }
      ],
-     "covered": null
+     "covered": null,
+     "what": "",
+     "spec": ""
     },
     {
      "program": "BCTITSCV",
@@ -249,7 +269,9 @@
        "line": 51
       }
      ],
-     "covered": null
+     "covered": null,
+     "what": "",
+     "spec": ""
     },
     {
      "program": "BCTITSCV",
@@ -294,7 +316,9 @@
        "line": 49
       }
      ],
-     "covered": null
+     "covered": null,
+     "what": "",
+     "spec": ""
     },
     {
      "program": "BCTITSCV",
@@ -315,7 +339,9 @@
        "line": 49
       }
      ],
-     "covered": null
+     "covered": null,
+     "what": "",
+     "spec": ""
     },
     {
      "program": "BCTITSCV",
@@ -340,7 +366,9 @@
        "line": 49
       }
      ],
-     "covered": null
+     "covered": null,
+     "what": "",
+     "spec": ""
     },
     {
      "program": "BCTITSCV",
@@ -365,7 +393,9 @@
        "line": 66
       }
      ],
-     "covered": null
+     "covered": null,
+     "what": "",
+     "spec": ""
     },
     {
      "program": "BCTITSCV",
@@ -378,7 +408,9 @@
        "line": 37
       }
      ],
-     "covered": null
+     "covered": null,
+     "what": "",
+     "spec": ""
     },
     {
      "program": "BCTITSCV",
@@ -391,7 +423,9 @@
        "line": 84
       }
      ],
-     "covered": null
+     "covered": null,
+     "what": "",
+     "spec": ""
     },
     {
      "program": "BCTITSCV",
@@ -404,7 +438,9 @@
        "line": 84
       }
      ],
-     "covered": null
+     "covered": null,
+     "what": "",
+     "spec": ""
     },
     {
      "program": "BCTITSCV",
@@ -412,7 +448,9 @@
      "start": 315,
      "end": 319,
      "cited_by": [],
-     "covered": null
+     "covered": null,
+     "what": "",
+     "spec": ""
     },
     {
      "program": "BCTITSCV",
@@ -420,13 +458,17 @@
      "start": 320,
      "end": 324,
      "cited_by": [],
-     "covered": null
+     "covered": null,
+     "what": "",
+     "spec": ""
     }
-   ]
+   ],
+   "programs": {}
   },
   {
    "path": "copybooks/BCTIYRCV.cpy",
-   "paragraphs": []
+   "paragraphs": [],
+   "programs": {}
   }
  ],
  "java": [

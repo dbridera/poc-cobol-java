@@ -40,7 +40,7 @@ The contracts are explicit so a future engineer (or LLM session) knows what file
 | | |
 |---|---|
 | **Consumes** | Phase A outputs (`cobol/<m>/README.md`, golden master) and the COBOL source itself |
-| **Produces** | `specs/<module>.md` with the 11 sections specified in the skill |
+| **Produces** | `specs/<module>.md` with the 11 sections specified in the skill; `cobol/<module>/PARAGRAPHS.md` (one "Qué hace" line per paragraph with its spec section, shown by the viewer) |
 | **Done when** | SME has reviewed §2–§7; every `ROUNDED` clause has a documented mode; every `ON SIZE ERROR` has its reason string verbatim from COBOL |
 | **Don't proceed if** | Spec disagrees with golden master on any byte-format detail (PIC width, padding direction, trailing-space rules) |
 

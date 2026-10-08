@@ -59,6 +59,13 @@ check_module() {
     if [[ -f "$cdir/traceability.html" ]]; then
       if ./tools/render-traceability.py "$m" --check >/dev/null 2>&1; then
         pass "2 traceability.html / traceability.json in sync with the sources"
+        if [[ -f "$cdir/PARAGRAPHS.md" ]]; then
+          undesc=$(python3 -c "import json,sys; d=json.load(open('$cdir/traceability.json')); print(sum(1 for f in d['cobol'] for p in f['paragraphs'] if not p['what']))")
+          [[ "$undesc" == "0" ]] && pass "2 PARAGRAPHS.md explains every paragraph shown in the viewer" \
+                                || warn "2 PARAGRAPHS.md leaves $undesc paragraph(s) without a 'Qué hace' line"
+        else
+          warn "2 no PARAGRAPHS.md (the viewer shows code without business explanations)"
+        fi
       else
         fail "2 traceability viewer drifted (run ./tools/render-traceability.py $m)"
       fi

@@ -242,6 +242,8 @@ Flat file by design — convert to `docs/decisions/` once entries exceed ~15.
 
 **Evidence.** [cobol/nightly-batch/job.json](../../cobol/nightly-batch/job.json) (`trace`, `-ftrace`). [tools/run-job.py](../../tools/run-job.py) `normalise_trace`. [java/nightly-batch/.../io/StepIo.java](../../java/nightly-batch/src/main/java/com/example/poc/nightlybatch/io/StepIo.java). [tools/compare-outputs.py](../../tools/compare-outputs.py) `trace_report`. [cobol/nightly-batch/COVERAGE.md](../../cobol/nightly-batch/COVERAGE.md) (82/86). README spike k. [validation/reports/nightly-batch.json](../../validation/reports/nightly-batch.json) — `summary.trace_entries_compared` 5 743 on fixture 04, 0 differing.
 
+Addendum (2026-10-07): the viewer alone was not understandable to a non-COBOL reader ("code against code"). Phase B now also produces `cobol/<module>/PARAGRAPHS.md`, a plain-language "Qué hace" line per paragraph with its spec section; `render-traceability.py` shows it under each paragraph and in the bridge bar, and a click on a paragraph jumps straight to the Java that translates it. Evidence: [cobol/nightly-batch/PARAGRAPHS.md](../../cobol/nightly-batch/PARAGRAPHS.md) (86/86 paragraphs described).
+
 ---
 
 ## How to add an ADR

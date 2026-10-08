@@ -29,10 +29,18 @@
   #help button { margin-left:auto; flex:none; }
   #help[hidden] { display:none; }
 
-  #bridge { padding:7px 16px; border-bottom:1px solid var(--line); font-size:13px; background:var(--pane); min-height:34px; display:flex; gap:8px; align-items:center; }
+  #bridge { padding:7px 16px; border-bottom:1px solid var(--line); font-size:13px; background:var(--pane); min-height:34px; }
+  #bridge .nav { display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
   #bridge .arrow { color:var(--muted); }
   #bridge b { font-family:var(--mono); font-weight:600; }
+  #bridge a { color:var(--link); cursor:pointer; text-decoration:underline; font-family:var(--mono); }
+  #bridge a.active { background:var(--sel); text-decoration:none; padding:0 4px; border-radius:4px; }
   #bridge .hint { color:var(--muted); margin-left:auto; }
+  #bridge .what { display:block; margin-top:3px; color:var(--fg); line-height:1.4; }
+  #bridge .what b { font-family:inherit; }
+  @keyframes flash { from { background:var(--hl2); } to { background:transparent; } }
+  #bridge.flash { animation: flash 0.9s ease-out; }
+  .ln.sel.flash { animation: flash 0.9s ease-out; }
 
   main { flex:1; min-height:0; display:grid; grid-template-columns:1fr 1fr; }
   .pane { display:flex; flex-direction:column; min-width:0; min-height:0; border-right:1px solid var(--line); }
@@ -51,6 +59,10 @@
   .ln.para { background:var(--para); font-weight:600; cursor:pointer; }
   .ln.para:hover { filter:brightness(0.97); }
   .ln.para .badge { margin-left:12px; }
+  .ln.desc { white-space:normal; background:var(--para); font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size:12px; color:var(--muted); padding:0 10px 4px 56px; }
+  .ln.desc b { color:var(--fg); font-weight:500; }
+  .intro { padding:8px 12px; font-size:12.5px; border-bottom:1px solid var(--line); background:var(--para); line-height:1.4; }
+  .intro b { font-weight:600; }
   .ln .cite { color:var(--link); text-decoration:underline; cursor:pointer; }
   .ln .cite:hover { background:var(--sel); }
   .info { padding:6px 12px; border-top:1px solid var(--line); font-size:12.5px; color:var(--muted); min-height:32px; background:var(--pane); }
@@ -67,12 +79,13 @@
 <div id="help">
   <ol>
     <li><b>Del Java al COBOL:</b> en el panel derecho, clic en un <u style="color:var(--link)">COBOL: archivo:líneas</u>. El panel izquierdo salta y pinta de amarillo esas líneas. El Java no se mueve: la línea que tocaste queda marcada en azul.</li>
-    <li><b>Del COBOL al Java:</b> en el panel izquierdo, clic en una fila azul (un párrafo). La barra del medio lista qué lugares del Java lo traducen; clic en uno y el panel derecho salta ahí.</li>
+    <li><b>Del COBOL al Java:</b> en el panel izquierdo, clic en una fila azul (un párrafo). El panel derecho salta solo al Java que lo traduce y lo marca en azul. Si lo traducen varios lugares, la barra del medio los lista: clic en otro para verlo.</li>
+    <li><b>Qué hace cada parte:</b> cada programa empieza con un resumen de negocio y cada párrafo lleva debajo una línea "Qué hace" con la sección de la especificación (viene de <code>PARAGRAPHS.md</code>). Al hacer clic en una cita del Java, la barra del medio también explica el párrafo citado.</li>
     <li><b>Etiquetas de cada párrafo:</b> <span class="badge b-ok">6/6 fixtures</span> en cuántos casos de prueba se ejecutó · <span class="badge b-ok">2 Java citations</span> cuántas veces lo cita el Java · <span class="badge b-warn">not cited by Java</span> ningún Java lo cita · <span class="badge b-bad">0/6 fixtures</span> ningún caso lo ejecuta.</li>
   </ol>
   <button id="helpClose">Entendido</button>
 </div>
-<div id="bridge"><span class="hint">Nada seleccionado todavía. Hacé clic en un párrafo (izquierda) o en una cita COBOL: (derecha).</span></div>
+<div id="bridge"><div class="nav"><span class="hint">Nada seleccionado todavía. Hacé clic en un párrafo (izquierda) o en una cita COBOL: (derecha).</span></div></div>
 <main>
   <section class="pane">
     <div class="title">COBOL · <b id="cobolTitle"></b> <span id="cobolSub"></span></div>
@@ -97,7 +110,7 @@
   const short = p => p.split('/').pop();
 
   $('stats').textContent = `${data.stats.cobol_files} archivos COBOL · ${data.stats.paragraphs} párrafos · ${data.stats.cited} citados desde Java · `
-    + (nFix ? `${data.stats.covered} ejecutados por los ${nFix} casos de prueba · ` : '') + `${data.stats.java_files} archivos Java · ${data.stats.links} citas`;
+    + (nFix ? `${data.stats.covered} ejecutados por los ${nFix} casos de prueba · ` : '') + (data.stats.guide ? `${data.stats.described} con explicación · ` : '') + `${data.stats.java_files} archivos Java · ${data.stats.links} citas`;
 
   // help box: shown until dismissed once
   try { if (localStorage.getItem('trace-help-dismissed')) $('help').hidden = true; } catch (e) {}
@@ -106,6 +119,20 @@
 
   let cobolIdx = 0, javaIdx = 0;
   const cobolByPath = Object.fromEntries(data.cobol.map((f, i) => [f.path, i]));
+  window.addEventListener('error', e => { $('bridge').innerHTML = `<div class="nav"><span class="badge b-bad">error en el visor: ${esc(String(e.message))}</span></div>`; });
+  $('cobolCode').addEventListener('click', e => {
+    const row = e.target.closest('.ln.para');
+    if (row) selectParagraph(data.cobol[cobolIdx], row.dataset.para);
+  });
+  $('javaCode').addEventListener('click', e => {
+    const cite = e.target.closest('.cite');
+    if (cite) citeClicked(data.java[javaIdx], +cite.dataset.line, javaLinksAt[+cite.dataset.line] || []);
+  });
+  $('bridge').addEventListener('click', e => {
+    const a = e.target.closest('a[data-java]');
+    if (a) { $('bridge').querySelectorAll('a').forEach(x => x.classList.toggle('active', x === a)); jumpJava(a.dataset.java, +a.dataset.line); }
+  });
+  let javaLinksAt = {};
 
   function tabs(container, files, active, onPick) {
     container.innerHTML = '';
@@ -132,6 +159,11 @@
     if (!el) return;
     code.scrollTop = Math.max(0, el.offsetTop - code.clientHeight / 2);
   }
+  function flash(el) { if (!el) return; el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash'); }
+  function setBridge(nav, what) {
+    $('bridge').innerHTML = `<div class="nav">${nav}</div>` + (what ? `<div class="what">${what}</div>` : '');
+    flash($('bridge'));
+  }
   function clearMarks(code, classes) { code.querySelectorAll('.ln').forEach(el => classes.forEach(c => el.classList.remove(c))); }
 
   function renderCobol(i) {
@@ -142,13 +174,14 @@
     $('cobolSub').textContent = f.paragraphs.length ? `· ${f.paragraphs.length} párrafos` : '';
     const paraAt = {};
     f.paragraphs.forEach(p => paraAt[p.start] = p);
-    $('cobolCode').innerHTML = f.lines.map((t, k) => {
+    const intro = Object.entries(f.programs || {}).map(([pid, g]) => `<div class="intro"><b>${pid} — ${esc(g.title)}</b><br>${esc(g.intro)}</div>`).join('');
+    $('cobolCode').innerHTML = intro + f.lines.map((t, k) => {
       const n = k + 1, p = paraAt[n];
-      if (p) return `<div class="ln para" id="c-${i}-${n}" data-para="${p.name}" title="clic: ver qué Java traduce este párrafo"><span class="n">${n}</span><span class="t">${esc(t)}${badge(p)}</span></div>`;
+      if (p) return `<div class="ln para" id="c-${i}-${n}" data-para="${p.name}" title="clic: ver qué Java traduce este párrafo"><span class="n">${n}</span><span class="t">${esc(t)}${badge(p)}</span></div>`
+        + (p.what ? `<div class="ln desc"><b>Qué hace:</b> ${esc(p.what)}${p.spec ? ` <span>(spec ${esc(p.spec)})</span>` : ''}</div>` : '');
       return `<div class="ln" id="c-${i}-${n}"><span class="n">${n}</span><span class="t">${esc(t)}</span></div>`;
     }).join('');
-    $('cobolCode').querySelectorAll('.ln.para').forEach(el => el.onclick = () => selectParagraph(f, el.dataset.para));
-    $('cobolInfo').textContent = 'Las filas azules son párrafos: clic para ver qué Java los traduce.';
+    $('cobolInfo').textContent = 'Las filas azules son párrafos: clic para ver qué Java los traduce. Debajo de cada uno, qué hace en términos de negocio.';
   }
 
   function selectParagraph(f, name) {
@@ -157,14 +190,19 @@
     clearMarks($('cobolCode'), ['hl', 'hl2', 'sel']);
     for (let n = p.start; n <= p.end; n++) { const el = document.getElementById(`c-${cobolIdx}-${n}`); if (el) el.classList.add('hl'); }
     document.getElementById(`c-${cobolIdx}-${p.start}`).classList.add('sel');
-    const cites = p.cited_by.map(c => `<a data-java="${c.java}" data-line="${c.line}">${short(c.java)}:${c.line}</a>`).join(' · ');
-    $('bridge').innerHTML = `<span>COBOL</span> <b>${p.program} ${p.name}</b> <span class="arrow">(líneas ${p.start}-${p.end}${nFix ? `, ejecutado en ${p.covered}/${nFix} casos` : ''})</span>`
+    const cites = p.cited_by.map((c, k) => `<a class="${k ? '' : 'active'}" data-java="${c.java}" data-line="${c.line}">${short(c.java)}:${c.line}</a>`).join(' · ');
+    const n = p.cited_by.length;
+    setBridge(`<span>COBOL</span> <b>${p.program} ${p.name}</b> <span class="arrow">(líneas ${p.start}-${p.end}${nFix ? `, ejecutado en ${p.covered}/${nFix} casos` : ''})</span>`
       + ` <span class="arrow">→ Java:</span> ${cites || '<span class="badge b-warn">ningún Java lo cita</span>'}`
-      + `<span class="hint">clic en una cita para saltar en el panel derecho</span>`;
-    $('bridge').querySelectorAll('a').forEach(a => a.onclick = () => jumpJava(a.dataset.java, +a.dataset.line));
-    // mark the Java lines that cite this paragraph if the current Java file is one of them (no scrolling)
-    clearMarks($('javaCode'), ['hl', 'hl2']);
-    p.cited_by.filter(c => c.java === data.java[javaIdx].path).forEach(c => { const el = document.getElementById(`j-${javaIdx}-${c.line}`); if (el) el.classList.add('hl'); });
+      + `<span class="hint">${n > 1 ? `el panel derecho muestra la primera de ${n} citas; clic en otra para verla` : n ? 'el panel derecho ya muestra la cita' : ''}</span>`,
+      p.what ? `<b>Qué hace:</b> ${esc(p.what)}${p.spec ? ` <span class="arrow">(spec ${esc(p.spec)})</span>` : ''}` : '');
+    // the Java pane jumps to the first citation right away; the other citations stay marked in the same file
+    if (n) {
+      jumpJava(p.cited_by[0].java, p.cited_by[0].line);
+      p.cited_by.slice(1).filter(c => c.java === data.java[javaIdx].path).forEach(c => { const el = document.getElementById(`j-${javaIdx}-${c.line}`); if (el) el.classList.add('hl'); });
+    } else {
+      clearMarks($('javaCode'), ['hl', 'hl2', 'sel']);
+    }
   }
 
   function renderJava(i) {
@@ -175,6 +213,7 @@
     $('javaSub').textContent = f.links.length ? `· ${f.links.length} citas al COBOL` : '· sin citas';
     const linksAt = {};
     f.links.forEach(l => (linksAt[l.line] = linksAt[l.line] || []).push(l));
+    javaLinksAt = linksAt;
     $('javaCode').innerHTML = f.lines.map((t, k) => {
       const n = k + 1;
       let text = esc(t);
@@ -182,21 +221,25 @@
         m => `<span class="cite" data-line="${n}" title="clic: mostrar estas líneas en el panel COBOL">${m}</span>`);
       return `<div class="ln" id="j-${i}-${n}"><span class="n">${n}</span><span class="t">${text}</span></div>`;
     }).join('');
-    $('javaCode').querySelectorAll('.cite').forEach(el => el.onclick = () => citeClicked(f, +el.dataset.line, linksAt[+el.dataset.line]));
-    $('javaInfo').textContent = 'Las citas COBOL: subrayadas llevan al panel izquierdo; el Java no se mueve.';
+    $('javaInfo').textContent = 'Las citas COBOL: subrayadas llevan al panel izquierdo; el Java no se mueve. La línea en azul es la que corresponde al párrafo elegido a la izquierda.';
   }
 
   function citeClicked(f, line, links) {
     clearMarks($('javaCode'), ['sel']);
     document.getElementById(`j-${javaIdx}-${line}`).classList.add('sel');
     const ok = links.filter(l => l.resolved);
-    if (!ok.length) { $('bridge').innerHTML = `<span class="badge b-warn">la cita no apunta a un archivo de este módulo</span>`; return; }
+    if (!ok.length) { setBridge(`<span class="badge b-warn">la cita no apunta a un archivo de este módulo</span>`); return; }
     const byFile = {};
     ok.forEach(l => (byFile[l.cobol] = byFile[l.cobol] || []).push(l));
     const first = ok[0];
-    $('bridge').innerHTML = `<span>Java</span> <b>${short(f.path)}:${line}</b> <span class="arrow">→ COBOL</span> `
+    const paras = [];
+    ok.forEach(l => { const cf = data.cobol[cobolByPath[l.cobol]]; if (!cf) return;
+      cf.paragraphs.forEach(p => { if (p.start <= l.end && l.start <= p.end && !paras.includes(p)) paras.push(p); }); });
+    const what = paras.filter(p => p.what).slice(0, 3).map(p => `<b>${esc(p.name)}</b> — ${esc(p.what)}`).join('<br>');
+    setBridge(`<span>Java</span> <b>${short(f.path)}:${line}</b> <span class="arrow">→ COBOL</span> `
       + Object.entries(byFile).map(([file, ls]) => `<b>${short(file)}</b> ${ls.map(x => x.start === x.end ? x.start : x.start + '-' + x.end).join(', ')}`).join(' · ')
-      + `<span class="hint">el panel izquierdo muestra la primera cita; las demás quedan en amarillo claro</span>`;
+      + `<span class="hint">el panel izquierdo muestra la primera cita</span>`,
+      what ? `<b>Qué hace</b> ${paras.length > 1 ? '(párrafos citados)' : ''}:<br>${what}` : '');
     jumpCobol(first.cobol, byFile[first.cobol]);
   }
 
@@ -217,7 +260,7 @@
     const code = $('javaCode');
     clearMarks(code, ['hl', 'hl2', 'sel']);
     const el = document.getElementById(`j-${i}-${line}`);
-    if (el) { el.classList.add('sel'); scrollPane(code, el); }
+    if (el) { el.classList.add('sel'); scrollPane(code, el); flash(el); }
   }
 
   // search over both panes: Enter cycles through matches, each pane scrolls on its own
@@ -231,12 +274,12 @@
       data.cobol.forEach((f, i) => f.lines.forEach((t, k) => { if (t.toLowerCase().includes(q)) matches.push({ side: 'c', i, n: k + 1 }); }));
       data.java.forEach((f, i) => f.lines.forEach((t, k) => { if (t.toLowerCase().includes(q)) matches.push({ side: 'j', i, n: k + 1 }); }));
     }
-    if (!matches.length) { $('bridge').innerHTML = `<span class="hint">sin resultados para "${esc(q)}"</span>`; return; }
+    if (!matches.length) { setBridge(`<span class="hint">sin resultados para "${esc(q)}"</span>`); return; }
     mi = (mi + 1) % matches.length;
     const m = matches[mi];
     if (m.side === 'c') { if (m.i !== cobolIdx) renderCobol(m.i); clearMarks($('cobolCode'), ['hl','hl2','sel']); const el = document.getElementById(`c-${m.i}-${m.n}`); el.classList.add('sel'); scrollPane($('cobolCode'), el); }
     else { if (m.i !== javaIdx) renderJava(m.i); clearMarks($('javaCode'), ['hl','hl2','sel']); const el = document.getElementById(`j-${m.i}-${m.n}`); el.classList.add('sel'); scrollPane($('javaCode'), el); }
-    $('bridge').innerHTML = `<span class="hint">resultado ${mi + 1} / ${matches.length} para "${esc(q)}" (${m.side === 'c' ? 'COBOL' : 'Java'})</span>`;
+    setBridge(`<span class="hint">resultado ${mi + 1} / ${matches.length} para "${esc(q)}" (${m.side === 'c' ? 'COBOL' : 'Java'})</span>`);
   });
 
   // start on the first business program and the class that cites it most, with a paragraph preselected
@@ -248,7 +291,6 @@
     renderJava(Math.max(0, data.java.findIndex(f => f.path === jpath)));
     selectParagraph(data.cobol[startCobol], firstPara.name);
     scrollPane($('cobolCode'), document.getElementById(`c-${startCobol}-${firstPara.start}`));
-    jumpJava(jpath, firstPara.cited_by[0].line);
   } else {
     renderJava(0);
   }

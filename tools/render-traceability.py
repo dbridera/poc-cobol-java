@@ -69,6 +69,49 @@ def java_files(module: str) -> list[Path]:
     return sorted((REPO_ROOT / "java" / module / "src" / "main" / "java").rglob("*.java"))
 
 
+GUIDE_HEADING_RE = re.compile(r"^##\s+(.+?)\s+—\s+(.+?)\s*$")
+
+
+def parse_guide(module: str) -> dict:
+    """cobol/<module>/PARAGRAPHS.md -> {"programs": {PID: {"title", "intro"}}, "paragraphs": {(PID, NAME): {"what", "spec"}}}.
+    A heading `## A, B — title` applies to every listed program; the prose under it is the
+    program intro; table rows `| Párrafo | Qué hace | Spec |` describe paragraphs."""
+    guide = {"programs": {}, "paragraphs": {}}
+    path = REPO_ROOT / "cobol" / module / "PARAGRAPHS.md"
+    if not path.exists():
+        return guide
+    pids: list[str] = []
+    intro: list[str] = []
+    in_table = False
+    for raw in path.read_text(encoding="utf-8").splitlines():
+        line = raw.strip()
+        m = GUIDE_HEADING_RE.match(line)
+        if m:
+            for pid in pids:
+                guide["programs"][pid]["intro"] = " ".join(intro).strip()
+            pids = [x.strip().upper() for x in m.group(1).split(",")]
+            for pid in pids:
+                guide["programs"][pid] = {"title": m.group(2).strip(), "intro": ""}
+            intro, in_table = [], False
+            continue
+        if not pids or line.startswith("# "):
+            continue
+        if line.startswith("|"):
+            cells = [c.strip() for c in line.strip("|").split("|")]
+            if len(cells) >= 2 and cells[0] and cells[0] not in ("Párrafo", "Paragraph") and not set(cells[0]) <= set("-: "):
+                for pid in pids:
+                    guide["paragraphs"][(pid, cells[0].upper())] = {"what": cells[1], "spec": cells[2] if len(cells) > 2 else ""}
+            in_table = True
+            continue
+        if line == "---":
+            continue
+        if line and not in_table:
+            intro.append(line)
+    for pid in pids:
+        guide["programs"][pid]["intro"] = " ".join(intro).strip()
+    return guide
+
+
 def relpath(p: Path, base: Path) -> str:
     try:
         return str(p.relative_to(base))
@@ -100,12 +143,18 @@ def build_index(module: str) -> dict:
             if (REPO_ROOT / "cobol" / fb / Path(info["file"]).name).name.lower() in cited_names:
                 programs[pid] = {"file": relpath(REPO_ROOT / "cobol" / fb / Path(info["file"]).name, base),
                                  "paragraphs": info["paragraphs"]}
+    guide = parse_guide(module)
     paragraphs_by_file: dict[str, list[dict]] = {}
+    program_guide: dict[str, dict] = {}
     for pid, info in programs.items():
         rel = info["file"]
+        if pid in guide["programs"]:
+            program_guide.setdefault(rel, {})[pid] = guide["programs"][pid]
         for name, (start, end) in info["paragraphs"].items():
+            g = guide["paragraphs"].get((pid, name), {})
             paragraphs_by_file.setdefault(rel, []).append(
-                {"program": pid, "name": name, "start": start, "end": end, "cited_by": [], "covered": None})
+                {"program": pid, "name": name, "start": start, "end": end, "cited_by": [], "covered": None,
+                 "what": g.get("what", ""), "spec": g.get("spec", "")})
 
     # coverage (job modules with traces)
     fixtures: list[str] = []
@@ -152,7 +201,7 @@ def build_index(module: str) -> dict:
     for p in cfiles:
         rel = relpath(p, base)
         cf.append({"path": rel, "lines": p.read_text(encoding="latin-1").splitlines(),
-                   "paragraphs": paragraphs_by_file.get(rel, [])})
+                   "paragraphs": paragraphs_by_file.get(rel, []), "programs": program_guide.get(rel, {})})
 
     all_paras = [para for f in cf for para in f["paragraphs"]]
     stats = {
@@ -163,6 +212,8 @@ def build_index(module: str) -> dict:
         "links": sum(len(j["links"]) for j in jfiles),
         "unresolved_links": unresolved,
         "fixtures": fixtures,
+        "described": sum(1 for para in all_paras if para["what"]),
+        "guide": bool(guide["programs"]),
     }
     return {"module": module, "stats": stats, "cobol": cf, "java": jfiles}
 
@@ -177,7 +228,7 @@ def render_one(module: str, write: bool) -> list[str]:
     index = build_index(module)
     html = render_html(index)
     js = json.dumps({k: v for k, v in index.items() if k != "cobol" and k != "java"} | {
-        "cobol": [{"path": f["path"], "paragraphs": f["paragraphs"]} for f in index["cobol"]],
+        "cobol": [{"path": f["path"], "paragraphs": f["paragraphs"], "programs": f["programs"]} for f in index["cobol"]],
         "java": [{"path": f["path"], "links": f["links"]} for f in index["java"]]}, indent=1, ensure_ascii=False)
     base = REPO_ROOT / "cobol" / module
     drift = []
@@ -187,7 +238,7 @@ def render_one(module: str, write: bool) -> list[str]:
             if write:
                 path.write_text(content, encoding="utf-8")
     s = index["stats"]
-    print(f"{module}: {s['paragraphs']} paragraphs, {s['cited']} cited by Java, "
+    print(f"{module}: {s['paragraphs']} paragraphs, {s['cited']} cited by Java, {s['described']} described, "
           f"{s['covered'] if s['fixtures'] else '-'} covered, {s['links']} links"
           f"{' (' + str(s['unresolved_links']) + ' unresolved)' if s['unresolved_links'] else ''}"
           + ("" if write else (" — DRIFT: " + ", ".join(drift) if drift else " — in sync")))

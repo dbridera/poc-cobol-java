@@ -272,7 +272,8 @@ module-3() {
     echo "${CYAN}${BOLD}  MOMENT 3 — did we translate everything? (paragraph traces, coverage, side-by-side viewer)${RESET}"
     echo "${DIM}    Every paragraph GnuCOBOL enters is traced; the Java emits the same trace and it is part of the diff.${RESET}"
     grep -A3 "BEGIN AUTO-GENERATED COVERAGE" cobol/nightly-batch/README.md | grep -v "^<!--" | sed 's/^/    /'
-    echo "    viewer: cobol/nightly-batch/traceability.html  (COBOL left, Java right, click a citation)"
+    echo "    viewer: cobol/nightly-batch/traceability.html  (COBOL left, Java right; click a paragraph → the Java that translates it,"
+    echo "            with a 'Qué hace' line per paragraph from cobol/nightly-batch/PARAGRAPHS.md)"
     if [[ "$(uname)" == "Darwin" ]]; then open cobol/nightly-batch/traceability.html 2>/dev/null || true; fi
   fi
 

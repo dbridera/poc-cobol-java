@@ -15,7 +15,9 @@
    "04-full-carddemo",
    "05-restart",
    "06-abend-discgrp"
-  ]
+  ],
+  "described": 86,
+  "guide": true
  },
  "cobol": [
   {
@@ -32,7 +34,9 @@
        "line": 39
       }
      ],
-     "covered": 6
+     "covered": 6,
+     "what": "Abre los saldos por categoría para recorrerlos en orden de clave (cuenta, tipo, categoría).",
+     "spec": "§4.4"
     },
     {
      "program": "CBACT04C",
@@ -45,7 +49,9 @@
        "line": 39
       }
      ],
-     "covered": 6
+     "covered": 6,
+     "what": "Abre la tabla de referencia cruzada; aquí se lee por la clave alternativa (número de cuenta) para obtener la tarjeta.",
+     "spec": "§4.4"
     },
     {
      "program": "CBACT04C",
@@ -58,7 +64,9 @@
        "line": 39
       }
      ],
-     "covered": 6
+     "covered": 6,
+     "what": "Abre la tabla de tasas por grupo de divulgación (grupo + tipo + categoría → tasa anual).",
+     "spec": "§4.4"
     },
     {
      "program": "CBACT04C",
@@ -71,7 +79,9 @@
        "line": 39
       }
      ],
-     "covered": 6
+     "covered": 6,
+     "what": "Abre el archivo de cuentas en lectura y actualización.",
+     "spec": "§4.4"
     },
     {
      "program": "CBACT04C",
@@ -84,7 +94,9 @@
        "line": 39
       }
      ],
-     "covered": 6
+     "covered": 6,
+     "what": "Abre el archivo de salida de transacciones de interés (secuencial).",
+     "spec": "§4.4"
     },
     {
      "program": "CBACT04C",
@@ -97,7 +109,9 @@
        "line": 65
       }
      ],
-     "covered": 6
+     "covered": 6,
+     "what": "Lee el siguiente saldo por categoría. Estado 10 = fin.",
+     "spec": "§4.4"
     },
     {
      "program": "CBACT04C",
@@ -110,7 +124,9 @@
        "line": 93
       }
      ],
-     "covered": 5
+     "covered": 5,
+     "what": "Suma el interés acumulado al saldo de la cuenta, pone en cero los acumulados de ciclo y reescribe la cuenta. Se ejecuta al cambiar de cuenta, nunca para la última (D1).",
+     "spec": "§4.4"
     },
     {
      "program": "CBACT04C",
@@ -123,7 +139,9 @@
        "line": 78
       }
      ],
-     "covered": 6
+     "covered": 6,
+     "what": "Lee la cuenta del saldo en curso. Si no existe: mensaje y caída.",
+     "spec": "§4.4"
     },
     {
      "program": "CBACT04C",
@@ -136,7 +154,9 @@
        "line": 88
       }
      ],
-     "covered": 6
+     "covered": 6,
+     "what": "Busca por número de cuenta (clave alternativa) la tarjeta asociada, que irá en la transacción de interés.",
+     "spec": "§4.4"
     },
     {
      "program": "CBACT04C",
@@ -153,7 +173,9 @@
        "line": 39
       }
      ],
-     "covered": 6
+     "covered": 6,
+     "what": "Busca la tasa con (grupo de la cuenta, tipo, categoría). Si no está (estado 23) avisa y prueba con el grupo DEFAULT (1200-A).",
+     "spec": "§5.3"
     },
     {
      "program": "CBACT04C",
@@ -170,7 +192,9 @@
        "line": 39
       }
      ],
-     "covered": 6
+     "covered": 6,
+     "what": "Busca la tasa del grupo DEFAULT para ese tipo y categoría. Si tampoco está: mensaje de error, estado de archivo y caída (caso de prueba 06).",
+     "spec": "§5.3"
     },
     {
      "program": "CBACT04C",
@@ -187,7 +211,9 @@
        "line": 64
       }
      ],
-     "covered": 6
+     "covered": 6,
+     "what": "Interés del mes = saldo × tasa anual / 1200, sin redondeo: se trunca hacia cero al centavo (0.09575 → 0.09, −11.4875 → −11.48). Lo acumula para la cuenta y escribe la transacción (1300-B). Solo se ejecuta si la tasa no es cero.",
+     "spec": "§6.1"
     },
     {
      "program": "CBACT04C",
@@ -204,7 +230,9 @@
        "line": 74
       }
      ],
-     "covered": 6
+     "covered": 6,
+     "what": "Arma la transacción de interés: id = fecha del PARM + correlativo, tipo 01, categoría 0005, origen \"System\", descripción \"Int. for a/c\" + cuenta, importe = interés, tarjeta de la cuenta, fecha/hora de proceso. La graba.",
+     "spec": "§4.4, §7.3"
     },
     {
      "program": "CBACT04C",
@@ -217,7 +245,9 @@
        "line": 119
       }
      ],
-     "covered": 6
+     "covered": 6,
+     "what": "Vacío en el programa original (\"a implementar\"). Se mantiene para conservar el orden de ejecución.",
+     "spec": "§4.4"
     },
     {
      "program": "CBACT04C",
@@ -230,7 +260,9 @@
        "line": 127
       }
      ],
-     "covered": 5
+     "covered": 5,
+     "what": "Cierra los saldos por categoría.",
+     "spec": "§4.4"
     },
     {
      "program": "CBACT04C",
@@ -243,7 +275,9 @@
        "line": 127
       }
      ],
-     "covered": 5
+     "covered": 5,
+     "what": "Cierra la referencia cruzada.",
+     "spec": "§4.4"
     },
     {
      "program": "CBACT04C",
@@ -256,7 +290,9 @@
        "line": 127
       }
      ],
-     "covered": 5
+     "covered": 5,
+     "what": "Cierra la tabla de tasas.",
+     "spec": "§4.4"
     },
     {
      "program": "CBACT04C",
@@ -269,7 +305,9 @@
        "line": 127
       }
      ],
-     "covered": 5
+     "covered": 5,
+     "what": "Cierra las cuentas.",
+     "spec": "§4.4"
     },
     {
      "program": "CBACT04C",
@@ -282,7 +320,9 @@
        "line": 127
       }
      ],
-     "covered": 5
+     "covered": 5,
+     "what": "Cierra el archivo de transacciones de interés.",
+     "spec": "§4.4"
     },
     {
      "program": "CBACT04C",
@@ -295,7 +335,9 @@
        "line": 17
       }
      ],
-     "covered": 6
+     "covered": 6,
+     "what": "Fecha y hora del sistema en formato DB2 (reloj fijado en el banco de pruebas).",
+     "spec": "§6.4"
     },
     {
      "program": "CBACT04C",
@@ -308,7 +350,9 @@
        "line": 24
       }
      ],
-     "covered": 1
+     "covered": 1,
+     "what": "\"ABENDING PROGRAM\" + llamada a CEE3ABD: el paso termina con código 12.",
+     "spec": "§4.4"
     },
     {
      "program": "CBACT04C",
@@ -321,13 +365,27 @@
        "line": 17
       }
      ],
-     "covered": 1
+     "covered": 1,
+     "what": "Muestra el estado de archivo de la operación fallida.",
+     "spec": "§7.1"
     }
-   ]
+   ],
+   "programs": {
+    "CBACT04C": {
+     "title": "Cobrar el interés mensual (paso 2, INTCALC)",
+     "intro": "Recorre los saldos por cuenta y categoría en orden de cuenta. Para cada saldo busca la tasa anual del grupo de la cuenta (o la del grupo DEFAULT si no la hay), calcula el interés del mes truncado al centavo, lo acumula por cuenta y escribe una transacción de interés. Al cambiar de cuenta, suma el interés acumulado al saldo de la cuenta anterior y reinicia sus acumulados de ciclo. Por un error del programa original, la última cuenta nunca recibe esa actualización (defecto D1)."
+    }
+   }
   },
   {
    "path": "src/CBSORT01.cbl",
-   "paragraphs": []
+   "paragraphs": [],
+   "programs": {
+    "CBSORT01": {
+     "title": "Ordenar y unir las transacciones (paso 3, COMBTRAN; agregado)",
+     "intro": "Reemplaza el paso DFSORT de COMBTRAN.jcl: une el respaldo de las transacciones contabilizadas con las transacciones de interés, ordena por id de transacción y escribe el archivo que después recarga el maestro. No tiene párrafos con nombre."
+    }
+   }
   },
   {
    "path": "src/CBSORT02.cbl",
@@ -343,7 +401,9 @@
        "line": 21
       }
      ],
-     "covered": 5
+     "covered": 5,
+     "what": "Lee el rango de fechas del archivo de parámetros, lanza el ordenamiento con SELECT-RECORDS como procedimiento de entrada y muestra cuántas transacciones seleccionó de cuántas leídas.",
+     "spec": "§4.6"
     },
     {
      "program": "CBSORT02",
@@ -356,9 +416,17 @@
        "line": 21
       }
      ],
-     "covered": 5
+     "covered": 5,
+     "what": "Lee las transacciones y entrega al ordenamiento solo las que tienen fecha de proceso dentro del rango.",
+     "spec": "§4.6"
     }
-   ]
+   ],
+   "programs": {
+    "CBSORT02": {
+     "title": "Seleccionar y ordenar para el reporte (paso 4, TRANREPT; agregado)",
+     "intro": "Reemplaza el paso DFSORT de TRANREPT.jcl: lee el rango de fechas, se queda con las transacciones cuya fecha de proceso está en el rango y las ordena por número de tarjeta (y, como desempate documentado, por id de transacción)."
+    }
+   }
   },
   {
    "path": "src/CBTRN02C.cbl",
@@ -374,7 +442,9 @@
        "line": 33
       }
      ],
-     "covered": 6
+     "covered": 6,
+     "what": "Abre el archivo de transacciones del día (entrada). Si falla, muestra el estado del archivo y cae.",
+     "spec": "§4.2"
     },
     {
      "program": "CBTRN02C",
@@ -387,7 +457,9 @@
        "line": 33
       }
      ],
-     "covered": 6
+     "covered": 6,
+     "what": "Abre el maestro de transacciones para escribirlo desde cero (OPEN OUTPUT: el maestro de la noche se crea vacío).",
+     "spec": "§4.2, §8"
     },
     {
      "program": "CBTRN02C",
@@ -400,7 +472,9 @@
        "line": 33
       }
      ],
-     "covered": 6
+     "covered": 6,
+     "what": "Abre la tabla tarjeta → cliente/cuenta (solo lectura).",
+     "spec": "§4.2"
     },
     {
      "program": "CBTRN02C",
@@ -413,7 +487,9 @@
        "line": 33
       }
      ],
-     "covered": 6
+     "covered": 6,
+     "what": "Abre el archivo de rechazos para escribirlo desde cero.",
+     "spec": "§4.2"
     },
     {
      "program": "CBTRN02C",
@@ -426,7 +502,9 @@
        "line": 33
       }
      ],
-     "covered": 6
+     "covered": 6,
+     "what": "Abre el archivo de cuentas en modo lectura y actualización (los saldos se reescriben en el lugar).",
+     "spec": "§4.2, §8"
     },
     {
      "program": "CBTRN02C",
@@ -439,7 +517,9 @@
        "line": 33
       }
      ],
-     "covered": 6
+     "covered": 6,
+     "what": "Abre el archivo de saldos por cuenta y categoría en modo lectura y actualización.",
+     "spec": "§4.2"
     },
     {
      "program": "CBTRN02C",
@@ -452,7 +532,9 @@
        "line": 59
       }
      ],
-     "covered": 6
+     "covered": 6,
+     "what": "Lee la siguiente transacción del día. Estado 10 = fin de archivo; cualquier otro error cae.",
+     "spec": "§4.2"
     },
     {
      "program": "CBTRN02C",
@@ -465,7 +547,9 @@
        "line": 39
       }
      ],
-     "covered": 6
+     "covered": 6,
+     "what": "Encadena las validaciones: primero la tarjeta (1500-A); si existe, la cuenta y sus reglas (1500-B). Un solo campo de motivo: la última validación que falla es la que queda.",
+     "spec": "§5"
     },
     {
      "program": "CBTRN02C",
@@ -482,7 +566,9 @@
        "line": 42
       }
      ],
-     "covered": 6
+     "covered": 6,
+     "what": "Busca la tarjeta en la tabla de referencia cruzada. Si no está: motivo 100 \"INVALID CARD NUMBER FOUND\".",
+     "spec": "§5 regla 1"
     },
     {
      "program": "CBTRN02C",
@@ -499,7 +585,9 @@
        "line": 50
       }
      ],
-     "covered": 6
+     "covered": 6,
+     "what": "Busca la cuenta de esa tarjeta (si no está: motivo 101). Calcula el saldo temporal = crédito del ciclo − débito del ciclo (que se guarda negativo) + importe; si supera el límite: motivo 102. Si la fecha de vencimiento es anterior a la fecha de la transacción: motivo 103, que pisa al 102. El saldo temporal tiene un dígito menos que los acumulados y se trunca (defecto D6).",
+     "spec": "§5 reglas 2-4, §6.3"
     },
     {
      "program": "CBTRN02C",
@@ -512,7 +600,9 @@
        "line": 49
       }
      ],
-     "covered": 6
+     "covered": 6,
+     "what": "Copia los campos de la transacción del día al registro del maestro, le pone la fecha/hora de proceso y ejecuta las tres actualizaciones: saldo por categoría, cuenta, maestro.",
+     "spec": "§4.2"
     },
     {
      "program": "CBTRN02C",
@@ -525,7 +615,9 @@
        "line": 75
       }
      ],
-     "covered": 6
+     "covered": 6,
+     "what": "Escribe la transacción rechazada tal cual, más el motivo (4 dígitos) y su texto (76 caracteres).",
+     "spec": "§4.2, §7.3"
     },
     {
      "program": "CBTRN02C",
@@ -538,7 +630,9 @@
        "line": 72
       }
      ],
-     "covered": 6
+     "covered": 6,
+     "what": "Busca el saldo por cuenta + tipo + categoría. Si no existe lo crea (2700-A, con mensaje \"Creating.\"); si existe lo actualiza (2700-B).",
+     "spec": "§4.2"
     },
     {
      "program": "CBTRN02C",
@@ -551,7 +645,9 @@
        "line": 72
       }
      ],
-     "covered": 5
+     "covered": 5,
+     "what": "Arma un registro nuevo de saldo por categoría con el importe de la transacción y lo graba. El relleno (FILLER) conserva lo que había en memoria.",
+     "spec": "§4.2"
     },
     {
      "program": "CBTRN02C",
@@ -564,7 +660,9 @@
        "line": 72
       }
      ],
-     "covered": 6
+     "covered": 6,
+     "what": "Suma el importe al saldo por categoría y reescribe el registro.",
+     "spec": "§4.2"
     },
     {
      "program": "CBTRN02C",
@@ -577,7 +675,9 @@
        "line": 98
       }
      ],
-     "covered": 6
+     "covered": 6,
+     "what": "Suma el importe al saldo de la cuenta; si es positivo lo acumula en crédito del ciclo, si es negativo en débito del ciclo (como número negativo). Reescribe la cuenta. Sin control de desborde: un saldo que no entra pierde los dígitos de la izquierda.",
+     "spec": "§4.2, §6.2, §6.3"
     },
     {
      "program": "CBTRN02C",
@@ -590,7 +690,9 @@
        "line": 111
       }
      ],
-     "covered": 6
+     "covered": 6,
+     "what": "Graba la transacción en el maestro (clave: id de transacción). Un id repetido haría caer el programa.",
+     "spec": "§4.2"
     },
     {
      "program": "CBTRN02C",
@@ -603,7 +705,9 @@
        "line": 84
       }
      ],
-     "covered": 6
+     "covered": 6,
+     "what": "Cierra el archivo de transacciones del día.",
+     "spec": "§4.2"
     },
     {
      "program": "CBTRN02C",
@@ -616,7 +720,9 @@
        "line": 84
       }
      ],
-     "covered": 6
+     "covered": 6,
+     "what": "Cierra el maestro de transacciones.",
+     "spec": "§4.2"
     },
     {
      "program": "CBTRN02C",
@@ -629,7 +735,9 @@
        "line": 84
       }
      ],
-     "covered": 6
+     "covered": 6,
+     "what": "Cierra la tabla de referencia cruzada.",
+     "spec": "§4.2"
     },
     {
      "program": "CBTRN02C",
@@ -642,7 +750,9 @@
        "line": 84
       }
      ],
-     "covered": 6
+     "covered": 6,
+     "what": "Cierra el archivo de rechazos (muestra el estado del archivo equivocado si falla, defecto D4).",
+     "spec": "§4.2"
     },
     {
      "program": "CBTRN02C",
@@ -655,7 +765,9 @@
        "line": 84
       }
      ],
-     "covered": 6
+     "covered": 6,
+     "what": "Cierra el archivo de cuentas.",
+     "spec": "§4.2"
     },
     {
      "program": "CBTRN02C",
@@ -668,7 +780,9 @@
        "line": 84
       }
      ],
-     "covered": 6
+     "covered": 6,
+     "what": "Cierra el archivo de saldos por categoría.",
+     "spec": "§4.2"
     },
     {
      "program": "CBTRN02C",
@@ -681,7 +795,9 @@
        "line": 17
       }
      ],
-     "covered": 6
+     "covered": 6,
+     "what": "Toma la fecha y hora del sistema y la escribe en el formato de DB2 (AAAA-MM-DD-hh.mm.ss.cc0000). En el banco de pruebas el reloj está fijado, por eso todas las transacciones llevan la misma hora.",
+     "spec": "§6.4"
     },
     {
      "program": "CBTRN02C",
@@ -694,7 +810,9 @@
        "line": 24
       }
      ],
-     "covered": 0
+     "covered": 0,
+     "what": "Muestra \"ABENDING PROGRAM\" y llama al servicio de caída del mainframe (CEE3ABD): el paso termina con código 12.",
+     "spec": "§4.2"
     },
     {
      "program": "CBTRN02C",
@@ -707,9 +825,17 @@
        "line": 17
       }
      ],
-     "covered": 0
+     "covered": 0,
+     "what": "Muestra el estado de archivo de la última operación fallida (\"FILE STATUS IS: NNNN00xx\"). Solo se ejecuta en una caída.",
+     "spec": "§7.1"
     }
-   ]
+   ],
+   "programs": {
+    "CBTRN02C": {
+     "title": "Contabilizar las transacciones del día (paso 1, POSTTRAN)",
+     "intro": "Lee una por una las transacciones de tarjeta del día. Para cada una verifica que la tarjeta exista, que su cuenta exista, que no exceda el límite de crédito y que la tarjeta no esté vencida. Si pasa, la contabiliza: actualiza el saldo y los acumulados de ciclo de la cuenta, el saldo por categoría, y la guarda en el maestro de transacciones. Si no pasa, la escribe en el archivo de rechazos con un código de motivo. Termina con código 4 si hubo algún rechazo."
+    }
+   }
   },
   {
    "path": "src/CBTRN03C.cbl",
@@ -725,7 +851,9 @@
        "line": 50
       }
      ],
-     "covered": 5
+     "covered": 5,
+     "what": "Lee el rango de fechas y lo muestra (\"Reporting from … to …\").",
+     "spec": "§4.6"
     },
     {
      "program": "CBTRN03C",
@@ -738,7 +866,9 @@
        "line": 60
       }
      ],
-     "covered": 5
+     "covered": 5,
+     "what": "Lee la siguiente transacción. Al fin de archivo el registro en memoria conserva la última leída, y la rama de fin de archivo la vuelve a sumar (D2).",
+     "spec": "§4.6"
     },
     {
      "program": "CBTRN03C",
@@ -751,7 +881,9 @@
        "line": 49
       }
      ],
-     "covered": 5
+     "covered": 5,
+     "what": "Para cada transacción: si es la primera, escribe los encabezados; si el contador de líneas es múltiplo de 20, cierra la página (total de página + encabezados); suma el importe al total de página y al de cuenta; escribe la línea de detalle.",
+     "spec": "§7.4"
     },
     {
      "program": "CBTRN03C",
@@ -764,7 +896,9 @@
        "line": 70
       }
      ],
-     "covered": 5
+     "covered": 5,
+     "what": "Escribe la línea \"Page Total\" con el total de página, lo pasa al total general, lo reinicia y escribe una línea de guiones.",
+     "spec": "§7.4"
     },
     {
      "program": "CBTRN03C",
@@ -777,7 +911,9 @@
        "line": 82
       }
      ],
-     "covered": 5
+     "covered": 5,
+     "what": "Escribe la línea \"Account Total\" de la tarjeta que termina, reinicia el total de cuenta y escribe una línea de guiones. No se escribe para la última tarjeta (D2).",
+     "spec": "§7.4"
     },
     {
      "program": "CBTRN03C",
@@ -790,7 +926,9 @@
        "line": 93
       }
      ],
-     "covered": 5
+     "covered": 5,
+     "what": "Escribe la línea \"Grand Total\".",
+     "spec": "§7.4"
     },
     {
      "program": "CBTRN03C",
@@ -803,7 +941,9 @@
        "line": 100
       }
      ],
-     "covered": 5
+     "covered": 5,
+     "what": "Escribe las cuatro líneas de encabezado: nombre y rango de fechas, línea en blanco, títulos de columnas, guiones.",
+     "spec": "§7.4"
     },
     {
      "program": "CBTRN03C",
@@ -816,7 +956,9 @@
        "line": 131
       }
      ],
-     "covered": 5
+     "covered": 5,
+     "what": "Escribe una línea de 133 caracteres en el reporte; si falla, cae.",
+     "spec": "§7.4"
     },
     {
      "program": "CBTRN03C",
@@ -829,7 +971,9 @@
        "line": 115
       }
      ],
-     "covered": 5
+     "covered": 5,
+     "what": "Arma la línea de detalle: id, cuenta, tipo y su descripción (15 caracteres), categoría y su descripción (29), origen, importe editado con signo y separadores de miles.",
+     "spec": "§7.4"
     },
     {
      "program": "CBTRN03C",
@@ -842,7 +986,9 @@
        "line": 32
       }
      ],
-     "covered": 5
+     "covered": 5,
+     "what": "Abre el archivo de transacciones a reportar (secuencial, ya filtrado y ordenado por el paso anterior).",
+     "spec": "§4.6"
     },
     {
      "program": "CBTRN03C",
@@ -855,7 +1001,9 @@
        "line": 32
       }
      ],
-     "covered": 5
+     "covered": 5,
+     "what": "Abre el archivo del reporte para escribirlo desde cero.",
+     "spec": "§4.6"
     },
     {
      "program": "CBTRN03C",
@@ -868,7 +1016,9 @@
        "line": 32
       }
      ],
-     "covered": 5
+     "covered": 5,
+     "what": "Abre la referencia cruzada para obtener la cuenta de cada tarjeta.",
+     "spec": "§4.6"
     },
     {
      "program": "CBTRN03C",
@@ -881,7 +1031,9 @@
        "line": 32
       }
      ],
-     "covered": 5
+     "covered": 5,
+     "what": "Abre la tabla de tipos de transacción (código → descripción).",
+     "spec": "§4.6"
     },
     {
      "program": "CBTRN03C",
@@ -894,7 +1046,9 @@
        "line": 32
       }
      ],
-     "covered": 5
+     "covered": 5,
+     "what": "Abre la tabla de categorías (tipo + categoría → descripción).",
+     "spec": "§4.6"
     },
     {
      "program": "CBTRN03C",
@@ -907,7 +1061,9 @@
        "line": 32
       }
      ],
-     "covered": 5
+     "covered": 5,
+     "what": "Abre el archivo de parámetros con el rango de fechas.",
+     "spec": "§4.6"
     },
     {
      "program": "CBTRN03C",
@@ -920,7 +1076,9 @@
        "line": 71
       }
      ],
-     "covered": 5
+     "covered": 5,
+     "what": "Busca la cuenta de la tarjeta en curso; si la tarjeta no existe, cae.",
+     "spec": "§4.6"
     },
     {
      "program": "CBTRN03C",
@@ -933,7 +1091,9 @@
        "line": 81
       }
      ],
-     "covered": 5
+     "covered": 5,
+     "what": "Busca la descripción del tipo de transacción; si no existe, cae.",
+     "spec": "§4.6"
     },
     {
      "program": "CBTRN03C",
@@ -946,7 +1106,9 @@
        "line": 90
       }
      ],
-     "covered": 5
+     "covered": 5,
+     "what": "Busca la descripción de la categoría; si no existe, cae.",
+     "spec": "§4.6"
     },
     {
      "program": "CBTRN03C",
@@ -959,7 +1121,9 @@
        "line": 114
       }
      ],
-     "covered": 5
+     "covered": 5,
+     "what": "Cierra el archivo de transacciones.",
+     "spec": "§4.6"
     },
     {
      "program": "CBTRN03C",
@@ -972,7 +1136,9 @@
        "line": 114
       }
      ],
-     "covered": 5
+     "covered": 5,
+     "what": "Cierra el reporte.",
+     "spec": "§4.6"
     },
     {
      "program": "CBTRN03C",
@@ -985,7 +1151,9 @@
        "line": 114
       }
      ],
-     "covered": 5
+     "covered": 5,
+     "what": "Cierra la referencia cruzada.",
+     "spec": "§4.6"
     },
     {
      "program": "CBTRN03C",
@@ -998,7 +1166,9 @@
        "line": 114
       }
      ],
-     "covered": 5
+     "covered": 5,
+     "what": "Cierra la tabla de tipos.",
+     "spec": "§4.6"
     },
     {
      "program": "CBTRN03C",
@@ -1011,7 +1181,9 @@
        "line": 114
       }
      ],
-     "covered": 5
+     "covered": 5,
+     "what": "Cierra la tabla de categorías.",
+     "spec": "§4.6"
     },
     {
      "program": "CBTRN03C",
@@ -1024,7 +1196,9 @@
        "line": 114
       }
      ],
-     "covered": 5
+     "covered": 5,
+     "what": "Cierra el archivo de parámetros.",
+     "spec": "§4.6"
     },
     {
      "program": "CBTRN03C",
@@ -1037,7 +1211,9 @@
        "line": 24
       }
      ],
-     "covered": 0
+     "covered": 0,
+     "what": "\"ABENDING PROGRAM\" + llamada a CEE3ABD: código 12.",
+     "spec": "§4.6"
     },
     {
      "program": "CBTRN03C",
@@ -1050,17 +1226,37 @@
        "line": 17
       }
      ],
-     "covered": 0
+     "covered": 0,
+     "what": "Muestra el estado de archivo de la operación fallida.",
+     "spec": "§7.1"
     }
-   ]
+   ],
+   "programs": {
+    "CBTRN03C": {
+     "title": "Imprimir el reporte diario de transacciones (paso 4, TRANREPT)",
+     "intro": "Recibe las transacciones del rango de fechas, ya ordenadas por tarjeta, y arma un reporte de 133 columnas: encabezado con el rango, una línea por transacción con las descripciones de tipo y categoría, total por cuenta cuando cambia la tarjeta, total por página cada 20 líneas y total general al final. Por un error del programa original, al llegar al fin de archivo vuelve a sumar el último importe: el total general queda inflado (defecto D2)."
+    }
+   }
   },
   {
    "path": "src/CEE3ABD.cbl",
-   "paragraphs": []
+   "paragraphs": [],
+   "programs": {
+    "CEE3ABD": {
+     "title": "Caída controlada (agregado, reemplaza un servicio del mainframe)",
+     "intro": "Reemplazo del servicio de Language Environment que termina un programa con un código de abend. Muestra \"CEE3ABD: USER ABEND U+000000999\" y detiene el paso con código 12. Lo llaman los tres programas de negocio desde su párrafo 9999-ABEND-PROGRAM."
+    }
+   }
   },
   {
    "path": "src/INTCALC.cbl",
-   "paragraphs": []
+   "paragraphs": [],
+   "programs": {
+    "INTCALC": {
+     "title": "Arranque del paso de intereses (agregado, no es de CardDemo)",
+     "intro": "En el mainframe el JCL le pasa al programa de intereses la fecha de proceso como PARM. GnuCOBOL no lo hace, así que este programa chico toma la fecha de la variable de entorno PARM, arma la misma estructura (largo + texto) y llama a CBACT04C sin modificarlo."
+    }
+   }
   },
   {
    "path": "src/ksds/LOAD-ACCTFILE.cbl",
@@ -1076,9 +1272,17 @@
        "line": 17
       }
      ],
-     "covered": 6
+     "covered": 6,
+     "what": "Abre la entrada secuencial y el archivo indexado (vacío), graba cada registro (una clave repetida cuenta como error, código 8) y muestra cuántos cargó.",
+     "spec": "§4.1"
     }
-   ]
+   ],
+   "programs": {
+    "LOAD-ACCTFILE": {
+     "title": "Cargar un archivo indexado (generados)",
+     "intro": "Reemplazan el utilitario IDCAMS REPRO del mainframe: leen un archivo secuencial de longitud fija y lo cargan en un archivo indexado (el análogo de VSAM) desde cero. Los genera `tools/gen-ksds-io.py` a partir de `job.json`."
+    }
+   }
   },
   {
    "path": "src/ksds/LOAD-DISCGRP.cbl",
@@ -1094,9 +1298,17 @@
        "line": 17
       }
      ],
-     "covered": 6
+     "covered": 6,
+     "what": "Abre la entrada secuencial y el archivo indexado (vacío), graba cada registro (una clave repetida cuenta como error, código 8) y muestra cuántos cargó.",
+     "spec": "§4.1"
     }
-   ]
+   ],
+   "programs": {
+    "LOAD-DISCGRP": {
+     "title": "Cargar un archivo indexado (generados)",
+     "intro": "Reemplazan el utilitario IDCAMS REPRO del mainframe: leen un archivo secuencial de longitud fija y lo cargan en un archivo indexado (el análogo de VSAM) desde cero. Los genera `tools/gen-ksds-io.py` a partir de `job.json`."
+    }
+   }
   },
   {
    "path": "src/ksds/LOAD-TCATBALF.cbl",
@@ -1112,9 +1324,17 @@
        "line": 17
       }
      ],
-     "covered": 6
+     "covered": 6,
+     "what": "Abre la entrada secuencial y el archivo indexado (vacío), graba cada registro (una clave repetida cuenta como error, código 8) y muestra cuántos cargó.",
+     "spec": "§4.1"
     }
-   ]
+   ],
+   "programs": {
+    "LOAD-TCATBALF": {
+     "title": "Cargar un archivo indexado (generados)",
+     "intro": "Reemplazan el utilitario IDCAMS REPRO del mainframe: leen un archivo secuencial de longitud fija y lo cargan en un archivo indexado (el análogo de VSAM) desde cero. Los genera `tools/gen-ksds-io.py` a partir de `job.json`."
+    }
+   }
   },
   {
    "path": "src/ksds/LOAD-TRANCATG.cbl",
@@ -1130,9 +1350,17 @@
        "line": 17
       }
      ],
-     "covered": 6
+     "covered": 6,
+     "what": "Abre la entrada secuencial y el archivo indexado (vacío), graba cada registro (una clave repetida cuenta como error, código 8) y muestra cuántos cargó.",
+     "spec": "§4.1"
     }
-   ]
+   ],
+   "programs": {
+    "LOAD-TRANCATG": {
+     "title": "Cargar un archivo indexado (generados)",
+     "intro": "Reemplazan el utilitario IDCAMS REPRO del mainframe: leen un archivo secuencial de longitud fija y lo cargan en un archivo indexado (el análogo de VSAM) desde cero. Los genera `tools/gen-ksds-io.py` a partir de `job.json`."
+    }
+   }
   },
   {
    "path": "src/ksds/LOAD-TRANSACT.cbl",
@@ -1148,9 +1376,17 @@
        "line": 17
       }
      ],
-     "covered": 5
+     "covered": 5,
+     "what": "Abre la entrada secuencial y el archivo indexado (vacío), graba cada registro (una clave repetida cuenta como error, código 8) y muestra cuántos cargó.",
+     "spec": "§4.1"
     }
-   ]
+   ],
+   "programs": {
+    "LOAD-TRANSACT": {
+     "title": "Cargar un archivo indexado (generados)",
+     "intro": "Reemplazan el utilitario IDCAMS REPRO del mainframe: leen un archivo secuencial de longitud fija y lo cargan en un archivo indexado (el análogo de VSAM) desde cero. Los genera `tools/gen-ksds-io.py` a partir de `job.json`."
+    }
+   }
   },
   {
    "path": "src/ksds/LOAD-TRANTYPE.cbl",
@@ -1166,9 +1402,17 @@
        "line": 17
       }
      ],
-     "covered": 6
+     "covered": 6,
+     "what": "Abre la entrada secuencial y el archivo indexado (vacío), graba cada registro (una clave repetida cuenta como error, código 8) y muestra cuántos cargó.",
+     "spec": "§4.1"
     }
-   ]
+   ],
+   "programs": {
+    "LOAD-TRANTYPE": {
+     "title": "Cargar un archivo indexado (generados)",
+     "intro": "Reemplazan el utilitario IDCAMS REPRO del mainframe: leen un archivo secuencial de longitud fija y lo cargan en un archivo indexado (el análogo de VSAM) desde cero. Los genera `tools/gen-ksds-io.py` a partir de `job.json`."
+    }
+   }
   },
   {
    "path": "src/ksds/LOAD-XREFFILE.cbl",
@@ -1184,9 +1428,17 @@
        "line": 17
       }
      ],
-     "covered": 6
+     "covered": 6,
+     "what": "Abre la entrada secuencial y el archivo indexado (vacío), graba cada registro (una clave repetida cuenta como error, código 8) y muestra cuántos cargó.",
+     "spec": "§4.1"
     }
-   ]
+   ],
+   "programs": {
+    "LOAD-XREFFILE": {
+     "title": "Cargar un archivo indexado (generados)",
+     "intro": "Reemplazan el utilitario IDCAMS REPRO del mainframe: leen un archivo secuencial de longitud fija y lo cargan en un archivo indexado (el análogo de VSAM) desde cero. Los genera `tools/gen-ksds-io.py` a partir de `job.json`."
+    }
+   }
   },
   {
    "path": "src/ksds/UNLD-ACCTFILE.cbl",
@@ -1202,9 +1454,17 @@
        "line": 15
       }
      ],
-     "covered": 6
+     "covered": 6,
+     "what": "Lee el archivo indexado de principio a fin en orden de clave, escribe cada registro y muestra cuántos descargó.",
+     "spec": "§4.3, §4.7"
     }
-   ]
+   ],
+   "programs": {
+    "UNLD-ACCTFILE": {
+     "title": "Descargar un archivo indexado (generados)",
+     "intro": "El REPRO inverso: recorren el archivo indexado en orden de clave y lo escriben en un archivo secuencial. Así los archivos que el job actualiza en el lugar (cuentas, saldos por categoría) se pueden comparar byte a byte, y así se hace el respaldo del maestro entre pasos."
+    }
+   }
   },
   {
    "path": "src/ksds/UNLD-TCATBALF.cbl",
@@ -1220,9 +1480,17 @@
        "line": 15
       }
      ],
-     "covered": 6
+     "covered": 6,
+     "what": "Lee el archivo indexado de principio a fin en orden de clave, escribe cada registro y muestra cuántos descargó.",
+     "spec": "§4.3, §4.7"
     }
-   ]
+   ],
+   "programs": {
+    "UNLD-TCATBALF": {
+     "title": "Descargar un archivo indexado (generados)",
+     "intro": "El REPRO inverso: recorren el archivo indexado en orden de clave y lo escriben en un archivo secuencial. Así los archivos que el job actualiza en el lugar (cuentas, saldos por categoría) se pueden comparar byte a byte, y así se hace el respaldo del maestro entre pasos."
+    }
+   }
   },
   {
    "path": "src/ksds/UNLD-TRANSACT.cbl",
@@ -1238,45 +1506,62 @@
        "line": 15
       }
      ],
-     "covered": 6
+     "covered": 6,
+     "what": "Lee el archivo indexado de principio a fin en orden de clave, escribe cada registro y muestra cuántos descargó.",
+     "spec": "§4.3, §4.7"
     }
-   ]
+   ],
+   "programs": {
+    "UNLD-TRANSACT": {
+     "title": "Descargar un archivo indexado (generados)",
+     "intro": "El REPRO inverso: recorren el archivo indexado en orden de clave y lo escriben en un archivo secuencial. Así los archivos que el job actualiza en el lugar (cuentas, saldos por categoría) se pueden comparar byte a byte, y así se hace el respaldo del maestro entre pasos."
+    }
+   }
   },
   {
    "path": "copybooks/CVACT01Y.cpy",
-   "paragraphs": []
+   "paragraphs": [],
+   "programs": {}
   },
   {
    "path": "copybooks/CVACT03Y.cpy",
-   "paragraphs": []
+   "paragraphs": [],
+   "programs": {}
   },
   {
    "path": "copybooks/CVTRA01Y.cpy",
-   "paragraphs": []
+   "paragraphs": [],
+   "programs": {}
   },
   {
    "path": "copybooks/CVTRA02Y.cpy",
-   "paragraphs": []
+   "paragraphs": [],
+   "programs": {}
   },
   {
    "path": "copybooks/CVTRA03Y.cpy",
-   "paragraphs": []
+   "paragraphs": [],
+   "programs": {}
   },
   {
    "path": "copybooks/CVTRA04Y.cpy",
-   "paragraphs": []
+   "paragraphs": [],
+   "programs": {}
   },
   {
    "path": "copybooks/CVTRA05Y.cpy",
-   "paragraphs": []
+   "paragraphs": [],
+   "programs": {}
   },
   {
    "path": "copybooks/CVTRA06Y.cpy",
-   "paragraphs": []
+   "paragraphs": [],
+   "programs": {}
   },
   {
    "path": "copybooks/CVTRA07Y.cpy",
-   "paragraphs": []
+   "paragraphs": [],
+   "programs": {}
   }
  ],
  "java": [

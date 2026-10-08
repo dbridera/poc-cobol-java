@@ -8,7 +8,9 @@
   "covered": 0,
   "links": 4,
   "unresolved_links": 0,
-  "fixtures": []
+  "fixtures": [],
+  "described": 0,
+  "guide": false
  },
  "cobol": [
   {
@@ -25,7 +27,9 @@
        "line": 35
       }
      ],
-     "covered": null
+     "covered": null,
+     "what": "",
+     "spec": ""
     },
     {
      "program": "ADDPFCD",
@@ -33,7 +37,9 @@
      "start": 125,
      "end": 134,
      "cited_by": [],
-     "covered": null
+     "covered": null,
+     "what": "",
+     "spec": ""
     },
     {
      "program": "ADDPFCD",
@@ -41,9 +47,12 @@
      "start": 135,
      "end": 215,
      "cited_by": [],
-     "covered": null
+     "covered": null,
+     "what": "",
+     "spec": ""
     }
-   ]
+   ],
+   "programs": {}
   },
   {
    "path": "../genapp-source/lgapdb01.cbl",
@@ -54,7 +63,9 @@
      "start": 146,
      "end": 251,
      "cited_by": [],
-     "covered": null
+     "covered": null,
+     "what": "",
+     "spec": ""
     },
     {
      "program": "LGAPDB01",
@@ -62,7 +73,9 @@
      "start": 252,
      "end": 260,
      "cited_by": [],
-     "covered": null
+     "covered": null,
+     "what": "",
+     "spec": ""
     },
     {
      "program": "LGAPDB01",
@@ -75,7 +88,9 @@
        "line": 19
       }
      ],
-     "covered": null
+     "covered": null,
+     "what": "",
+     "spec": ""
     },
     {
      "program": "LGAPDB01",
@@ -83,7 +98,9 @@
      "start": 327,
      "end": 401,
      "cited_by": [],
-     "covered": null
+     "covered": null,
+     "what": "",
+     "spec": ""
     },
     {
      "program": "LGAPDB01",
@@ -91,7 +108,9 @@
      "start": 402,
      "end": 439,
      "cited_by": [],
-     "covered": null
+     "covered": null,
+     "what": "",
+     "spec": ""
     },
     {
      "program": "LGAPDB01",
@@ -99,7 +118,9 @@
      "start": 440,
      "end": 485,
      "cited_by": [],
-     "covered": null
+     "covered": null,
+     "what": "",
+     "spec": ""
     },
     {
      "program": "LGAPDB01",
@@ -107,7 +128,9 @@
      "start": 486,
      "end": 561,
      "cited_by": [],
-     "covered": null
+     "covered": null,
+     "what": "",
+     "spec": ""
     },
     {
      "program": "LGAPDB01",
@@ -115,9 +138,12 @@
      "start": 562,
      "end": 595,
      "cited_by": [],
-     "covered": null
+     "covered": null,
+     "what": "",
+     "spec": ""
     }
-   ]
+   ],
+   "programs": {}
   },
   {
    "path": "../genapp-source/lgapol01.cbl",
@@ -133,7 +159,9 @@
        "line": 29
       }
      ],
-     "covered": null
+     "covered": null,
+     "what": "",
+     "spec": ""
     },
     {
      "program": "LGAPOL01",
@@ -141,7 +169,9 @@
      "start": 128,
      "end": 136,
      "cited_by": [],
-     "covered": null
+     "covered": null,
+     "what": "",
+     "spec": ""
     },
     {
      "program": "LGAPOL01",
@@ -149,9 +179,12 @@
      "start": 137,
      "end": 169,
      "cited_by": [],
-     "covered": null
+     "covered": null,
+     "what": "",
+     "spec": ""
     }
-   ]
+   ],
+   "programs": {}
   },
   {
    "path": "../add-policy-db/src/ADDPOLDB.cbl",
@@ -162,7 +195,9 @@
      "start": 72,
      "end": 118,
      "cited_by": [],
-     "covered": null
+     "covered": null,
+     "what": "",
+     "spec": ""
     },
     {
      "program": "ADDPOLDB",
@@ -170,7 +205,9 @@
      "start": 119,
      "end": 127,
      "cited_by": [],
-     "covered": null
+     "covered": null,
+     "what": "",
+     "spec": ""
     },
     {
      "program": "ADDPOLDB",
@@ -178,9 +215,12 @@
      "start": 128,
      "end": 165,
      "cited_by": [],
-     "covered": null
+     "covered": null,
+     "what": "",
+     "spec": ""
     }
-   ]
+   ],
+   "programs": {}
   }
  ],
  "java": [
