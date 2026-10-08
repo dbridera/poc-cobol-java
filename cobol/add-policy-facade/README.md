@@ -41,7 +41,7 @@ Byte-exact diff on the stdout chain + the POLICY table dump proves the two archi
 - EXEC SQL/SQLite shim — identical to module 1B; see [../add-policy-db/README.md](../add-policy-db/README.md).
 
 ### Removed
-- WRITE-ERROR-MESSAGE (CICS LINK to LGSTSQ error queue) — replaced by stderr write.
+- WRITE-ERROR-MESSAGE (CICS LINK to LGSTSQ error queue). Nothing replaces it in the COBOL: return codes go to stdout via DISPLAY; any stderr text comes from the SQLite shim, not from the programs.
 - EIBTRNID/EIBTRMID/EIBTASKN/EIBCALEN — CICS runtime variables; not meaningful in batch.
 
 ## How to run

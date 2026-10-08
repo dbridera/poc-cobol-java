@@ -50,7 +50,7 @@ The contracts are explicit so a future engineer (or LLM session) knows what file
 |---|---|
 | **Consumes** | `specs/<m>.md`, `golden-master/<m>/`, [docs/glossary.yaml](./glossary.yaml), [CLAUDE.md](../../CLAUDE.md) hard rules |
 | **Produces** | `java/<module>/` Spring Boot project with `pom.xml`, `src/main/java/com/example/poc/<module>/...`, `application.properties` with banner suppression |
-| **Done when** | `mvn -B test` is green AND `tools/run-java.sh <module>` succeeds AND every translated method has a `// COBOL: <file>.cbl:<startLine>-<endLine>` traceability comment (harness-infrastructure classes carry `// cobol-trace-exempt: <why>`) |
+| **Done when** | `mvn -B test` is green AND `tools/run-java.sh <module>` succeeds AND every translated method has a `// COBOL: <file>.cbl:<startLine>-<endLine>` traceability comment (harness-infrastructure classes carry `// cobol-trace-exempt: <why>`) AND, once the diff is green, `cobol/<m>/traceability.html` is rendered with every shown paragraph explained in `PARAGRAPHS.md` |
 | **Don't proceed if** | Any `BigDecimal` could be `double`/`float` — reject the translation regardless of test status (see [ADR-3](./DECISIONS.md#adr-3--bigdecimal-is-mandatory-for-every-cobol-numeric)) |
 
 `copybook-to-entity` is invoked *within* Phase C when the engineer encounters a copybook not already mapped. Its consumes/produces are local: copybook in, `domain/<X>Entity.java` or `domain/<X>Request.java` out, with `REDEFINES` mapped to a `sealed interface` (never a single nullable bag).
