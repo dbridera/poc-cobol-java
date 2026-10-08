@@ -6,7 +6,7 @@ Guion (storyline) para el deck HTML de la demo a gerentes y gerentes técnicos d
 
 | Cambio | Por qué |
 |---|---|
-| **"Harness" en lugar de "framework" / "método"** en todo el deck, y una slide dedicada (slide 4) que muestra de qué está hecho: Claude Code, skills por fase, un subagente validador, hooks y modo sin intervención (`claude -p`), sin API keys ni LangChain. | Queremos mostrar que somos expertos en IA y agentes, no solo en COBOL. El harness se presenta como **acelerador con artefactos auditables**, nunca como una caja que hace todo sola. |
+| **"Harness" en lugar de "framework" / "método"** en todo el deck, y una slide dedicada (slide 4) que muestra de qué está hecho: Claude Code, skills por fase, un subagente validador, hooks y modo sin intervención (`claude -p`), sin API keys. | Queremos mostrar que somos expertos en IA y agentes, no solo en COBOL. El harness se presenta como **acelerador con artefactos auditables**, nunca como una caja que hace todo sola. |
 | **"Agentic evals"** es el nombre de las validaciones de equivalencia en títulos y etiquetas (slides 1, 5, 6, 9, 10, 12). | Las validaciones las corre un agente y entrega un informe legible por máquina; el término las distingue de las pruebas unitarias escritas a mano. |
 | **Menos técnico, más explicativo**: el estilo vuelve al del primer deck (cards por módulo, una idea por slide, menos tablas densas). Cada término técnico aparece una vez y explicado en pocas palabras. Sin "SME" (es "analista del banco"), sin "fixture" (es "caso de prueba"), sin "golden master" sin explicar (es "la salida de referencia del COBOL"), sin "conformant" (es "cumple el proceso"). | La versión anterior era más técnica y explicaba peor. El público son gerentes y gerentes técnicos de banca. |
 | **El cierre nocturno entra como cuarta card** en la slide de cobertura del mainframe (junto a VSAM, DB2 y CICS) y conserva su slide propia (acto 3). El convertidor CCI (módulo 2) no forma parte de este deck. | La slide "tres módulos, tres validaciones" del primer deck era la mejor para explicar el ecosistema; ahora son cuatro aristas del mainframe. |
@@ -100,7 +100,7 @@ Recorrer la tabla fila por fila. Insistir: el agente nunca aprueba nada; cada "v
 
 **Título:** Un harness de agentes, no una caja mágica.
 
-**Mensaje clave:** El harness es Claude Code más reglas versionadas, una skill por fase, un subagente que valida y corridas sin intervención; todo auditable, sin API keys ni LangChain.
+**Mensaje clave:** El harness es Claude Code más reglas versionadas, una skill por fase, un subagente que valida y corridas sin intervención; todo auditable, sin API keys.
 
 **Cuerpo:**
 
@@ -111,12 +111,12 @@ Recorrer la tabla fila por fila. Insistir: el agente nunca aprueba nada; cada "v
 | Una skill por fase | `cobol-analyze` (A) · `cobol-spec` (B) · `java-translate` (C) · `equivalence-validate` (D) | Cada fase tiene su procedimiento, sus entradas y su entregable; no hay salto de fase |
 | Subagente `equivalence-validator` | Solo lectura: corre el COBOL, corre el Java, compara y responde VERDE o ROJO | No puede tocar el Java ni el comparador; nunca puede "aflojar" la prueba |
 | Hooks y modo sin intervención (`claude -p`) | Corridas repetibles desde la terminal o un pipeline | La verificación se vuelve a correr igual, sin que nadie la escriba a mano |
-| Sin API keys, sin LangChain | Corre sobre Claude Code con una suscripción | Sin infraestructura extra ni costo por token; el repositorio ya es el contexto |
+| Sin API keys | Corre sobre Claude Code con una suscripción | Sin infraestructura extra ni costo por token; el repositorio ya es el contexto |
 
 > El harness es un acelerador. Lo que entrega no es "confianza": son artefactos que una persona puede abrir, leer y firmar.
 
 **Notas para el presentador:**
-Esta es la slide donde mostramos que entendemos de agentes. La idea central: la inteligencia artificial no está suelta; está dentro de un harness que le fija reglas (markdown versionado), le da un procedimiento por fase (skills) y le pone un verificador aparte (el subagente, que es de solo lectura por diseño: tiene permiso de ejecutar y leer, no de editar). Lo que hace la skill de la fase C, por ejemplo: exige `BigDecimal` para todo número, exige un comentario `// COBOL: archivo:línea` en cada método y rechaza la traducción si falta cualquiera de los dos, aunque compile. Decir de frente por qué no LangChain ni API keys: a esta escala el repositorio ya es el contexto (glosario, skills, especificaciones); una capa más sería indirección sin valor, con costo e infraestructura extra. Si preguntan "¿y si el modelo inventa código?": lo atrapan los agentic evals (slide 9), que no miran si el Java es lindo, miran si los bytes coinciden.
+Esta es la slide donde mostramos que entendemos de agentes. La idea central: la inteligencia artificial no está suelta; está dentro de un harness que le fija reglas (markdown versionado), le da un procedimiento por fase (skills) y le pone un verificador aparte (el subagente, que es de solo lectura por diseño: tiene permiso de ejecutar y leer, no de editar). Lo que hace la skill de la fase C, por ejemplo: exige `BigDecimal` para todo número, exige un comentario `// COBOL: archivo:línea` en cada método y rechaza la traducción si falta cualquiera de los dos, aunque compile. Decir de frente por qué no API keys: a esta escala el repositorio ya es el contexto (glosario, skills, especificaciones); una capa más sería indirección sin valor, con costo e infraestructura extra. Si preguntan "¿y si el modelo inventa código?": lo atrapan los agentic evals (slide 9), que no miran si el Java es lindo, miran si los bytes coinciden.
 
 ---
 
@@ -164,10 +164,8 @@ El orden importa: nadie empieza a traducir antes de tener la salida de referenci
 
 > Mismo harness. Mismos agentic evals. Cuatro preocupaciones distintas del mainframe.
 
-**Todavía no cubierto (lo decimos antes de que lo pregunten):** pantallas interactivas (CICS online), bases jerárquicas (IMS), colas (MQ), cursores de base de datos en batch, generaciones de archivos (GDG), una corrida con entrada 100 % EBCDIC, y rendimiento.
-
 **Notas para el presentador:**
-Contar primero qué hace cada programa para el negocio, después la arista técnica. Módulo 0 es la puerta de entrada: un batch de seguros con reglas de validación y una fórmula de prima. Módulos 1B y 1A son el mismo negocio (alta de póliza) resuelto de las dos formas en que un mainframe lo hace: contra base de datos y a través de un programa orquestador. Módulo 3 es el salto de escala: tres programas de un core de tarjetas, tomados sin tocar una línea, corriendo como un trabajo de cuatro pasos. Frase a evitar: "esto cubre todo lo que hace un sistema COBOL". No: cubre cuatro aristas frecuentes. La lista de lo no cubierto es parte del mensaje de honestidad; decirla completa y sin apuro.
+Contar primero qué hace cada programa para el negocio, después la arista técnica. Módulo 0 es la puerta de entrada: un batch de seguros con reglas de validación y una fórmula de prima. Módulos 1B y 1A son el mismo negocio (alta de póliza) resuelto de las dos formas en que un mainframe lo hace: contra base de datos y a través de un programa orquestador. Módulo 3 es el salto de escala: tres programas de un core de tarjetas, tomados sin tocar una línea, corriendo como un trabajo de cuatro pasos. Frase a evitar: "esto cubre todo lo que hace un sistema COBOL". No: cubre cuatro aristas frecuentes.
 
 ---
 
@@ -224,7 +222,7 @@ Respuesta ensayada a "¿tradujeron un error a propósito?": "Sí, dos, y podemos
 
 ## Slide 9 — Agentic evals: la prueba de sabotaje
 
-**Eyebrow:** ¿Los agentic evals tienen dientes?
+**Eyebrow:** Prueba de sabotaje · ¿el verde es decorativo?
 
 **Título:** Agentic evals: un centavo alcanza para ponerlo en rojo.
 
