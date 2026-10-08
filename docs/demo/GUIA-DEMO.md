@@ -35,13 +35,13 @@ Todos los comandos del recorrido llevan `--step`: el script explica, espera Ente
 
 | Bloque | Slides del deck | Comando | Tiempo |
 |---|---|---|---|
-| Apertura: problema, quién hace qué, el harness, las fases, los módulos | 1 a 6 | ninguno | 10 min |
-| El patrón en chico: módulo 0 | 6 | `module-0 --step` | 3 min |
-| El cierre nocturno: módulo 3 y sus tres momentos | 7 y 8 | `module-3 --step` | 7 min |
-| Agentic evals 1: el sabotaje | 9 | `negative-control --step` | 5 min |
-| Agentic evals 2: el agente validador en vivo | 10 | `agentic-eval` | 3 min |
-| Checklist de proceso y prueba final | 11 | `conformance` y `proof` | 3 min |
-| Alcance y próximos pasos, preguntas | 12 y 13 | ninguno | 10 min |
+| Apertura: problema, quién hace qué, el harness, el loop, los artefactos, los módulos | 1 a 7 | ninguno | 11 min |
+| El patrón en chico: módulo 0 | 7 | `module-0 --step` | 3 min |
+| El cierre nocturno: módulo 3 y sus tres momentos | 8 y 9 | `module-3 --step` | 7 min |
+| Agentic evals 1: el sabotaje | 10 | `negative-control --step` | 5 min |
+| Agentic evals 2: el agente validador en vivo | 11 | `agentic-eval` | 3 min |
+| Checklist de proceso y prueba final | 12 | `conformance` y `proof` | 3 min |
+| Alcance y próximos pasos, preguntas | 13 y 14 | ninguno | 10 min |
 
 Total: unos 40 minutos. Si hay que recortar, se cae primero `conformance` (decir el resultado sin correrlo) y después `module-0` (ir directo al módulo 3).
 
@@ -49,9 +49,9 @@ Total: unos 40 minutos. Si hay que recortar, se cae primero `conformance` (decir
 
 ## 2. Bloque por bloque
 
-### 2.1 Apertura (slides 1 a 6, sin comandos)
+### 2.1 Apertura (slides 1 a 7, sin comandos)
 
-**Qué contar.** Traducir COBOL a Java es fácil; demostrar que se comporta igual, no. El harness acelera la traducción y produce artefactos que una persona puede auditar sin correr nada. Las validaciones las corre un agente y por eso las llamamos agentic evals. Cubrimos cuatro aristas del mainframe: archivos VSAM, base DB2, orquestación CICS y batch con JCL.
+**Qué contar.** Traducir COBOL a Java es fácil; demostrar que se comporta igual, no. El harness acelera la traducción y produce artefactos que una persona puede auditar sin correr nada. El loop (slide 5) es: leer el COBOL, leer el harness, escribir el Java, agentic eval, capturar la lección; cada fase deja un artefacto (slide 6) y esos mismos artefactos son los que la terminal va a listar como links en cada bloque. Las validaciones las corre un agente y por eso las llamamos agentic evals. Cubrimos cuatro aristas del mainframe: archivos VSAM, base DB2, orquestación CICS y batch con JCL.
 
 **Qué decir al pasar a la terminal.** "Lo que sigue no es una traducción en vivo. El Java ya existe. Lo que van a ver es cómo se verifica, y cómo esa verificación se defiende sola."
 

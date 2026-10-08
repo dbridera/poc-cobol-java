@@ -1,22 +1,23 @@
 # Deck 3 — "El harness acelera, las personas deciden, los agentic evals son el contrato"
 
-Guion (storyline) para el deck HTML de la demo a gerentes y gerentes técnicos de un banco. 30-40 minutos, 13 slides. Cada slide trae: eyebrow (la frase chica arriba del título), el título como una oración, el mensaje clave, el cuerpo tal como debe aparecer y las notas para el presentador.
+Guion (storyline) para el deck HTML de la demo a gerentes y gerentes técnicos de un banco. 30-40 minutos, 14 slides. Cada slide trae: eyebrow (la frase chica arriba del título), el título como una oración, el mensaje clave, el cuerpo tal como debe aparecer y las notas para el presentador.
 
 ## Qué cambió respecto de la versión anterior (y por qué)
 
 | Cambio | Por qué |
 |---|---|
 | **"Harness" en lugar de "framework" / "método"** en todo el deck, y una slide dedicada (slide 4) que muestra de qué está hecho: Claude Code, skills por fase, un subagente validador, hooks y modo sin intervención (`claude -p`), sin API keys. | Queremos mostrar que somos expertos en IA y agentes, no solo en COBOL. El harness se presenta como **acelerador con artefactos auditables**, nunca como una caja que hace todo sola. |
-| **"Agentic evals"** es el nombre de las validaciones de equivalencia en títulos y etiquetas (slides 1, 5, 6, 9, 10, 12). | Las validaciones las corre un agente y entrega un informe legible por máquina; el término las distingue de las pruebas unitarias escritas a mano. |
+| **"Agentic evals"** es el nombre de las validaciones de equivalencia en títulos y etiquetas (slides 1, 3, 5, 6, 7, 10 a 14). | Las validaciones las corre un agente y entrega un informe legible por máquina; el término las distingue de las pruebas unitarias escritas a mano. |
 | **Menos técnico, más explicativo**: el estilo vuelve al del primer deck (cards por módulo, una idea por slide, menos tablas densas). Cada término técnico aparece una vez y explicado en pocas palabras. Sin "SME" (es "analista del banco"), sin "fixture" (es "caso de prueba"), sin "golden master" sin explicar (es "la salida de referencia del COBOL"), sin "conformant" (es "cumple el proceso"). | La versión anterior era más técnica y explicaba peor. El público son gerentes y gerentes técnicos de banca. |
 | **El cierre nocturno entra como cuarta card** en la slide de cobertura del mainframe (junto a VSAM, DB2 y CICS) y conserva su slide propia (acto 3). El convertidor CCI (módulo 2) no forma parte de este deck. | La slide "tres módulos, tres validaciones" del primer deck era la mejor para explicar el ecosistema; ahora son cuatro aristas del mainframe. |
+| **Dos slides recuperadas del primer deck** porque explicaban mejor los artefactos: "El loop. Versionado en markdown." (slide 5, oscura: los cinco pasos del loop y los archivos markdown del harness) y "Cada fase produce un artefacto auditable." (slide 6: cinco cards A–E con fragmentos reales del módulo 1B). La segunda reemplaza la tabla de "Cinco fases, cinco artefactos"; el deck pasa de 13 a 14 slides. | El usuario juzgó que esas dos slides del primer deck explicaban mejor qué queda en el repositorio y cómo se genera el Java. |
 | Cada programa COBOL se explica primero por **lo que hace para el negocio** y después por la arista técnica que cubre. | Que quede claro por qué cada programa es un caso de uso real y no un ejemplo de juguete. |
 
 Reglas del guion:
 
 - Mensaje de fondo: **el harness acelera la traducción; las personas deciden en cada fase; cada fase deja un artefacto auditable; los agentic evals (comparación byte a byte COBOL contra Java) son el contrato.** Nunca decir ni sugerir que la herramienta hace todo sola.
 - Alcance: 4 módulos (0, 1B, 1A, 3), 12 casos de prueba (3 + 2 + 1 + 6), 4.914 registros y 1,37 MB comparados, 0 bytes distintos. Las cifras salen de `validation/reports/*.json`, no se escriben a mano.
-- Nada se inventa en vivo: todos los comandos de la slide 12 están en el repositorio y dan siempre el mismo resultado.
+- Nada se inventa en vivo: todos los comandos de la slide 13 están en el repositorio y dan siempre el mismo resultado.
 
 Fuentes: `docs/demo/DEMO.md`, `docs/demo/ACTO-3-VS-PROPUESTA.md`, `cobol/nightly-batch/README.md`, `cobol/nightly-batch/PARAGRAPHS.md`, `docs/methodology/DECISIONS.md` (ADR-8, ADR-13 a ADR-17), `docs/methodology/SKILLS-GUIDE.md`, `tools/demo-commands.sh`, `validation/reports/*.json`.
 
@@ -90,7 +91,7 @@ Esta slide se mantiene del primer deck porque sigue siendo cierta. El punto 03 e
 | E · Captura | Propone nuevas reglas de traducción a partir de lo aprendido | Aprueba la regla que pasa a aplicarse en el módulo siguiente |
 
 **Notas para el presentador:**
-Recorrer la tabla fila por fila. Insistir: el agente nunca aprueba nada; cada "verde" lo firma una persona después de mirar el resultado. Ejemplo para la fila B: en el cierre nocturno, la especificación le pregunta al analista del banco si es intencional que la última cuenta no reciba interés (slide 8). Ejemplo para la fila D: la primera corrida del Java en ese módulo dio rojo en 22 bytes de relleno por registro; la persona tuvo que decidir si era un error del Java o una regla del COBOL que faltaba documentar (era lo segundo). Ejemplo para la fila E: el redondeo por defecto del COBOL no es el que uno supone; quedó escrito como regla y no se vuelve a discutir.
+Recorrer la tabla fila por fila. Insistir: el agente nunca aprueba nada; cada "verde" lo firma una persona después de mirar el resultado. Ejemplo para la fila B: en el cierre nocturno, la especificación le pregunta al analista del banco si es intencional que la última cuenta no reciba interés (slide 9). Ejemplo para la fila D: la primera corrida del Java en ese módulo dio rojo en 22 bytes de relleno por registro; la persona tuvo que decidir si era un error del Java o una regla del COBOL que faltaba documentar (era lo segundo). Ejemplo para la fila E: el redondeo por defecto del COBOL no es el que uno supone; quedó escrito como regla y no se vuelve a discutir.
 
 ---
 
@@ -116,36 +117,117 @@ Recorrer la tabla fila por fila. Insistir: el agente nunca aprueba nada; cada "v
 > El harness es un acelerador. Lo que entrega no es "confianza": son artefactos que una persona puede abrir, leer y firmar.
 
 **Notas para el presentador:**
-Esta es la slide donde mostramos que entendemos de agentes. La idea central: la inteligencia artificial no está suelta; está dentro de un harness que le fija reglas (markdown versionado), le da un procedimiento por fase (skills) y le pone un verificador aparte (el subagente, que es de solo lectura por diseño: tiene permiso de ejecutar y leer, no de editar). Lo que hace la skill de la fase C, por ejemplo: exige `BigDecimal` para todo número, exige un comentario `// COBOL: archivo:línea` en cada método y rechaza la traducción si falta cualquiera de los dos, aunque compile. Decir de frente por qué no API keys: a esta escala el repositorio ya es el contexto (glosario, skills, especificaciones); una capa más sería indirección sin valor, con costo e infraestructura extra. Si preguntan "¿y si el modelo inventa código?": lo atrapan los agentic evals (slide 9), que no miran si el Java es lindo, miran si los bytes coinciden.
+Esta es la slide donde mostramos que entendemos de agentes. La idea central: la inteligencia artificial no está suelta; está dentro de un harness que le fija reglas (markdown versionado), le da un procedimiento por fase (skills) y le pone un verificador aparte (el subagente, que es de solo lectura por diseño: tiene permiso de ejecutar y leer, no de editar). Lo que hace la skill de la fase C, por ejemplo: exige `BigDecimal` para todo número, exige un comentario `// COBOL: archivo:línea` en cada método y rechaza la traducción si falta cualquiera de los dos, aunque compile. Decir de frente por qué no API keys: a esta escala el repositorio ya es el contexto (glosario, skills, especificaciones); una capa más sería indirección sin valor, con costo e infraestructura extra. Si preguntan "¿y si el modelo inventa código?": lo atrapan los agentic evals (slide 10), que no miran si el Java es lindo, miran si los bytes coinciden.
 
 ---
 
-## Slide 5 — Las cinco fases y sus artefactos
+## Slide 5 — El loop
 
-**Eyebrow:** El recorrido
+**Eyebrow:** Cómo generamos el Java
 
-**Título:** Cinco fases. Cinco artefactos que se pueden auditar sin correr nada.
+**Título:** El loop. Versionado en markdown.
 
-**Mensaje clave:** Cada fase termina con un entregable concreto que queda en el repositorio y se puede revisar sin ejecutar nada.
+**Mensaje clave:** El Java del repositorio es la salida de un loop de cinco pasos cuyas reglas están en archivos de texto versionados; cualquiera puede auditarlas.
 
-**Cuerpo:**
+**Cuerpo (slide oscura):**
 
-A Descubrimiento → B Especificación → C Traducción → **D Agentic evals** → E Captura
+```
+01  Leer el COBOL
+02  Leer el harness              CLAUDE.md · glossary.yaml · skills/*
+03  Escribir el Java             BigDecimal · trazabilidad · Spring
+04  Agentic eval: comparación byte a byte contra la salida de referencia del COBOL (golden master)
+      ↳ rojo  → volver al paso 03
+      ↳ verde → paso 05
+05  Capturar la lección          entrada en el glosario + ADR · el próximo módulo la aprovecha
+```
 
-| Fase | Qué se hace | Artefacto que queda |
-|---|---|---|
-| A · Descubrimiento | Leer el módulo completo y correr el COBOL original con casos de prueba. Si el COBOL no es reproducible, no hay contra qué comparar | La salida de referencia del COBOL, guardada (`golden-master/`) + mapa de dependencias |
-| B · Especificación | Describir las reglas en lenguaje de negocio, para que alguien que no sabe COBOL pueda validarlas | Especificación con preguntas para el analista del banco + una línea "qué hace" por párrafo |
-| C · Traducción | Escribir el Java bajo reglas fijas: precisión numérica obligatoria, cada método cita su párrafo COBOL | Código Java con trazabilidad línea a línea + decisiones documentadas |
-| D · Agentic evals | Correr los dos lados con los mismos datos y comparar byte a byte. "Compila" no es "hace lo mismo" | Informe de equivalencia legible por máquina (JSON), por caso y por canal |
-| E · Captura | Convertir lo aprendido en reglas, para que el módulo siguiente arranque con menos sorpresas | Reglas de traducción acumuladas (glosario) + checklist de proceso |
+**El harness en markdown**
+
+| Archivo | Qué es |
+|---|---|
+| `CLAUDE.md` | Reglas duras no negociables: `BigDecimal`, trazabilidad, el COBOL es la verdad |
+| `docs/methodology/glossary.yaml` | Cada idiom COBOL mapeado a su equivalente Java |
+| `.claude/skills/*/SKILL.md` | Instrucciones por fase: analyze, spec, translate, validate |
+| `.claude/agents/equivalence-validator.md` | El agente de solo lectura que corre los agentic evals |
+
+> Un ingeniero nuevo puede auditar qué reglas aplicamos. El agente escribe; el harness verifica; la persona decide.
 
 **Notas para el presentador:**
-El orden importa: nadie empieza a traducir antes de tener la salida de referencia guardada. Dos reglas de la casa: el COBOL es la verdad, no la especificación (si difieren, se corrige la especificación); y no se "mejora" el COBOL antes de que los agentic evals estén en verde, porque en COBOL bancario lo que parece código muerto suele estar sosteniendo algo. Elegir dos artefactos para mostrar: la pregunta de la especificación al analista ("¿es intencional que la última cuenta nunca reciba su interés?") y el comentario de trazabilidad (`// COBOL: CBACT04C.cbl:219-221`): si un auditor pregunta de dónde sale una regla de interés, la respuesta es una línea de COBOL con número.
+Esta es la respuesta a "¿cómo se escribió el Java?": el agente leyó el COBOL, leyó el harness (las reglas duras, el glosario de equivalencias y la skill de la fase) y escribió el Java bajo esas reglas. Después corrió el agentic eval contra la salida de referencia del COBOL. Las dos ramas del paso 04 son el corazón del loop: rojo devuelve al paso 03 (se corrige el Java, nunca el comparador); verde habilita el paso 05, donde la lección se escribe en el glosario y en una decisión documentada (ADR) para que el próximo módulo arranque sabiéndola. Lo que se audita está en la columna de la derecha: cuatro archivos de texto, versionados en el repositorio. Un ingeniero nuevo o un auditor los lee y sabe exactamente qué restricciones aplicaron, sin preguntarle a nadie. El Java del repositorio es la salida de este loop, no texto libre de un modelo.
 
 ---
 
-## Slide 6 — Qué parte del mainframe cubrimos
+## Slide 6 — Los artefactos
+
+**Eyebrow:** Los artefactos
+
+**Título:** Cada fase produce un artefacto auditable.
+
+**Mensaje clave:** Cada fase deja un entregable concreto en el repositorio, con contenido real, que se puede revisar sin correr nada.
+
+**Cuerpo (cinco cards; los fragmentos son del módulo 1B, la póliza en base de datos):**
+
+**A · Discovery — Salida de referencia (golden master).** Captura cada byte que el COBOL produce: pantalla, código de salida, archivos de salida. Es la *fuente de verdad* contra la que se mide todo lo demás.
+
+```
+golden-master/add-policy-db/
+└── 01-happy-small/
+    ├── stdout.txt
+    ├── exit_code          # 0
+    └── out/policy.csv
+        1000000001|1234567890|
+        2026-01-15|...
+```
+
+**B · Spec — Markdown estructurado.** Documento que un analista del banco puede leer sin tocar COBOL. Cada construcción del original aparece mapeada a su contraparte en Java. La fase B también produce `PARAGRAPHS.md`: qué hace cada párrafo, en lenguaje llano.
+
+```
+## 4. SQL contract
+
+| # | Operation     | COBOL → Java
+|---|---------------|----------------
+| 1 | Insert one row| INSERT INTO POLICY
+|   |               | → em.persist + flush
+| 2 | Schema reset  | DROP + CREATE shim
+|   |               | → schema.sql
+```
+
+**C · Translation — Java + trazabilidad.** Java moderno (Spring Boot + JPA) con un comentario que apunta a las líneas exactas del COBOL original. Auditoría línea por línea posible.
+
+```java
+/** Mirror of INSERT-POLICY
+    in lgapdb01.cbl:261-322. */
+@Transactional(propagation = REQUIRES_NEW)
+public void insert(PolicyEntity p) {
+    em.persist(p);
+    em.flush();
+}
+```
+
+**D · Validation (card destacada, borde verde) — Informe JSON de los agentic evals.** **La prueba de equivalencia.** JSON con cero diferencias por caso de prueba: evidencia archivable para cumplimiento y auditoría.
+
+```json
+[
+  { "fixture": "01-happy-small", "module": "add-policy-db", "diffs": [] },
+  { "fixture": "02-sql-errors",  "module": "add-policy-db", "diffs": [] }
+]
+```
+
+**E · Captura en el harness — Entrada de glosario · ADR.** Cada lección se vuelve una regla. El próximo módulo arranca con todo lo aprendido: el harness no olvida.
+
+```yaml
+exec_sql_insert:
+  target: "EntityManager.persist(entity); em.flush()"
+  avoid:  "JpaRepository.save — INSERT-OR-UPDATE"
+  note:   "See ADR-9."
+```
+
+**Notas para el presentador:**
+Cinco artefactos, uno por fase, todos en el repositorio y todos reales: los fragmentos son del módulo 1B. El orden importa: nadie empieza a traducir antes de tener la salida de referencia (A) guardada; el COBOL es la verdad, no la especificación, y si difieren se corrige la especificación. Elegir tres para contar. (A) La salida de referencia: cada byte que el COBOL produjo, congelado como evidencia. (C) El comentario de trazabilidad: si un auditor pregunta de dónde sale una regla, la respuesta es una línea de COBOL con número. (D) El informe JSON: `"diffs": []` es el contrato; cualquier cosa que no sea vacío detiene la migración. (E) es lo que hace que el harness mejore con cada módulo: la lección del módulo 1B (guardar no es insertar) quedó como entrada del glosario y como ADR-9, y el módulo siguiente ya no puede cometer ese error. Nada de esto requiere correr nada para auditarlo.
+
+---
+
+## Slide 7 — Qué parte del mainframe cubrimos
 
 **Eyebrow:** Cobertura del mainframe
 
@@ -169,7 +251,7 @@ Contar primero qué hace cada programa para el negocio, después la arista técn
 
 ---
 
-## Slide 7 — Acto 3: el cierre nocturno
+## Slide 8 — Acto 3: el cierre nocturno
 
 **Eyebrow:** Módulo 3 · AWS CardDemo
 
@@ -195,7 +277,7 @@ Lo que esto responde: "¿y el batch de verdad, con JCL de varios pasos, archivos
 
 ---
 
-## Slide 8 — Traducimos los errores a propósito
+## Slide 9 — Traducimos los errores a propósito
 
 **Eyebrow:** Regla 5 del harness: no refinar el COBOL antes del verde
 
@@ -220,7 +302,7 @@ Respuesta ensayada a "¿tradujeron un error a propósito?": "Sí, dos, y podemos
 
 ---
 
-## Slide 9 — Agentic evals: la prueba de sabotaje
+## Slide 10 — Agentic evals: la prueba de sabotaje
 
 **Eyebrow:** Prueba de sabotaje · ¿el verde es decorativo?
 
@@ -250,7 +332,7 @@ Es el momento más fuerte de la demo y conviene correrlo en vivo (`negative-cont
 
 ---
 
-## Slide 10 — Cómo los agentic evals encuentran divergencias
+## Slide 11 — Cómo los agentic evals encuentran divergencias
 
 **Eyebrow:** Hallazgos reales, no teóricos
 
@@ -279,7 +361,7 @@ Mensaje central: estos hallazgos no salieron de leer código ni de pruebas unita
 
 ---
 
-## Slide 11 — Checklist de proceso
+## Slide 12 — Checklist de proceso
 
 **Eyebrow:** Mismo harness, todos los módulos
 
@@ -311,7 +393,7 @@ En el primer deck esta slide era una aspiración ("evaluación en cada paso"). A
 
 ---
 
-## Slide 12 — Demo en vivo
+## Slide 13 — Demo en vivo
 
 **Eyebrow:** Todo reproducible, nada se traduce en vivo
 
@@ -345,7 +427,7 @@ Recorrido sugerido para 12-15 minutos: `module-0 --step` (rápido, muestra el pa
 
 ---
 
-## Slide 13 — Alcance y próximos pasos
+## Slide 14 — Alcance y próximos pasos
 
 **Eyebrow:** Qué está hecho y qué falta
 
