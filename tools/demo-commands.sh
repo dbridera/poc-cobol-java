@@ -148,8 +148,9 @@ link() { printf '\e]8;;file://%s\e\\%s\e]8;;\e\\' "$REPO_ROOT/$1" "$1"; }
 # open_path <path>: directories and html in Finder/browser; text in the editor when `code` exists
 open_path() {
   local p="$1"
-  if [[ -d "$p" || "$p" == *.html ]]; then open "$p"
-  elif command -v code >/dev/null 2>&1; then code -r "$p"
+  if [[ "$p" == *.html ]]; then open "$p"
+  elif [[ -d "$p" ]]; then open "$p"                                   # Finder (code would add the folder to the workspace)
+  elif command -v code >/dev/null 2>&1; then code -r -g "$p"            # editor, reusing the window
   else open "$p"; fi
 }
 
@@ -179,13 +180,29 @@ links() {
 
 # links_for <module> <A|C|D|all>: the artifacts a phase leaves behind, in the order the story needs them
 links_for() {
-  local m="$1" ph="$2" first_gm first_jr; local -a items=()
+  local m="$1" ph="$2" first_gm first_jr main_cbl main_java; local -a items=()
   first_gm="$(ls -d golden-master/$m/*/ 2>/dev/null | head -1)"; first_gm="${first_gm%/}"
   first_jr="$(ls -d java-run/$m/*/ 2>/dev/null | head -1)"; first_jr="${first_jr%/}"
+  # the COBOL program with most paragraphs and the Java file with most COBOL citations: files, not folders,
+  # so a click (or a number) opens them in the editor instead of revealing a directory
+  read -r main_cbl main_java <<< "$(python3 - "cobol/$m/traceability.json" <<'PY'
+import json, sys, os
+try:
+    d = json.load(open(sys.argv[1]))
+except Exception:
+    print("", ""); sys.exit()
+m = sys.argv[1].split("/")[1]
+own = [f for f in d["cobol"] if not f["path"].startswith("..")] or d["cobol"]   # prefer the module program over borrowed originals
+cb = max(own, key=lambda f: len(f["paragraphs"]), default=None)
+jv = max(d["java"], key=lambda f: len(f["links"]), default=None)
+print(os.path.normpath(f"cobol/{m}/{cb['path']}") if cb else "", f"java/{m}/{jv['path']}" if jv else "")
+PY
+)"
   echo
   echo "  ${BOLD}$(T 'Intermediate artifacts' 'Artefactos intermedios') ($(T 'click, or a number in --step mode' 'clic, o número en modo --step')):${RESET}"
   if [[ "$ph" == A || "$ph" == all ]]; then
-    items+=("$(T 'the COBOL as the bank runs it (verbatim)' 'el COBOL tal como lo corre el banco (sin tocar)')|cobol/$m/src"
+    items+=("$(T 'the main COBOL program, as the bank runs it (verbatim)' 'el programa COBOL principal, tal como lo corre el banco (sin tocar)')|$main_cbl"
+            "$(T 'all the COBOL sources (folder)' 'todos los fuentes COBOL (carpeta)')|cobol/$m/src"
             "$(T 'the copybooks (record layouts)' 'los copybooks (diseños de registro)')|cobol/$m/copybooks"
             "$(T 'job manifest: steps, datasets, return codes' 'manifiesto del trabajo: pasos, archivos, códigos de retorno')|cobol/$m/job.json"
             "$(T 'what each program does + dependency graph' 'qué hace cada programa + grafo de dependencias')|cobol/$m/DEPENDENCIES.md"
@@ -193,11 +210,14 @@ links_for() {
             "$(T 'spec for the bank analyst (rules, numerics, questions)' 'especificación para el analista del banco (reglas, numérica, preguntas)')|specs/$m.md"
             "$(T 'what each paragraph does' 'qué hace cada párrafo')|cobol/$m/PARAGRAPHS.md"
             "$(T 'test cases (inputs + expectations)' 'casos de prueba (entradas + qué se espera)')|cobol/$m/fixtures"
-            "$(T 'COBOL reference output, first case' 'salida de referencia del COBOL, primer caso')|$first_gm")
+            "$(T 'COBOL reference output, first case: what it printed' 'salida de referencia del COBOL, primer caso: lo que imprimió')|$first_gm/stdout.txt"
+            "$(T 'COBOL reference output, first case (folder)' 'salida de referencia del COBOL, primer caso (carpeta)')|$first_gm")
   fi
   if [[ "$ph" == C || "$ph" == all ]]; then
-    items+=("$(T 'the Java translation (every method cites its COBOL lines)' 'la traducción Java (cada método cita sus líneas COBOL)')|java/$m/src/main/java"
-            "$(T 'Java output, first case' 'salida del Java, primer caso')|$first_jr")
+    items+=("$(T 'the Java class with most COBOL citations (every method cites its COBOL lines)' 'la clase Java con más citas al COBOL (cada método cita sus líneas)')|$main_java"
+            "$(T 'all the Java sources (folder)' 'todos los fuentes Java (carpeta)')|java/$m/src/main/java"
+            "$(T 'Java output, first case: what it printed' 'salida del Java, primer caso: lo que imprimió')|$first_jr/stdout.txt"
+            "$(T 'Java output, first case (folder)' 'salida del Java, primer caso (carpeta)')|$first_jr")
   fi
   if [[ "$ph" == D || "$ph" == all ]]; then
     items+=("$(T 'agentic eval report (diffs: [] is the contract)' 'informe del agentic eval (diffs: [] es el contrato)')|validation/reports/$m.json"
