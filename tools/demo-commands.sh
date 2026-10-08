@@ -13,7 +13,7 @@
 #   ./tools/demo-commands.sh module-1a    # CICS LINK → Spring service-to-service — 1 fixture
 #   ./tools/demo-commands.sh module-2     # Real banking module: CCI ↔ BCP (BCTITSCV) — 3 fixtures
 #   ./tools/demo-commands.sh module-3     # Nightly batch: 4-step JCL job (CardDemo), restart + abend — 6 fixtures
-#   ./tools/demo-commands.sh negative-control  # sabotage one rounding mode in module 3, show the red diff, revert
+#   ./tools/demo-commands.sh negative-control  # two sabotages in module 3 (a rounding mode; "fixing" a legacy bug): field-level red diff + divergent paragraph, revert
 #   ./tools/demo-commands.sh conformance  # tools/check-module.sh --all: every module went through the same 5 phases
 #   ./tools/demo-commands.sh proof        # validation/reports/*.json + cross-module summary (computed, not hard-coded)
 #   ./tools/demo-commands.sh all          # module-0 + module-1b + module-1a + module-2 + module-3 + conformance + proof
@@ -268,10 +268,16 @@ module-3() {
     echo "${DIM}    balance untouched, cycle totals not reset. The Java reproduces it (CLAUDE.md rule 5) and the SME checklist asks about it.${RESET}"
     ./tools/make-fixture.py --dump carddemo_account golden-master/nightly-batch/01-happy-small/out/acctfile.unl \
       | tail -1 | python3 -c "import sys,json; r=json.loads(sys.stdin.read()); print('    account', r['ACCT-ID'], 'balance', r['ACCT-CURR-BAL'], 'cycle credit', r['ACCT-CURR-CYC-CREDIT'], 'cycle debit', r['ACCT-CURR-CYC-DEBIT'])"
+    echo
+    echo "${CYAN}${BOLD}  MOMENT 3 — did we translate everything? (paragraph traces, coverage, side-by-side viewer)${RESET}"
+    echo "${DIM}    Every paragraph GnuCOBOL enters is traced; the Java emits the same trace and it is part of the diff.${RESET}"
+    grep -A3 "BEGIN AUTO-GENERATED COVERAGE" cobol/nightly-batch/README.md | grep -v "^<!--" | sed 's/^/    /'
+    echo "    viewer: cobol/nightly-batch/traceability.html  (COBOL left, Java right, click a citation)"
+    if [[ "$(uname)" == "Darwin" ]]; then open cobol/nightly-batch/traceability.html 2>/dev/null || true; fi
   fi
 
   result_summary "3" "Module 3 (nightly batch, 4 JCL steps)" "6" "6" \
-    "per-step stdout · exit_code (MAXRC) · run-log.txt · dalyrejs · tranbkp · systran · combined · tranbkp2 · trandaly · tranrept · acctfile.unl · tcatbal.unl" \
+    "per-step stdout · paragraph traces · exit_code (MAXRC) · run-log.txt · dalyrejs · tranbkp · systran · combined · tranbkp2 · trandaly · tranrept · acctfile.unl · tcatbal.unl" \
     "JCL step = Spring Batch step with step-level restart (ADR-14) · JDBC not JPA for record-at-a-time batch (ADR-13) · COMPUTE without ROUNDED truncates toward zero · faithful defects replicated, never fixed"
 }
 
@@ -287,8 +293,26 @@ negative-control() {
   echo
   run ./tools/compare-outputs.py nightly-batch 03-numeric-boundaries || true
   echo
-  echo "  ${BOLD}revert${RESET} (git keeps the real file) and restore green:"
-  sed -i '' 's/divide(TWELVE_HUNDRED, 2, RoundingMode.HALF_UP)/divide(TWELVE_HUNDRED, 2, RoundingMode.DOWN)/' "$f"
+  echo "  ${BOLD}revert${RESET} (git keeps the real file):"
+  git checkout -- "$f"
+
+  local g=java/nightly-batch/src/main/java/com/example/poc/nightlybatch/batch/programs/IntCalcProgram.java
+  echo
+  echo "  ${BOLD}sabotage 2:${RESET} 'fix' the legacy bug — update the last account too (the ELSE that CBACT04C never reaches)"
+  python3 - "$g" <<'PY'
+import sys
+p=sys.argv[1]; s=open(p).read()
+m="            // COBOL: CBACT04C.cbl:219-221 — ELSE PERFORM 1050-UPDATE-ACCOUNT is unreachable:"
+s=s.replace(m, "            if (!firstTime) calc.updateAccount(accountWs, totalInt);   // SABOTAGE: the 'obvious fix'\n"+m, 1)
+open(p,"w").write(s)
+PY
+  grep -n "SABOTAGE" "$g" | sed 's/^/    /'
+  ./tools/run-java.sh nightly-batch 01-happy-small >/dev/null 2>&1 || true
+  echo
+  run ./tools/compare-outputs.py nightly-batch 01-happy-small || true
+  echo
+  echo "  ${BOLD}revert${RESET} and restore green:"
+  git checkout -- "$g"
   ./tools/run-java.sh nightly-batch >/dev/null 2>&1
   run ./tools/compare-outputs.py nightly-batch
 }
@@ -343,7 +367,7 @@ usage: $0 {preflight|module-0|module-1b|module-1a|module-2|module-3|negative-con
   module-1a         CICS LINK → Spring DI (add-policy-facade)             — 1 fixture
   module-2          Real BCP package: CCI ↔ BCP (BCTITSCV)                — 3 fixtures
   module-3          Nightly batch: 4-step JCL job, restart, abend (CardDemo) — 6 fixtures
-  negative-control  flip one rounding mode in module 3 → red diff at a named record/column → revert
+  negative-control  two sabotages in module 3 → field-level red diff (one cent) and a divergent paragraph → revert
   conformance       tools/check-module.sh --all (same five phases, same tooling, every module)
   proof             validation/reports/*.json + cross-module summary (computed)
   all               all five modules + conformance + proof

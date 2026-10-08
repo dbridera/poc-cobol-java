@@ -22,7 +22,8 @@ A module name (e.g., `add-motor-policy`). The repo layout is fixed (see `CLAUDE.
 A short report:
 - one line per fixture: `[OK]` or `[FAIL]` + fixture name
 - if any FAIL, copy the diff hunks (max 50 lines per fixture) inline
-- for a binary mismatch quote the `first_diff` line (offset, record, column, cobol/java hex)
+- for a binary mismatch quote the `field_diffs` lines (record, key, field, cobol/java values) when present, otherwise the `first_diff` line (offset, record, column, cobol/java hex)
+- for a trace mismatch quote the `trace: first divergence at entry N` line with its paragraphs
 - if all green, also note: number of fixtures, and the totals of the `summary` blocks (records compared, bytes compared)
 - final line: `RESULT: GREEN` or `RESULT: RED`
 

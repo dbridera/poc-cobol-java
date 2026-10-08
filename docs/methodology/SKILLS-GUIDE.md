@@ -30,7 +30,7 @@ The contracts are explicit so a future engineer (or LLM session) knows what file
 | | |
 |---|---|
 | **Consumes** | `cobol/<module>/src/*.cbl`, `cobol/<module>/copybooks/*.cpy`, JCL/scripts if any, sample data |
-| **Produces** | `cobol/<module>/README.md` populated with sections 1–7 of the skill; `DEPENDENCIES.md`; `cobol/<module>/fixtures/<name>/spec.json` (or `fixture.json`) per fixture; for job modules also `job.json` and generated `src/ksds/` loaders |
+| **Produces** | `cobol/<module>/README.md` populated with sections 1–7 of the skill; `DEPENDENCIES.md`; `cobol/<module>/fixtures/<name>/spec.json` (or `fixture.json`) per fixture; for job modules also `job.json`, generated `src/ksds/` loaders, and after capture `COVERAGE.md` (from the paragraph traces) |
 | **Side effects** | After `tools/run-cobol.sh <module>`: `golden-master/<module>/<fixture>/{stdout.txt, exit_code, stderr.txt, out/...}` |
 | **Done when** | Every paragraph is named in the README's control-flow map, every PIC is in the data dictionary, ≥3 fixtures cover happy path + validation errors + numeric boundaries, golden master captures cleanly |
 | **Don't proceed if** | Any paragraph's purpose is "TBD" — get SME input first |
@@ -60,7 +60,7 @@ The contracts are explicit so a future engineer (or LLM session) knows what file
 | | |
 |---|---|
 | **Consumes** | Phase A's `golden-master/<m>/`, Phase C's Java build |
-| **Produces** | `validation/reports/<module>.json` (per-fixture diff results), `java-run/<m>/<fixture>/` artifacts |
+| **Produces** | `validation/reports/<module>.json` (per-fixture diff results with field-level and trace diagnostics), `java-run/<m>/<fixture>/` artifacts, `cobol/<m>/traceability.html` (COBOL ↔ Java viewer, `render-traceability.py`) |
 | **Done when** | All fixtures show `[OK ]`; report shows `"diffs": []` per fixture; negative-control test (deliberately break a `BigDecimal`, confirm diff fails) has run at least once; `./tools/check-module.sh <module>` is CONFORMANT (restart invariant included for job modules) |
 | **Don't proceed if** | Any diff fails — fix Java/spec/harness; **never** weaken the comparator |
 

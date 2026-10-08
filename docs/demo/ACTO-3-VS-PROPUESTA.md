@@ -42,6 +42,8 @@ Para Esteban. Resumen de cómo quedó implementado el acto 3 del handoff *"Un d�
 
 ---
 
+Agregado después de la nota original: la **traza de párrafos** (cada párrafo que GnuCOBOL ejecuta; el Java emite la misma traza y entra en el diff), la **matriz de cobertura generada** desde esas trazas (`cobol/nightly-batch/COVERAGE.md`, 82/86 párrafos), el **diff por campo** ("cuenta 1: `ACCT-CURR-BAL` COBOL 201.75, Java 201.76") y el **visor lado a lado** COBOL ↔ Java (`cobol/nightly-batch/traceability.html`). `./tools/demo-commands.sh module-3` los muestra como tercer momento.
+
 ## 4. Lo que hay que decir de frente
 
 1. Los programas son públicos y verbatim; el runtime (JCL, IDCAMS, DFSORT, Language Environment) se reemplaza por stand-ins pequeños y documentados.

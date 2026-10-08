@@ -96,7 +96,8 @@ Stakeholder concern this answers: **"how do you handle real batch — JCL with s
 Three CardDemo programs **kept byte-for-byte verbatim** (`CBTRN02C` posting, `CBACT04C` interest, `CBTRN03C` report) run as one job of 16 steps described by [`cobol/nightly-batch/job.json`](../../cobol/nightly-batch/job.json), the JCL analogue: six KSDS loads, **post the day's transactions**, back up, **charge monthly interest**, **sort + reload the transaction master**, **unload + sort + print the daily report**, two capture unloads. The Java side is Spring Batch, one Step per JCL step built from the *same* manifest, with the KSDS files as H2 tables accessed through JDBC.
 
 - **6 fixtures**: happy (accounts 1-5), rejects (reason codes 100/101/102/103 and their precedence), numeric boundaries (truncation toward zero, overflow without `ON SIZE ERROR`, a 10-digit cycle total truncated so a 50.00 purchase passes a 100.00 limit), the full seed set (300 transactions, 18 report pages), **restart** (killed after step 2 of 4, resumed — outputs identical to the unbroken run), **abend** (unknown category → `CEE3ABD`, RC 12, later steps `NOT RUN`, capture steps still run).
-- **Channels diffed per fixture**: per-step stdout and return code, the job log, and 9 fixed-length binary datasets (rejects, backups, interest transactions, the sorted master, the report, the unloads of the two files rewritten in place) — 44 files per fixture.
+- **Channels diffed per fixture**: per-step stdout and return code, the **paragraph trace** of every step (one line per paragraph GnuCOBOL enters; the Java emits the same lines — 5 743 entries on the full fixture), the job log, and 9 fixed-length binary datasets (rejects, backups, interest transactions, the sorted master, the report, the unloads of the two files rewritten in place) — 60 files per fixture.
+- **Translator tooling** (ADR-17): a red diff names the field (`record 1 (ACCT-ID=00000000001): ACCT-CURR-BAL cobol=201.75 java=201.76`) or the first divergent paragraph; the coverage matrix in [`cobol/nightly-batch/COVERAGE.md`](../../cobol/nightly-batch/COVERAGE.md) is generated from the traces (82 / 86 paragraphs, the 4 unreached are the abend paragraphs of posting and report); [`cobol/nightly-batch/traceability.html`](../../cobol/nightly-batch/traceability.html) shows the COBOL and the Java side by side, linked by the citations and coloured by coverage.
 - **Empirical findings** (four new ADRs): JDBC over JPA for record-at-a-time batch ([ADR-13](../methodology/DECISIONS.md)); a job manifest as the JCL analogue with step-level restart and unload-based capture ([ADR-14](../methodology/DECISIONS.md)); tasklet per program, never chunk-oriented ([ADR-15](../methodology/DECISIONS.md)); determinism pins — pinned clock *with hundredths*, `-fsign=EBCDIC`, sort tie-break ([ADR-16](../methodology/DECISIONS.md)).
 - **Faithful defects, replicated on purpose** (CLAUDE.md rule 5): the interest program never updates the last account (`CBACT04C.cbl:219-221`, unreachable `ELSE`), and the report overstates the grand total by the last amount (`CBTRN03C.cbl:197-204`, stale record at EOF). Both are cited in the Java and on the spec's SME checklist. Say it on stage: *we translate what the bank runs, bugs included — and we tell the bank where they are.*
 - **Honesty note**: the data uses zoned-decimal overpunched signs, not COMP-3 file fields (COMP-3 appears only in the report's counters). The restart proves "same final output", not "same checkpoint mechanism" — the COBOL-side checkpoint is the harness's, the Java side is Spring Batch's `JobRepository`.
@@ -126,8 +127,8 @@ Subcommands for running one at a time:
 | `./tools/demo-commands.sh module-1b` | Module 1B (2 fixtures) |
 | `./tools/demo-commands.sh module-1a` | Module 1A (1 fixture) |
 | `./tools/demo-commands.sh module-2` | Module 2 (3 fixtures) |
-| `./tools/demo-commands.sh module-3` | Module 3 (6 fixtures) + the two demo moments: the restart job log and the faithful bug |
-| `./tools/demo-commands.sh negative-control` | Sabotage one rounding mode in module 3 → red diff at a named record/column → revert → green |
+| `./tools/demo-commands.sh module-3` | Module 3 (6 fixtures) + three demo moments: the restart job log, the faithful bug, and coverage + the side-by-side viewer |
+| `./tools/demo-commands.sh negative-control` | Two sabotages in module 3: a rounding mode → `ACCT-CURR-BAL cobol=201.75 java=201.76`; "fixing" the legacy bug → `cobol 1000-TCATBALF-GET-NEXT vs java 1050-UPDATE-ACCOUNT` at trace entry 68 + account 5 → both reverted → green |
 | `./tools/demo-commands.sh conformance` | `check-module.sh --all`: same five phases, same tooling, every module |
 | `./tools/demo-commands.sh proof` | Per-fixture summary of all `validation/reports/*.json` + computed cross-module totals |
 | `./tools/demo-commands.sh all` | All five modules + conformance + proof |
@@ -191,7 +192,7 @@ End of `./tools/demo-commands.sh all`:
 [OK ] cci-account-converter/01-cci-to-bcp-impacs
 [OK ] cci-account-converter/02-bcp-to-cci-saving
 [OK ] cci-account-converter/03-validation-error
-[OK ] nightly-batch/01-happy-small   (files 44 · records 397 · bytes 77449 · differing 0)
+[OK ] nightly-batch/01-happy-small   (files 60 · records 397 · trace entries 608 · bytes 102247 · differing 0)
 [OK ] nightly-batch/02-rejects   (files 44 · records 318 · bytes 54090 · differing 0)
 [OK ] nightly-batch/03-numeric-boundaries   (files 44 · records 237 · bytes 33539 · differing 0)
 [OK ] nightly-batch/04-full-carddemo   (files 44 · records 3377 · bytes 792762 · differing 0)
@@ -266,6 +267,10 @@ Same approach. `EXEC CICS LINK` becomes a Spring `@Autowired` service-to-service
 > *"Module 3 is a real four-step nightly close from a public card-processing sample. The job is described once, in a manifest that plays the role of the JCL; the same file drives the COBOL run on GnuCOBOL and builds the Spring Batch job, so step order, file mapping and return-code rules cannot drift. One fixture kills the job after step 2 and resumes it; the resumed run must produce the same bytes as the unbroken one, on both sides — the checker enforces it. Another fixture abends: the job stops, the later steps are marked NOT RUN, the capture steps still run, exit code 12 on both sides."*
 
 What we don't claim: GDG generations, selective `COND=` expressions and an all-EBCDIC input run are not modelled (see [SCALING.md §4](../methodology/SCALING.md)).
+
+### How do I know you translated everything?
+
+> *"Three ways, all generated. The coverage matrix comes from the paragraph traces GnuCOBOL emits while building the golden master: 82 of 86 paragraphs are entered by at least one case, and the four that are not are the abend paragraphs no case reaches — listed, not hidden. The Java emits the same paragraph trace, and it is part of the byte-exact diff: if the Java skipped or merged a paragraph, the diff names it. And the viewer puts the COBOL and the Java side by side, linked by the citation every method carries, so an auditor clicks a paragraph and sees the Java that translates it."*
 
 ### You translated a bug on purpose?
 
