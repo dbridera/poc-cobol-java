@@ -35,7 +35,7 @@ Pre-requisite: toolchain (see §8). After that, from the repo root, **one comman
 
 Prints phase headers (A / C / D), echoes each command, runs the conformance gate, and ends with a computed proof block: 15 / 15 fixtures byte-exact equivalent across modules 0, 1A, 1B, 2, 3.
 
-Per-module subcommands are below. For the full narrative + talking points, see [`docs/demo/DEMO.md`](./docs/demo/DEMO.md).
+Per-module subcommands are below. For the full narrative + talking points, see [`docs/demo/DEMO.md`](./docs/demo/DEMO.md). The presenter's step-by-step guide in Spanish (what to say, which command, what to expect on screen) is [`docs/demo/GUIA-DEMO.md`](./docs/demo/GUIA-DEMO.md).
 
 ### Raw commands (for live typing / debugging)
 

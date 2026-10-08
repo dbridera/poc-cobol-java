@@ -108,6 +108,8 @@ Full session report: [../methodology/MODULE-3-REPORT.md](../methodology/MODULE-3
 
 ## 4. Running it
 
+Presenter's guide for the stage, in Spanish, with the expected output of every command: [GUIA-DEMO.md](./GUIA-DEMO.md).
+
 Three equivalent options. Pick whichever fits the audience.
 
 ### Option A — wrapper script (recommended; one command, narrated)
