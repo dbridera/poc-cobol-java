@@ -18,7 +18,7 @@ import java.util.Map;
  */
 // cobol-trace-exempt: manifest model of cobol/nightly-batch/job.json (the JCL analogue), not a translated paragraph
 @JsonIgnoreProperties(ignoreUnknown = true)
-public record JobManifest(String job, Map<String, String> env, Map<String, Dataset> datasets, List<Step> steps) {
+public record JobManifest(String job, boolean trace, Map<String, String> env, Map<String, Dataset> datasets, List<Step> steps) {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Dataset(String org, int lrecl, List<Integer> key, List<List<Integer>> alt_keys, String path,

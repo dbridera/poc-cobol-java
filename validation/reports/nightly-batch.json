@@ -3,11 +3,12 @@
     "fixture": "01-happy-small",
     "module": "nightly-batch",
     "summary": {
-      "files_compared": 44,
+      "files_compared": 60,
       "records_compared": 397,
-      "bytes_compared": 77449,
+      "bytes_compared": 102247,
       "bytes_differing": 0,
-      "files_differing": 0
+      "files_differing": 0,
+      "trace_entries_compared": 608
     },
     "diffs": []
   },
@@ -15,11 +16,12 @@
     "fixture": "02-rejects",
     "module": "nightly-batch",
     "summary": {
-      "files_compared": 44,
+      "files_compared": 60,
       "records_compared": 318,
-      "bytes_compared": 54090,
+      "bytes_compared": 72824,
       "bytes_differing": 0,
-      "files_differing": 0
+      "files_differing": 0,
+      "trace_entries_compared": 467
     },
     "diffs": []
   },
@@ -27,11 +29,12 @@
     "fixture": "03-numeric-boundaries",
     "module": "nightly-batch",
     "summary": {
-      "files_compared": 44,
+      "files_compared": 60,
       "records_compared": 237,
-      "bytes_compared": 33539,
+      "bytes_compared": 44825,
       "bytes_differing": 0,
-      "files_differing": 0
+      "files_differing": 0,
+      "trace_entries_compared": 284
     },
     "diffs": []
   },
@@ -39,11 +42,12 @@
     "fixture": "04-full-carddemo",
     "module": "nightly-batch",
     "summary": {
-      "files_compared": 44,
+      "files_compared": 60,
       "records_compared": 3377,
-      "bytes_compared": 792762,
+      "bytes_compared": 1031658,
       "bytes_differing": 0,
-      "files_differing": 0
+      "files_differing": 0,
+      "trace_entries_compared": 5743
     },
     "diffs": []
   },
@@ -51,11 +55,12 @@
     "fixture": "05-restart",
     "module": "nightly-batch",
     "summary": {
-      "files_compared": 44,
+      "files_compared": 60,
       "records_compared": 408,
-      "bytes_compared": 77939,
+      "bytes_compared": 102737,
       "bytes_differing": 0,
-      "files_differing": 0
+      "files_differing": 0,
+      "trace_entries_compared": 608
     },
     "diffs": []
   },
@@ -63,11 +68,12 @@
     "fixture": "06-abend-discgrp",
     "module": "nightly-batch",
     "summary": {
-      "files_compared": 30,
+      "files_compared": 41,
       "records_compared": 115,
-      "bytes_compared": 8981,
+      "bytes_compared": 15888,
       "bytes_differing": 0,
-      "files_differing": 0
+      "files_differing": 0,
+      "trace_entries_compared": 174
     },
     "diffs": []
   }

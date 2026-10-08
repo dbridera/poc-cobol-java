@@ -90,6 +90,21 @@ check_module() {
     ./tools/gen-ksds-io.py "$m" --check >/dev/null 2>&1 && pass "4 (job) generated KSDS loaders in sync" || fail "4 (job) src/ksds/ out of date (run ./tools/gen-ksds-io.py $m)"
     local nrecipe=0; for d in "$cdir"/fixtures/*/; do [[ -f "$d/fixture.json" ]] && nrecipe=$((nrecipe+1)); done
     [[ "$nrecipe" -eq "$nfix" ]] && pass "4 (job) every fixture has a fixture.json recipe" || warn "4 (job) $nrecipe/$nfix fixtures have fixture.json"
+    if python3 -c "import json,sys; sys.exit(0 if json.load(open('$cdir/job.json')).get('trace') else 1)"; then
+      local notrace=""
+      for d in "$cdir"/fixtures/*/; do
+        local f; f="$(basename "$d")"
+        ls "golden-master/$m/$f/out/steps/"*.trace.txt >/dev/null 2>&1 || notrace="$notrace $f"
+      done
+      [[ -z "$notrace" ]] && pass "4 (job) paragraph traces captured for every fixture" || fail "4 (job) fixtures without out/steps/*.trace.txt:$notrace"
+      if ./tools/gen-coverage.py "$m" --check >/dev/null 2>&1; then
+        pass "4 (job) COVERAGE.md and README summary in sync with the traces"
+      else
+        fail "4 (job) coverage drifted (run ./tools/gen-coverage.py $m)"
+      fi
+      local unreached; unreached="$(grep -o 'Not reached by any fixture: .*' "$cdir/README.md" | head -1)"
+      [[ -n "$unreached" ]] && warn "4 (job) $unreached"
+    fi
   fi
 
   # 5. Golden master per fixture

@@ -22,6 +22,8 @@ import java.util.List;
 final class CardSortProgram implements StepProgram {
     @Override
     public int run(JobRun run, JobManifest.Step step, StepIo io) throws Exception {
+        io.entry("CBSORT02");
+        io.paragraph("CBSORT02", "MAIN");
         int lrecl = Layouts.TRAN.lrecl();
         List<String> parm = FixedRecordFile.readAll(run.dd(step, "DATEPARM"), Layouts.DATEPARM.lrecl());
         if (parm.isEmpty()) {
@@ -32,6 +34,7 @@ final class CardSortProgram implements StepProgram {
         String start = dateparm.get("WS-START-DATE");
         String end = dateparm.get("WS-END-DATE");
 
+        io.paragraph("CBSORT02", "SELECT-RECORDS");                         // INPUT PROCEDURE of the SORT
         List<String> input = FixedRecordFile.readAll(run.dd(step, "SORTIN"), lrecl);
         List<String> selected = new ArrayList<>();
         for (String r : input) {                                           // SELECT-RECORDS input procedure

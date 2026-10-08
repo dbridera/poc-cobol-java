@@ -4,6 +4,8 @@ import com.example.poc.nightlybatch.batch.JobManifest;
 import com.example.poc.nightlybatch.domain.CobolRecord;
 import com.example.poc.nightlybatch.domain.Layouts;
 import com.example.poc.nightlybatch.io.KsdsTable;
+import com.example.poc.nightlybatch.io.StepIo;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -25,9 +27,11 @@ class TransactionValidatorTest {
     private KsdsTable accounts;
     private CobolRecord xrefWs;
     private CobolRecord accountWs;
+    private StepIo io;
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws Exception {
+        io = StepIo.open(java.nio.file.Files.createTempFile("tv", ".stdout.txt"));
         JdbcTemplate jdbc = new JdbcTemplate(new DriverManagerDataSource("jdbc:h2:mem:tv" + System.nanoTime() + ";DB_CLOSE_DELAY=-1", "sa", ""));
         xref = new KsdsTable(jdbc, "XREFFILE", new JobManifest.Dataset("ksds", 50, List.of(0, 16), List.of(List.of(25, 11)), "x.ksds", false, false, "CVACT03Y"));
         accounts = new KsdsTable(jdbc, "ACCTFILE", new JobManifest.Dataset("ksds", 300, List.of(0, 11), List.of(), "a.ksds", false, false, "CVACT01Y"));
@@ -50,8 +54,11 @@ class TransactionValidatorTest {
                 .setDecimal("TRAN-AMT", new BigDecimal(amount)).set("TRAN-ORIG-TS", origDate + " 10:00:00.000000");
     }
 
+    @AfterEach
+    void tearDown() throws Exception { io.close(); }
+
     private TransactionValidator.Result validate(CobolRecord daly) {
-        return new TransactionValidator(xref, accounts).validate(daly, xrefWs, accountWs);
+        return new TransactionValidator(xref, accounts, io).validate(daly, xrefWs, accountWs);
     }
 
     @Test

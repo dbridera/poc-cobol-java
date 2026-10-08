@@ -15,13 +15,15 @@ final class CobolRuntime {
      * never produced here).
      */
     // COBOL: CBTRN02C.cbl:714-727, CBACT04C.cbl:635-648, CBTRN03C.cbl:633-646
-    static void displayIoStatus(StepIo io, String status) {
+    static void displayIoStatus(StepIo io, String program, String status) {
+        io.paragraph(program, "9910-DISPLAY-IO-STATUS");
         io.display("FILE STATUS IS: NNNN", "00" + status);
     }
 
     /** {@code 9999-ABEND-PROGRAM}: display, then {@code CALL 'CEE3ABD'} with code 999. */
     // COBOL: CBTRN02C.cbl:707-712, CBACT04C.cbl:628-633, CBTRN03C.cbl:626-631
-    static AbendException abend(StepIo io) {
+    static AbendException abend(StepIo io, String program) {
+        io.paragraph(program, "9999-ABEND-PROGRAM");
         io.display("ABENDING PROGRAM");
         return new AbendException(999);
     }

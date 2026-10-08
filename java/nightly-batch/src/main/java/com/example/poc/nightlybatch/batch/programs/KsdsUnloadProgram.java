@@ -24,6 +24,8 @@ final class KsdsUnloadProgram implements StepProgram {
 
     @Override
     public int run(JobRun run, JobManifest.Step step, StepIo io) throws Exception {
+        io.entry(name);
+        io.paragraph(name, "MAIN");
         KsdsTable ksds = programs.table(run, step, "KSDS");
         JobManifest.Dataset ds = run.ddDataset(step, "KSDS");
         int count;

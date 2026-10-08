@@ -42,6 +42,7 @@ used to provide is supplied from the outside:
 | IDCAMS `REPRO` (load / backup VSAM) | generated loader/unloader programs | `src/ksds/*.cbl` via `tools/gen-ksds-io.py` |
 | DFSORT steps | two small COBOL `SORT` programs | `src/CBSORT01.cbl`, `src/CBSORT02.cbl` |
 | EBCDIC overpunched signs in the data (`{A-I}J-R`) | compiled with `-fsign=EBCDIC` | `job.json` `build.cobc_flags` |
+| Paragraph execution trace (no mainframe equivalent — the harness's own evidence) | compiled with `-ftrace`; `tools/run-job.py` sets `COB_SET_TRACE=1` per step and normalises the output to one `PROGRAM Paragraph NAME` line per entered paragraph (`out/steps/*.trace.txt`); the Java side writes the same lines and the comparator diffs them | `job.json` `"trace": true` |
 | The system clock (`FUNCTION CURRENT-DATE`) | pinned with `COB_CURRENT_DATE="2022/07/18 00:00:00.00"` (the fractional part freezes the hundredths too — spike d) | `job.json` `env` |
 | VSAM AIX path (`XREFFIL1`) | `LOAD-XREFFILE` declares the `ALTERNATE RECORD KEY`; programs that open the file without it still work under BDB (spike c) | `job.json` `datasets.XREFFILE.alt_keys` |
 
@@ -99,6 +100,7 @@ executed in the instance; an abend is RC 12.
 ./tools/run-java.sh nightly-batch                     # Phase C: Spring Batch, same manifest
 ./tools/compare-outputs.py nightly-batch              # Phase D: byte-exact diff, 9 datasets + stdout + RC per fixture
 ./tools/check-module.sh nightly-batch                 # process conformance
+./tools/gen-coverage.py nightly-batch                 # coverage matrix from the paragraph traces
 ```
 
 `./tools/run-cobol.sh nightly-batch` is equivalent to `run-job.sh` (it
@@ -153,65 +155,28 @@ Determinism: running `run-job.sh` twice yields byte-identical golden masters
 
 ## 6. Paragraph → fixture coverage
 
-Legend: ✔ exercised by every fixture · fixture numbers = only those ·
-✘ not exercised (file-error branches that need a broken runtime, listed so
-the spec can say so honestly).
+<!-- BEGIN AUTO-GENERATED COVERAGE (gen-coverage.py) -->
+Coverage from the paragraph traces: **82 / 86 paragraphs** of 14 programs are entered by at least one of the 6 fixtures. Full matrix: [COVERAGE.md](./COVERAGE.md).
 
-### CBTRN02C (posting)
+Not reached by any fixture: `CBTRN02C.9999-ABEND-PROGRAM`, `CBTRN02C.9910-DISPLAY-IO-STATUS`, `CBTRN03C.9999-ABEND-PROGRAM`, `CBTRN03C.9910-DISPLAY-IO-STATUS`.
+<!-- END AUTO-GENERATED COVERAGE -->
 
-| Paragraph | Lines | Covered by | Notes |
-|---|---|---|---|
-| `0000`…`0500-*-OPEN` (6) | 236-344 | ✔ (success branch) | ✘ open-failure branch |
-| `1000-DALYTRAN-GET-NEXT` | 345-369 | ✔ | EOF via status 10 |
-| `1500-VALIDATE-TRAN` | 370-379 | ✔ | |
-| `1500-A-LOOKUP-XREF` | 380-392 | ✔; INVALID KEY → 100: 02 | |
-| `1500-B-LOOKUP-ACCT` | 393-423 | ✔; 101: 02 · 102: 01 02 03 04 06 · 103: 02 · 103-overrides-102: 02 · truncation of WS-TEMP-BAL: 03 | |
-| `2000-POST-TRANSACTION` | 424-445 | ✔ | |
-| `2500-WRITE-REJECT-REC` | 446-466 | 01 02 03 04 06 | ✘ write-failure branch |
-| `2700-UPDATE-TCATBAL` | 467-502 | ✔ | |
-| `2700-A-CREATE-TCATBAL-REC` | 503-525 | ✔ (type 03 rows; cat 9999 in 06) | |
-| `2700-B-UPDATE-TCATBAL-REC` | 526-544 | ✔ | |
-| `2800-UPDATE-ACCOUNT-REC` | 545-561 | ✔; high-order wrap: 03 | ✘ INVALID KEY → 109 |
-| `2900-WRITE-TRANSACTION-FILE` | 562-581 | ✔ | ✘ duplicate TRAN-ID |
-| `9000`…`9500-*-CLOSE` (6) | 582-691 | ✔ | |
-| `Z-GET-DB2-FORMAT-TIMESTAMP` | 692-706 | ✔ | pinned clock |
-| `9999-ABEND-PROGRAM`, `9910-DISPLAY-IO-STATUS` | 707-727 | ✘ (never reached in CBTRN02C) | same paragraphs reached in CBACT04C by 06 |
+The matrix is **generated from the GnuCOBOL paragraph traces** of the golden
+master (`-ftrace`, see spike k and ADR-17): `./tools/gen-coverage.py
+nightly-batch` rewrites [COVERAGE.md](./COVERAGE.md) and the summary above;
+`--check` is the drift gate used by `tools/check-module.sh`. The same traces
+are emitted by the Java side and diffed as a channel of their own, so "the
+Java executes the same paragraphs in the same order" is part of the
+byte-exact proof.
 
-### CBACT04C (interest)
-
-| Paragraph | Lines | Covered by | Notes |
-|---|---|---|---|
-| `0000`…`0400-*-OPEN` (5) | 234-324 | ✔ | |
-| main loop / control break | 188-232 | ✔ | the `ELSE PERFORM 1050-UPDATE-ACCOUNT` at 219-221 is unreachable — defect D1 |
-| `1000-TCATBALF-GET-NEXT` | 325-349 | ✔ | |
-| `1050-UPDATE-ACCOUNT` | 350-371 | ✔ (for every account but the last) | |
-| `1100-GET-ACCT-DATA` | 372-392 | ✔ | ✘ account missing |
-| `1110-GET-XREF-DATA` | 393-414 | ✔ (alternate-key read) | |
-| `1200-GET-INTEREST-RATE` | 415-442 | direct hit: 01 (accts 1-2) · DEFAULT fallback: 01 02 03 04 06 | |
-| `1200-A-GET-DEFAULT-INT-RATE` | 443-461 | ✔; abend branch: 06 | |
-| `1300-COMPUTE-INTEREST` | 462-472 | ✔; truncation cases: 03 | skipped when rate = 0 (type 03 rows) |
-| `1300-B-WRITE-TX` | 473-517 | ✔ | |
-| `1400-COMPUTE-FEES` | 518-521 | ✔ (empty paragraph) | |
-| `9000`…`9400-*-CLOSE` (5) | 522-612 | 01-05 | not reached in 06 |
-| `Z-GET-DB2-FORMAT-TIMESTAMP` | 613-627 | ✔ | |
-| `9999-ABEND-PROGRAM`, `9910-DISPLAY-IO-STATUS` | 628-650 | 06 | `FILE STATUS IS: NNNN0023` |
-
-### CBTRN03C (report)
-
-| Paragraph | Lines | Covered by | Notes |
-|---|---|---|---|
-| main loop | 157-218 | 01-05 | EOF branch re-adds the stale `TRAN-AMT` — defect D2; `NEXT SENTENCE` branch unreachable (REPTSORT pre-filters the same range) |
-| `0550-DATEPARM-READ` | 220-246 | 01-05 | |
-| `1000-TRANFILE-GET-NEXT` | 248-272 | 01-05 | |
-| `1100-WRITE-TRANSACTION-REPORT` | 274-292 | 01-05; page-break branch: 04 (and any fixture with > 16 detail lines) | |
-| `1110-WRITE-PAGE-TOTALS` | 293-305 | 01-05 | |
-| `1120-WRITE-ACCOUNT-TOTALS` | 306-317 | 01-05 | never printed for the last card |
-| `1110-WRITE-GRAND-TOTALS` | 318-323 | 01-05 | |
-| `1120-WRITE-HEADERS` | 324-342 | 01-05 | |
-| `1111-WRITE-REPORT-REC` | 343-360 | 01-05 | ✘ write failure |
-| `1120-WRITE-DETAIL` | 361-375 | 01-05 | |
-| `0000`…`0500-*-OPEN`, `9000`…`9500-*-CLOSE` | 376-483, 514-625 | 01-05 | |
-| `1500-A/B/C-LOOKUP-*` | 484-513 | 01-05 | ✘ INVALID KEY → abend (would need a type/category missing from the tables) |
+The four unreached paragraphs are the abend path of `CBTRN02C` and `CBTRN03C`
+(`9999-ABEND-PROGRAM`, `9910-DISPLAY-IO-STATUS`): reaching them needs a
+broken file (open/write failure) or a transaction type/category missing from
+the reference tables. The same two paragraphs of `CBACT04C` are reached by
+fixture 06. Not exercised either, inside otherwise covered paragraphs: the
+file-error branches of every open/close/read/write paragraph and the
+`INVALID KEY` → reason 109 branch of `2800-UPDATE-ACCOUNT-REC` (documented in
+the spec §9).
 
 ---
 
@@ -241,6 +206,8 @@ the spec can say so honestly).
 | g | `SORT … USING f1 f2 GIVING f3` on record-sequential files; stability? | **Pass**; output order of equal keys followed input order in the test, but it is not guaranteed — hence the TRAN-ID tie-break in `CBSORT02`. |
 | h | Indexed `OPEN OUTPUT` on an existing file; duplicate `WRITE`? | Truncates (old keys read status 23); duplicate write status 22. |
 | i | Spring Batch 5 + H2 file database: restart across two JVM runs? | **Pass.** Run 1 fails after STEP2 via a decider (`.fail()`); run 2 with the same identifying parameters skips STEP1-2 and completes STEP3-4; `initialize-schema=always` tolerates the existing schema. One decider *object per position* is required — a shared decider loops. |
+| j | Does `INITIALIZE` touch FILLER? Does `READ … INTO` move on INVALID KEY? | FILLER untouched (`KLMNO` survived); no move on a failed read. Both verified after the first Java run was red on exactly 22 FILLER bytes per created TCATBAL row. |
+| k | Can GnuCOBOL emit a paragraph trace without touching the source? | **Pass.** Compile with `-ftrace`; at run time `COB_SET_TRACE=1 COB_TRACE_FILE=<path> COB_TRACE_FORMAT="%I %S"` writes one line per entered paragraph: `SPKK Paragraph: 1000-FIRST`, sections as `SPKK   Section: 4000-SECTION`, program starts as `SPKK     Entry: SPKK`, called programs with their own id (`CEE3ABD     Entry: CEE3ABD`), plus `Source:`/`Program-Id:` header lines to drop. Deterministic across runs; no file without `COB_SET_TRACE`; stdout of the traced binary byte-identical to the untraced one. `PERFORM a THRU c` logs a, b, c; a `PERFORM VARYING` logs the paragraph once per iteration; paragraphs after a `SECTION` header belong to it (a `PERFORM section` runs them all). |
 
 ---
 

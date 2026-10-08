@@ -41,10 +41,17 @@ try:
     import jobman  # noqa: E402
 except ImportError:  # pragma: no cover
     jobman = None
+try:
+    import importlib  # noqa: E402
+    mf = importlib.import_module("make-fixture")   # record layouts (field names, kinds, scales)
+except Exception:  # pragma: no cover
+    mf = None
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 SAMPLE_RECORDS = 5
 CONTEXT_CHARS = 24
+FIELD_DIFFS_CAP = 25
+TRACE_CONTEXT = 5
 
 
 # ----------------------------------------------------------------------------- helpers
@@ -77,6 +84,85 @@ def load_lrecl_table(module: str, fixture: str) -> dict[str, int]:
     return table
 
 
+def load_layout_table(module: str, fixture: str) -> dict[str, dict]:
+    """file basename -> {"fields": layout, "key": (offset, length) | None}.
+    Layouts come from the manifest datasets (copybook / dataset name, see
+    make-fixture.layout_for_dataset) or from fixtures/<f>/compare.json
+    {"layouts": {"policy.dat": "add_motor_policy"}}."""
+    table: dict[str, dict] = {}
+    if mf is None:
+        return table
+    if jobman is not None and jobman.manifest_path(module).exists():
+        try:
+            m = jobman.load(module)
+            for name, ds in m["datasets"].items():
+                fields = mf.layout_for_dataset(name, ds)
+                if fields:
+                    key = (ds["key"][0], ds["key"][1]) if ds.get("key") else None
+                    table[ds["path"]] = {"fields": fields, "key": key}
+        except Exception:
+            pass
+    cj = REPO_ROOT / "cobol" / module / "fixtures" / fixture / "compare.json"
+    if cj.exists():
+        try:
+            for fname, lname in json.loads(cj.read_text()).get("layouts", {}).items():
+                if lname in mf.LAYOUTS:
+                    table[fname] = {"fields": mf.LAYOUTS[lname], "key": None}
+        except Exception:
+            pass
+    return table
+
+
+def field_diffs(a: bytes, b: bytes, lrecl: int, layout: dict) -> list[dict]:
+    """Decode every differing record with the copybook layout and name the
+    fields whose values differ, with the record key for the reader."""
+    fields = layout["fields"]
+    key = layout["key"]
+    out: list[dict] = []
+    n = min(len(a), len(b)) // lrecl
+    for r in range(n):
+        ra = a[r * lrecl:(r + 1) * lrecl]
+        rb = b[r * lrecl:(r + 1) * lrecl]
+        if ra == rb:
+            continue
+        sa = ra.decode("latin-1")
+        sb = rb.decode("latin-1")
+        try:
+            da = mf.parse_record(sa, fields)
+            db = mf.parse_record(sb, fields)
+        except Exception:
+            continue
+        if key:
+            keytext = sa[key[0]:key[0] + key[1]]
+            keyname = "key"
+        else:   # no manifest key (sequential dataset): identify the record by its first field
+            keyname = mf._field(fields[0])[0]
+            keytext = str(da.get(keyname))
+        for f in fields:
+            name = mf._field(f)[0]
+            if da.get(name) != db.get(name):
+                out.append({"record": r + 1, "key_field": keyname, "key": keytext, "field": name,
+                            "cobol": str(da.get(name)), "java": str(db.get(name))})
+                if len(out) >= FIELD_DIFFS_CAP:
+                    return out
+    return out
+
+
+def trace_report(name: str, a: bytes, b: bytes) -> dict:
+    """Paragraph traces (out/steps/*.trace.txt): find the first entry where the
+    two sides enter different paragraphs."""
+    la = a.decode("latin-1").splitlines()
+    lb = b.decode("latin-1").splitlines()
+    n = min(len(la), len(lb))
+    i = next((k for k in range(n) if la[k] != lb[k]), n)
+    rep = {"file": name, "kind": "trace", "entries_cobol": len(la), "entries_java": len(lb),
+           "entry_no": i + 1,
+           "cobol": la[i] if i < len(la) else "<end of trace>",
+           "java": lb[i] if i < len(lb) else "<end of trace>",
+           "context": la[max(0, i - TRACE_CONTEXT):i]}
+    return rep
+
+
 def is_utf8(raw: bytes) -> bool:
     try:
         raw.decode("utf-8")
@@ -99,7 +185,7 @@ def record_count(raw: bytes, lrecl: int | None) -> int:
     return raw.count(b"\n") + (0 if raw.endswith(b"\n") else 1)
 
 
-def binary_report(name: str, a: bytes, b: bytes, lrecl: int | None) -> dict:
+def binary_report(name: str, a: bytes, b: bytes, lrecl: int | None, layout: dict | None = None) -> dict:
     rep: dict = {"file": name, "kind": "binary", "lrecl": lrecl,
                  "size_cobol": len(a), "size_java": len(b),
                  "records_compared": max(record_count(a, lrecl), record_count(b, lrecl)),
@@ -143,23 +229,32 @@ def binary_report(name: str, a: bytes, b: bytes, lrecl: int | None) -> dict:
     rep["records_differing"] = len({i // width for i in range(n) if a[i] != b[i]}) + \
         (record_count(a[n:], lrecl) if len(a) > n else record_count(b[n:], lrecl))
     rep["samples"] = samples
+    if lrecl and layout:
+        rep["field_diffs"] = field_diffs(a, b, lrecl, layout)
     return rep
 
 
-def compare_file(name: str, a: bytes, b: bytes, lrecl: int | None, summary: dict) -> dict | None:
+def compare_file(name: str, a: bytes, b: bytes, lrecl: int | None, summary: dict,
+                 layout: dict | None = None) -> dict | None:
     """Returns a diff entry or None when identical. Updates summary counters."""
+    is_trace = name.endswith(".trace.txt")
     summary["files_compared"] += 1
     summary["bytes_compared"] += max(len(a), len(b))
-    summary["records_compared"] += max(record_count(a, lrecl), record_count(b, lrecl))
+    if is_trace:
+        summary["trace_entries_compared"] = summary.get("trace_entries_compared", 0) + max(record_count(a, None), record_count(b, None))
+    else:
+        summary["records_compared"] += max(record_count(a, lrecl), record_count(b, lrecl))
     if a == b:
         return None
     summary["files_differing"] += 1
     differing = count_differing_bytes(a, b)
     summary["bytes_differing"] += differing
+    if is_trace:
+        return trace_report(name, a, b)
     if lrecl is None and is_utf8(a) and is_utf8(b):
         return {"file": name, "diff": "".join(diff_text(a.decode("utf-8"), b.decode("utf-8"))),
                 "bytes_compared": max(len(a), len(b)), "bytes_differing": differing}
-    return binary_report(name, a, b, lrecl)
+    return binary_report(name, a, b, lrecl, layout)
 
 
 # ----------------------------------------------------------------------------- per fixture
@@ -174,6 +269,7 @@ def compare_fixture(module: str, fixture: str) -> tuple[bool, dict]:
         return False, {"error": f"no java-run at {jr} (run the Java side first)"}
 
     lrecl_table = load_lrecl_table(module, fixture)
+    layout_table = load_layout_table(module, fixture)
     summary = {"files_compared": 0, "records_compared": 0, "bytes_compared": 0,
                "bytes_differing": 0, "files_differing": 0}
     report: dict = {"fixture": fixture, "module": module, "summary": summary, "diffs": []}
@@ -216,7 +312,7 @@ def compare_fixture(module: str, fixture: str) -> tuple[bool, dict]:
         for f in sorted(gm_files & jr_files):
             a = (gm_out / f).read_bytes()
             b = (jr_out / f).read_bytes()
-            entry = compare_file(str(f), a, b, lrecl_table.get(f.name), summary)
+            entry = compare_file(str(f), a, b, lrecl_table.get(f.name), summary, layout_table.get(f.name))
             if entry:
                 ok = False
                 report["diffs"].append(entry)
@@ -225,7 +321,8 @@ def compare_fixture(module: str, fixture: str) -> tuple[bool, dict]:
 
 
 def fmt_summary(s: dict) -> str:
-    return (f"files {s['files_compared']} · records {s['records_compared']} · "
+    trace = f" · trace entries {s['trace_entries_compared']}" if s.get("trace_entries_compared") else ""
+    return (f"files {s['files_compared']} · records {s['records_compared']}{trace} · "
             f"bytes {s['bytes_compared']} · differing {s['bytes_differing']}")
 
 
@@ -233,6 +330,11 @@ def print_diff_entry(d: dict) -> None:
     if "diff" in d:
         print(f"  --- {d['file']} ---")
         print(d["diff"])
+    elif d.get("kind") == "trace":
+        print(f"  --- {d['file']} (paragraph trace, cobol {d['entries_cobol']} entries, java {d['entries_java']}) ---")
+        for c in d.get("context", []):
+            print(f"         {c}")
+        print(f"  trace: first divergence at entry {d['entry_no']}: cobol [{d['cobol']}] vs java [{d['java']}]")
     elif d.get("kind") == "binary":
         fd = d.get("first_diff")
         print(f"  --- {d['file']} (binary, lrecl={d['lrecl']}, sizes cobol={d['size_cobol']} java={d['size_java']}, "
@@ -242,6 +344,9 @@ def print_diff_entry(d: dict) -> None:
                   f"cobol=0x{fd['cobol_hex']} java=0x{fd['java_hex']}")
             print(f"    cobol: {fd['cobol_text']}")
             print(f"    java : {fd['java_text']}")
+        for x in d.get("field_diffs", []):
+            key = f" ({x.get('key_field', 'key')}={x['key'].strip()})" if x.get("key") else ""
+            print(f"  record {x['record']}{key}: {x['field']} cobol={x['cobol']} java={x['java']}")
     else:
         print(f"  {d}")
 

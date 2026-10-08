@@ -19,6 +19,7 @@ import java.util.List;
 final class MergeSortProgram implements StepProgram {
     @Override
     public int run(JobRun run, JobManifest.Step step, StepIo io) throws Exception {
+        io.entry("CBSORT01");                                                // no paragraph labels in CBSORT01
         int lrecl = Layouts.TRAN.lrecl();
         List<String> all = new ArrayList<>(FixedRecordFile.readAll(run.dd(step, "SORTIN1"), lrecl));
         all.addAll(FixedRecordFile.readAll(run.dd(step, "SORTIN2"), lrecl));

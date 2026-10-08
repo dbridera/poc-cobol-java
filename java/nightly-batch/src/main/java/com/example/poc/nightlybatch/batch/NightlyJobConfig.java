@@ -20,6 +20,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 import java.math.BigDecimal;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 
 /**
@@ -70,11 +71,13 @@ public class NightlyJobConfig {
             }
             Files.createDirectories(run.stepsDir());
             int rc;
-            try (StepIo io = StepIo.open(run.stepsDir().resolve(nn + "-" + ms.name() + ".stdout.txt"))) {
+            Path traceFile = run.manifest().trace() ? run.stepsDir().resolve(nn + "-" + ms.name() + ".trace.txt") : null;
+            try (StepIo io = StepIo.open(run.stepsDir().resolve(nn + "-" + ms.name() + ".stdout.txt"), traceFile)) {
                 try {
                     rc = programs.forStep(ms).run(run, ms, io);
                 } catch (AbendException abend) {
                     // COBOL: CEE3ABD.cbl:23-25 — the stub's DISPLAY, then STOP RUN with RETURN-CODE 12
+                    io.entry("CEE3ABD");
                     io.display("CEE3ABD: USER ABEND U", CobolDisplay.signedBinary(BigDecimal.valueOf(abend.abendCode()), 9));
                     rc = AbendException.RC;
                 }

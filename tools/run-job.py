@@ -40,6 +40,7 @@ from __future__ import annotations
 
 import argparse
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -52,6 +53,22 @@ import jobman  # noqa: E402
 REPO_ROOT = Path(__file__).resolve().parent.parent
 
 ABEND_RC = 12
+TRACE_LINE = re.compile(r"^(\S+)\s+(Entry|Paragraph|Section):\s+(\S+)\s*$")
+
+
+def normalise_trace(raw: Path, out: Path) -> None:
+    """GnuCOBOL `-ftrace` output (COB_TRACE_FORMAT="%I %S") -> canonical trace:
+    one line per entered paragraph/section/program entry, `PROGRAM Kind NAME`,
+    header lines (`Source:`, `Program-Id:`) dropped. The Java side writes the
+    same form, so the two traces are diffed as a channel of their own."""
+    lines = []
+    if raw.exists():
+        for ln in raw.read_text(encoding="latin-1").splitlines():
+            m = TRACE_LINE.match(ln)
+            if m:
+                lines.append(f"{m.group(1)} {m.group(2)} {m.group(3)}")
+        raw.unlink()
+    out.write_text("".join(l + "\n" for l in lines), encoding="latin-1")
 
 
 # ----------------------------------------------------------------------------- helpers
@@ -134,6 +151,7 @@ def build_cobol(module: str, m: dict, verbose: bool) -> None:
         srcs = [mod_dir / s for s in m["build"]["executables"][name]]
         cpy_dir = mod_dir / "copybooks"
         deps = list(srcs) + (list(cpy_dir.glob("*.cpy")) if cpy_dir.exists() else [])
+        deps.append(jobman.manifest_path(module))   # compiler flags live in the manifest
         if target.exists() and all(target.stat().st_mtime >= d.stat().st_mtime for d in deps):
             continue
         if verbose:
@@ -211,10 +229,17 @@ def run_cobol_job(module: str, m: dict, sandbox: Path, runs: list[dict], overrid
                 env["PARM"] = parm_override
 
             out_file = sandbox / "out" / "steps" / f"{st['nn']}-{st['name']}.stdout.txt"
+            trace_raw = sandbox / "out" / "steps" / f"{st['nn']}-{st['name']}.trace.raw"
+            if m.get("trace"):
+                env["COB_SET_TRACE"] = "1"
+                env["COB_TRACE_FILE"] = str(trace_raw)
+                env["COB_TRACE_FORMAT"] = "%I %S"
             with out_file.open("wb") as fh_out, open(os.devnull, "rb") as fh_in:
                 res = subprocess.run([str(bin_dir / st["exec"])], cwd=sandbox, env=env,
                                      stdin=fh_in, stdout=fh_out, stderr=subprocess.PIPE)
             rc = res.returncode
+            if m.get("trace"):
+                normalise_trace(trace_raw, trace_raw.with_suffix("").with_suffix(".trace.txt"))
             if res.stderr:
                 stderr_chunks.append(f"=== {st['nn']}-{st['name']} ===\n" + res.stderr.decode("latin-1"))
             (sandbox / "out" / "steps" / f"{st['nn']}-{st['name']}.rc").write_text(f"{rc}\n")
