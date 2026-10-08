@@ -21,13 +21,13 @@ You're ready for the live demo.
 
 Checklist de escena:
 
-- Una sola ventana de terminal, fuente grande (18 pt o más), fondo claro u oscuro pero con buen contraste. Terminal.app, iTerm2 o la terminal de VS Code: las tres abren los links `file://` con clic.
+- Una sola ventana de terminal, fuente grande (18 pt o más), fondo claro u oscuro pero con buen contraste. La terminal integrada de VS Code es la más cómoda: los archivos se abren en el mismo editor, al lado de la terminal.
 - El navegador abierto en una pestaña vacía (el visor se abre solo cuando toca).
 - `claude` con sesión iniciada (`claude --version` responde). El agente en vivo usa la suscripción, no una API key.
 - Si la red es dudosa, probar antes `./tools/demo-commands.sh agentic-eval --replay`: reproduce la grabación y no necesita red.
 - Cerrar todo lo demás. Notificaciones apagadas.
 
-Todos los comandos del recorrido llevan `--step`: el script explica, espera Enter, corre el comando, lista los artefactos y vuelve a esperar. El ritmo lo manejás vos con Enter. En las listas de artefactos, un número abre el ítem: los archivos (COBOL, Java, spec, salidas, informe) en el editor de VS Code, los html en el navegador, y los ítems marcados "(carpeta)" en Finder. Desde la terminal de VS Code, el clic en un link de archivo también lo abre en el editor; el clic en una carpeta solo la revela. Enter solo sigue.
+Todos los comandos del recorrido llevan `--step`: el script explica, espera Enter, corre el comando, lista los artefactos y vuelve a esperar. El ritmo lo manejás vos con Enter. En las listas de artefactos, un número abre el ítem: los archivos (COBOL, Java, spec, salidas, informe) en VS Code, los html en el navegador, y los ítems marcados "(carpeta)" en Finder. En la terminal de VS Code los paths se muestran sin adorno y Cmd+clic los abre en el editor; en Terminal.app o iTerm2 son links y Cmd+clic los abre con la aplicación por defecto, así que ahí conviene usar el número. Enter solo sigue.
 
 ---
 

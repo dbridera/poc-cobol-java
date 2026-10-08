@@ -142,16 +142,23 @@ red_lines() {
   echo "$hits" | sed "s/^/${RED}${BOLD}    /; s/\$/${RESET}/"
 }
 
-# link <relative path> → OSC-8 hyperlink (clickable in Terminal.app / iTerm2 / VS Code terminal)
-link() { printf '\e]8;;file://%s\e\\%s\e]8;;\e\\' "$REPO_ROOT/$1" "$1"; }
+# link <relative path>: in the VS Code terminal print the bare path (VS Code links workspace paths itself and
+# Cmd+click opens them in the editor; an OSC-8 file:// link would go to the OS default app instead);
+# elsewhere an OSC-8 hyperlink (Terminal.app, iTerm2).
+link() {
+  if [[ "${TERM_PROGRAM:-}" == "vscode" ]]; then printf '%s' "$1"
+  else printf '\e]8;;file://%s\e\\%s\e]8;;\e\\' "$REPO_ROOT/$1" "$1"; fi
+}
 
-# open_path <path>: directories and html in Finder/browser; text in the editor when `code` exists
+# open_path <path>: html in the browser, folders in Finder, everything else in VS Code
+# (`code` CLI when on the PATH, else the app by bundle id, so it works without the shell command installed)
 open_path() {
   local p="$1"
   if [[ "$p" == *.html ]]; then open "$p"
-  elif [[ -d "$p" ]]; then open "$p"                                   # Finder (code would add the folder to the workspace)
-  elif command -v code >/dev/null 2>&1; then code -r -g "$p"            # editor, reusing the window
-  else open "$p"; fi
+  elif [[ -d "$p" ]]; then open "$p"
+  elif command -v code >/dev/null 2>&1; then code -r -g "$p"
+  elif open -b com.microsoft.VSCode "$p" 2>/dev/null; then :
+  else open -t "$p"; fi
 }
 
 # links "label|path" ... : list the intermediate artifacts of a step as clickable links;
