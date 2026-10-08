@@ -15,6 +15,7 @@
 #   ./tools/demo-commands.sh module-3     # Nightly batch: 4-step JCL job (CardDemo), restart + abend — 6 fixtures
 #   ./tools/demo-commands.sh negative-control  # two sabotages in module 3 (a rounding mode; "fixing" a legacy bug): field-level red diff + divergent paragraph, revert
 #   ./tools/demo-commands.sh agentic-eval [module]  # the equivalence-validator AGENT runs the validation headless (claude -p); --replay plays the recorded transcript
+#   ./tools/demo-commands.sh viewer [module]    # open the COBOL ↔ Java side-by-side viewer + the 30-second on-stage script
 #   ./tools/demo-commands.sh explore [module]   # every artifact of a module as clickable links; type a number to open one
 #   ./tools/demo-commands.sh conformance  # tools/check-module.sh --all: every module went through the same 5 phases
 #   ./tools/demo-commands.sh proof        # validation/reports/*.json + cross-module summary (computed, not hard-coded)
@@ -200,7 +201,7 @@ links_for() {
   fi
   if [[ "$ph" == D || "$ph" == all ]]; then
     items+=("$(T 'agentic eval report (diffs: [] is the contract)' 'informe del agentic eval (diffs: [] es el contrato)')|validation/reports/$m.json"
-            "$(T 'COBOL ↔ Java side-by-side viewer' 'visor lado a lado COBOL ↔ Java')|cobol/$m/traceability.html"
+            "$(T "★ COBOL ↔ Java side-by-side viewer — or: ./tools/demo-commands.sh viewer $m" "★ visor lado a lado COBOL ↔ Java — o bien: ./tools/demo-commands.sh viewer $m")|cobol/$m/traceability.html"
             "$(T 'paragraph coverage, generated from the traces' 'cobertura por párrafo, generada desde las trazas')|cobol/$m/COVERAGE.md"
             "$(T 'decisions taken along the way (ADRs)' 'decisiones tomadas en el camino (ADR)')|docs/methodology/DECISIONS.md")
   fi
@@ -406,10 +407,7 @@ module-3() {
     moment "$(T 'did we translate everything? (paragraph traces, coverage, side-by-side viewer)' '¿tradujimos todo? (traza de párrafos, cobertura, visor lado a lado)')" \
       "$(T 'Every paragraph GnuCOBOL enters is traced; the Java emits the same trace and it is part of the diff.' 'Cada párrafo que entra el COBOL queda en la traza; el Java emite la misma traza y es parte de la comparación.')"
     grep -A3 "BEGIN AUTO-GENERATED COVERAGE" cobol/nightly-batch/README.md | grep -v "^<!--" | sed 's/^/    /'
-    echo "    $(T 'viewer' 'visor'): cobol/nightly-batch/traceability.html"
-    echo "${DIM}    $(T 'on stage: click a paragraph on the left → the Java that translates it on the right; read its "Qué hace" line' 'en escena: clic en un párrafo a la izquierda → el Java que lo traduce a la derecha; leer su línea "Qué hace"')${RESET}"
-    if [[ "$(uname)" == "Darwin" ]]; then open cobol/nightly-batch/traceability.html 2>/dev/null || true; fi
-    pause
+    viewer nightly-batch
   fi
 
   result_summary "3" "$(T 'Module 3 (nightly batch, 4 JCL steps)' 'Módulo 3 (cierre nocturno, 4 pasos JCL)')" "6" "6" \
@@ -418,8 +416,8 @@ module-3() {
 }
 
 negative-control() {
-  module_header "NC" "$(T 'Negative control — does the harness bite?' 'Control negativo: ¿el harness muerde?')" "nightly-batch" \
-    "$(T 'how do we know the diff would catch a translation that is wrong by one cent?' '¿cómo sabemos que la comparación atraparía una traducción equivocada en un centavo?')"
+  module_header "NC" "$(T 'Negative control — does the agentic eval catch a wrong translation?' 'Control negativo: ¿el agentic eval detecta una traducción equivocada?')" "nightly-batch" \
+    "$(T 'how do we know the verification would catch a translation that is wrong by one cent?' '¿cómo sabemos que la verificación atraparía una traducción equivocada en un centavo?')"
   local f=java/nightly-batch/src/main/java/com/example/poc/nightlybatch/service/InterestCalculator.java
   local out; out="$(mktemp)"
   echo
@@ -506,6 +504,23 @@ agentic-eval() {
   echo "${GREEN}${BOLD}  $(T 'The agent ran both sides and compared them; a person reads the report and signs the green.' 'El agente corrió los dos lados y los comparó; una persona lee el informe y firma el verde.')${RESET}"
 }
 
+# viewer <module>: open the COBOL ↔ Java side-by-side viewer and say what to do with it on stage
+viewer() {
+  local m="${1:-nightly-batch}" f="cobol/${1:-nightly-batch}/traceability.html"
+  [[ -f "$f" ]] || { echo "${RED}$(T 'no viewer for' 'no hay visor para') $m ($(T 'run' 'correr') ./tools/render-traceability.py $m)${RESET}"; return 1; }
+  echo
+  echo "${CYAN}${BOLD}  $(T 'COBOL ↔ Java VIEWER' 'VISOR COBOL ↔ JAVA') — $(link "$f")${RESET}"
+  echo "${DIM}  $(T 'What it is: the COBOL on the left, the Java on the right, linked by the citations every Java method carries.' 'Qué es: el COBOL a la izquierda, el Java a la derecha, unidos por las citas que lleva cada método Java.')${RESET}"
+  echo "  ${BOLD}$(T 'On stage (30 seconds):' 'En escena (30 segundos):')${RESET}"
+  echo "    1. $(T 'Read the program summary at the top of the left pane (what the program does, in business terms).' 'Leer el resumen del programa arriba del panel izquierdo (qué hace, en términos de negocio).')"
+  echo "    2. $(T 'Click a blue paragraph row, e.g. 1300-COMPUTE-INTEREST: the right pane jumps to the Java that translates it and marks the line.' 'Clic en una fila azul, por ejemplo 1300-COMPUTE-INTEREST: el panel derecho salta al Java que lo traduce y marca la línea.')"
+  echo "    3. $(T 'Read the "Qué hace" line under the paragraph and in the middle bar: the rule in plain language, with its spec section.' 'Leer la línea "Qué hace" debajo del párrafo y en la barra del medio: la regla en lenguaje llano, con su sección de la especificación.')"
+  echo "    4. $(T 'Click a COBOL: citation in the Java: the left pane jumps to those lines. The badges say in how many test cases the paragraph ran.' 'Clic en una cita COBOL: del Java: el panel izquierdo salta a esas líneas. Las etiquetas dicen en cuántos casos de prueba se ejecutó el párrafo.')"
+  echo "  ${DIM}$(T 'Every paragraph of the three business programs is explained (PARAGRAPHS.md) and cited by the Java.' 'Los 86 párrafos están explicados (PARAGRAPHS.md) y citados por el Java.')${RESET}"
+  if [[ "$(uname)" == "Darwin" ]]; then open "$f" 2>/dev/null || true; fi
+  pause
+}
+
 # explore <module>: the whole trail of artifacts of a module, to open and read on stage
 explore() {
   local m="${1:-nightly-batch}"
@@ -568,12 +583,13 @@ case "${1:-}" in
   negative-control) negative-control ;;
   agentic-eval) agentic-eval "${2:-nightly-batch}" ;;
   explore)   explore "${2:-nightly-batch}" ;;
+  viewer)    viewer "${2:-nightly-batch}" ;;
   conformance) conformance ;;
   proof)     proof ;;
   all)       module-0; module-1b; module-1a; module-2; module-3; conformance; proof ;;
   *)
     cat >&2 <<EOF
-usage: $0 {preflight|module-0|module-1b|module-1a|module-2|module-3|negative-control|agentic-eval [module]|explore [module]|conformance|proof|all} [--step] [--en] [--quiet] [--replay]
+usage: $0 {preflight|module-0|module-1b|module-1a|module-2|module-3|negative-control|agentic-eval [module]|explore [module]|viewer [module]|conformance|proof|all} [--step] [--en] [--quiet] [--replay]
 
   preflight         run ~30 min before demo: toolchain check + clean state + warm-up
   module-0          VSAM / file access (add-motor-policy)                 — 3 fixtures
@@ -583,6 +599,7 @@ usage: $0 {preflight|module-0|module-1b|module-1a|module-2|module-3|negative-con
   module-3          Nightly batch: 4-step JCL job, restart, abend (CardDemo) — 6 fixtures
   negative-control  two sabotages in module 3 → field-level red diff (one cent) and a divergent paragraph → revert
   agentic-eval      the equivalence-validator agent validates a module headless (claude -p), rendered live; --replay plays the recording
+  viewer            open the COBOL ↔ Java side-by-side viewer of a module and print the 30-second on-stage script
   explore           list every artifact of a module as clickable links; a number opens it (viewer, spec, report, outputs…)
   conformance       tools/check-module.sh --all (same five phases, same tooling, every module)
   proof             validation/reports/*.json + cross-module summary (computed)
