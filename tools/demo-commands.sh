@@ -508,15 +508,26 @@ agentic-eval() {
 viewer() {
   local m="${1:-nightly-batch}" f="cobol/${1:-nightly-batch}/traceability.html"
   [[ -f "$f" ]] || { echo "${RED}$(T 'no viewer for' 'no hay visor para') $m ($(T 'run' 'correr') ./tools/render-traceability.py $m)${RESET}"; return 1; }
+  # facts from the module's own index: paragraphs, cited, described, coverage, and an example paragraph that the Java cites
+  local facts; facts="$(python3 - "cobol/$m/traceability.json" <<'PY'
+import json, sys
+d = json.load(open(sys.argv[1])); s = d["stats"]
+ex = next((p["name"] for f in d["cobol"] for p in f["paragraphs"] if p["cited_by"] and p["name"] not in ("MAIN",)), "")
+print(s["paragraphs"], s["cited"], s["described"], len(s["fixtures"]), ex)
+PY
+)"
+  local n_par n_cit n_desc n_fix example; read -r n_par n_cit n_desc n_fix example <<< "$facts"
   echo
   echo "${CYAN}${BOLD}  $(T 'COBOL ↔ Java VIEWER' 'VISOR COBOL ↔ JAVA') — $(link "$f")${RESET}"
   echo "${DIM}  $(T 'What it is: the COBOL on the left, the Java on the right, linked by the citations every Java method carries.' 'Qué es: el COBOL a la izquierda, el Java a la derecha, unidos por las citas que lleva cada método Java.')${RESET}"
   echo "  ${BOLD}$(T 'On stage (30 seconds):' 'En escena (30 segundos):')${RESET}"
   echo "    1. $(T 'Read the program summary at the top of the left pane (what the program does, in business terms).' 'Leer el resumen del programa arriba del panel izquierdo (qué hace, en términos de negocio).')"
-  echo "    2. $(T 'Click a blue paragraph row, e.g. 1300-COMPUTE-INTEREST: the right pane jumps to the Java that translates it and marks the line.' 'Clic en una fila azul, por ejemplo 1300-COMPUTE-INTEREST: el panel derecho salta al Java que lo traduce y marca la línea.')"
-  echo "    3. $(T 'Read the "Qué hace" line under the paragraph and in the middle bar: the rule in plain language, with its spec section.' 'Leer la línea "Qué hace" debajo del párrafo y en la barra del medio: la regla en lenguaje llano, con su sección de la especificación.')"
-  echo "    4. $(T 'Click a COBOL: citation in the Java: the left pane jumps to those lines. The badges say in how many test cases the paragraph ran.' 'Clic en una cita COBOL: del Java: el panel izquierdo salta a esas líneas. Las etiquetas dicen en cuántos casos de prueba se ejecutó el párrafo.')"
-  echo "  ${DIM}$(T 'Every paragraph of the three business programs is explained (PARAGRAPHS.md) and cited by the Java.' 'Los 86 párrafos están explicados (PARAGRAPHS.md) y citados por el Java.')${RESET}"
+  echo "    2. $(T "Click a blue paragraph row, e.g. $example: the right pane jumps to the Java that translates it and marks the line." "Clic en una fila azul, por ejemplo $example: el panel derecho salta al Java que lo traduce y marca la línea.")"
+  if [[ "$n_desc" -gt 0 ]]; then
+    echo "    3. $(T 'Read the "Qué hace" line under the paragraph and in the middle bar: the rule in plain language, with its spec section.' 'Leer la línea "Qué hace" debajo del párrafo y en la barra del medio: la regla en lenguaje llano, con su sección de la especificación.')"
+  fi
+  echo "    $([[ "$n_desc" -gt 0 ]] && echo 4 || echo 3). $(T 'Click a COBOL: citation in the Java: the left pane jumps to those lines.' 'Clic en una cita COBOL: del Java: el panel izquierdo salta a esas líneas.')$([[ "$n_fix" -gt 0 ]] && echo " $(T 'The badges say in how many test cases the paragraph ran.' 'Las etiquetas dicen en cuántos casos de prueba se ejecutó el párrafo.')")"
+  echo "  ${DIM}$(T "This module: $n_par paragraphs, $n_cit cited by the Java, $n_desc with a 'Qué hace' line$([[ "$n_fix" -gt 0 ]] && echo ", coverage from $n_fix test cases" || echo ", no paragraph coverage (no trace channel)")." "Este módulo: $n_par párrafos, $n_cit citados por el Java, $n_desc con línea 'Qué hace'$([[ "$n_fix" -gt 0 ]] && echo ", cobertura de $n_fix casos de prueba" || echo ", sin cobertura por párrafo (sin canal de traza)").")${RESET}"
   if [[ "$(uname)" == "Darwin" ]]; then open "$f" 2>/dev/null || true; fi
   pause
 }
