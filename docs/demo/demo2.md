@@ -304,7 +304,7 @@ Respuesta ensayada a "¿tradujeron un error a propósito?": "Sí, dos, y podemos
 
 ## Slide 10 — Agentic evals: la prueba de sabotaje
 
-**Eyebrow:** Prueba de sabotaje · ¿el verde es decorativo?
+**Eyebrow:** Control negativo · rompemos el Java a propósito
 
 **Título:** Agentic evals: un centavo alcanza para ponerlo en rojo.
 
@@ -312,7 +312,7 @@ Respuesta ensayada a "¿tradujeron un error a propósito?": "Sí, dos, y podemos
 
 **Cuerpo:**
 
-**Qué es un agentic eval**, en cuatro pasos: el agente corre el COBOL y el Java con el mismo caso de prueba → compara byte a byte todos los canales (archivos, pantalla, códigos de retorno, tablas y el recorrido de párrafos) → entrega un informe JSON con registro, campo y los dos valores → una persona lo lee y firma el verde.
+**Qué es un agentic eval**, en cuatro pasos: el agente corre el COBOL y el Java con el mismo caso de prueba → compara byte a byte todos los canales (archivos, pantalla, códigos de retorno, tablas y el recorrido de párrafos) → entrega un informe JSON con registro, campo y los dos valores → una persona lo lee y aprueba el resultado.
 
 **Sabotaje 1 — un modo de redondeo.** Cambiamos truncar por redondear (`RoundingMode.DOWN` → `HALF_UP`) en el cálculo de interés.
 
@@ -325,10 +325,10 @@ Un centavo, en la cuenta 1. Rojo. Revertido: verde.
 > `cuenta 5: saldo cobol=1182.86 java=1198.69` (y los acumulados de ciclo)
 > `traza: primera divergencia en la entrada 68 — cobol 1000-TCATBALF-GET-NEXT vs java 1050-UPDATE-ACCOUNT`
 
-Rojo en el dato y rojo en el recorrido del programa. Revertido: verde.
+La verificación falla en el dato y en el recorrido del programa. Revertido: verde.
 
 **Notas para el presentador:**
-Es el momento más fuerte de la demo y conviene correrlo en vivo (`negative-control`, un minuto). Lo que demuestra: que el verde no es decorativo. Si el comparador no detectara un centavo, no serviría para banca. El segundo sabotaje tiene un detalle nuevo: además de comparar los datos, comparamos el recorrido de párrafos de los dos programas (la traza de ejecución) y el informe dice en qué entrada se separan y qué párrafo tomó cada lado. Para un ingeniero eso convierte "hay un byte distinto" en "el Java fue a actualizar la cuenta cuando el COBOL ya había terminado de leer". Insistir en la división de trabajo: el agente corre y compara; una persona lee el informe y decide qué significa. Los dos sabotajes están documentados y revertidos; el repositorio está en verde.
+Es el momento más fuerte de la demo y conviene correrlo en vivo (`negative-control`, un minuto). Lo que demuestra: que la verificación detecta un error real. Si no detectara un centavo, no serviría para banca. El segundo sabotaje tiene un detalle nuevo: además de comparar los datos, comparamos el recorrido de párrafos de los dos programas (la traza de ejecución) y el informe dice en qué entrada se separan y qué párrafo tomó cada lado. Para un ingeniero eso convierte "hay un byte distinto" en "el Java fue a actualizar la cuenta cuando el COBOL ya había terminado de leer". Insistir en la división de trabajo: el agente corre y compara; una persona lee el informe y decide qué significa. Los dos sabotajes están documentados y revertidos; el repositorio vuelve a pasar la verificación completa.
 
 ---
 
