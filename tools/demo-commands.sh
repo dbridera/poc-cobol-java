@@ -15,7 +15,7 @@
 #   ./tools/demo-commands.sh module-3     # Nightly batch: 4-step JCL job (CardDemo), restart + abend — 6 fixtures
 #   ./tools/demo-commands.sh negative-control  # two sabotages in module 3 (a rounding mode; "fixing" a legacy bug): field-level red diff + divergent paragraph, revert
 #   ./tools/demo-commands.sh agentic-eval [module]  # the equivalence-validator AGENT runs the validation headless (claude -p); --replay plays the recorded transcript
-#   ./tools/demo-commands.sh viewer [module]    # open the COBOL ↔ Java side-by-side viewer + the 30-second on-stage script
+#   ./tools/demo-commands.sh viewer [module]    # open the COBOL ↔ Java side-by-side viewer in the browser
 #   ./tools/demo-commands.sh explore [module]   # every artifact of a module as clickable links; type a number to open one
 #   ./tools/demo-commands.sh conformance  # tools/check-module.sh --all: every module went through the same 5 phases
 #   ./tools/demo-commands.sh proof        # validation/reports/*.json + cross-module summary (computed, not hard-coded)
@@ -550,17 +550,10 @@ ex = next((p["name"] for f in d["cobol"] for p in f["paragraphs"] if p["cited_by
 print(s["paragraphs"], s["cited"], s["described"], len(s["fixtures"]), ex)
 PY
 )"
-  local n_par n_cit n_desc n_fix example; read -r n_par n_cit n_desc n_fix example <<< "$facts"
+  local n_par n_cit n_desc n_fix; read -r n_par n_cit n_desc n_fix _ <<< "$facts"
   echo
   echo "${CYAN}${BOLD}  $(T 'COBOL ↔ Java VIEWER' 'VISOR COBOL ↔ JAVA') — $(link "$f")${RESET}"
   echo "${DIM}  $(T 'What it is: the COBOL on the left, the Java on the right, linked by the citations every Java method carries.' 'Qué es: el COBOL a la izquierda, el Java a la derecha, unidos por las citas que lleva cada método Java.')${RESET}"
-  echo "  ${BOLD}$(T 'On stage (30 seconds):' 'En escena (30 segundos):')${RESET}"
-  echo "    1. $(T 'Read the program summary at the top of the left pane (what the program does, in business terms).' 'Leer el resumen del programa arriba del panel izquierdo (qué hace, en términos de negocio).')"
-  echo "    2. $(T "Click a blue paragraph row, e.g. $example: the right pane jumps to the Java that translates it and marks the line." "Clic en una fila azul, por ejemplo $example: el panel derecho salta al Java que lo traduce y marca la línea.")"
-  if [[ "$n_desc" -gt 0 ]]; then
-    echo "    3. $(T 'Read the "Qué hace" line under the paragraph and in the middle bar: the rule in plain language, with its spec section.' 'Leer la línea "Qué hace" debajo del párrafo y en la barra del medio: la regla en lenguaje llano, con su sección de la especificación.')"
-  fi
-  echo "    $([[ "$n_desc" -gt 0 ]] && echo 4 || echo 3). $(T 'Click a COBOL: citation in the Java: the left pane jumps to those lines.' 'Clic en una cita COBOL: del Java: el panel izquierdo salta a esas líneas.')$([[ "$n_fix" -gt 0 ]] && echo " $(T 'The badges say in how many test cases the paragraph ran.' 'Las etiquetas dicen en cuántos casos de prueba se ejecutó el párrafo.')")"
   echo "  ${DIM}$(T "This module: $n_par paragraphs, $n_cit cited by the Java, $n_desc with a 'Qué hace' line$([[ "$n_fix" -gt 0 ]] && echo ", coverage from $n_fix test cases" || echo ", no paragraph coverage (no trace channel)")." "Este módulo: $n_par párrafos, $n_cit citados por el Java, $n_desc con línea 'Qué hace'$([[ "$n_fix" -gt 0 ]] && echo ", cobertura de $n_fix casos de prueba" || echo ", sin cobertura por párrafo (sin canal de traza)").")${RESET}"
   if [[ "$(uname)" == "Darwin" ]]; then open_html "$f" || true; fi
   pause
@@ -644,7 +637,7 @@ usage: $0 {preflight|module-0|module-1b|module-1a|module-2|module-3|negative-con
   module-3          Nightly batch: 4-step JCL job, restart, abend (CardDemo) — 6 fixtures
   negative-control  two sabotages in module 3 → field-level red diff (one cent) and a divergent paragraph → revert
   agentic-eval      the equivalence-validator agent validates a module headless (claude -p), rendered live; --replay plays the recording
-  viewer            open the COBOL ↔ Java side-by-side viewer of a module and print the 30-second on-stage script
+  viewer            open the COBOL ↔ Java side-by-side viewer of a module in the browser
   explore           list every artifact of a module as clickable links; a number opens it (viewer, spec, report, outputs…)
   conformance       tools/check-module.sh --all (same five phases, same tooling, every module)
   proof             validation/reports/*.json + cross-module summary (computed)

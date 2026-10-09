@@ -134,7 +134,7 @@ Coverage from the paragraph traces: 82 / 86 paragraphs of 14 programs ...
 Not reached by any fixture: CBTRN02C.9999-ABEND-PROGRAM, ...
 ```
 
-   Decir: "82 de 86 párrafos los ejecuta algún caso de prueba; los cuatro que faltan son los de caída por error de archivo, y los listamos en vez de esconderlos." Después se abre solo el visor en el navegador y la terminal imprime los cuatro pasos. Hacerlos, no más de 30 segundos:
+   Decir: "82 de 86 párrafos los ejecuta algún caso de prueba; los cuatro que faltan son los de caída por error de archivo, y los listamos en vez de esconderlos." Después se abre solo el visor en el navegador. En él, no más de 30 segundos:
 
    - Leer el resumen del programa arriba a la izquierda.
    - Clic en una fila azul, por ejemplo `1300-COMPUTE-INTEREST`. El panel derecho salta al Java y marca la línea.
@@ -231,7 +231,7 @@ Nota: el deck cuenta 12 casos y 4.914 registros porque deja afuera el módulo 2 
 
 ```bash
 ./tools/demo-commands.sh explore nightly-batch   # los 15 artefactos del módulo, numerados; un número los abre
-./tools/demo-commands.sh viewer nightly-batch    # abre el visor y repite los cuatro pasos
+./tools/demo-commands.sh viewer nightly-batch    # abre el visor en el navegador
 ```
 
 Útiles cuando preguntan "¿y la especificación?", "¿y el grafo de dependencias?", "¿dónde están los casos de prueba?".
