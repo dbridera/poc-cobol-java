@@ -48,6 +48,7 @@ public final class TransactionPoster {
      */
     // COBOL: CBTRN02C.cbl:424-445
     public int post(CobolRecord daly, CobolRecord tran, CobolRecord xrefWs, CobolRecord accountWs, CobolRecord tcatbalWs) {
+        io.paragraph("CBTRN02C", "2000-POST-TRANSACTION");
         tran.set("TRAN-ID", daly.get("TRAN-ID"));
         tran.set("TRAN-TYPE-CD", daly.get("TRAN-TYPE-CD"));
         tran.setDecimal("TRAN-CAT-CD", daly.decimal("TRAN-CAT-CD"));
@@ -60,6 +61,7 @@ public final class TransactionPoster {
         tran.set("TRAN-MERCHANT-ZIP", daly.get("TRAN-MERCHANT-ZIP"));
         tran.set("TRAN-CARD-NUM", daly.get("TRAN-CARD-NUM"));
         tran.set("TRAN-ORIG-TS", daly.get("TRAN-ORIG-TS"));
+        io.paragraph("CBTRN02C", "Z-GET-DB2-FORMAT-TIMESTAMP");
         tran.set("TRAN-PROC-TS", CobolTimestamp.db2Format(clock));
         updateTcatbal(daly, xrefWs, tcatbalWs);
         int reason = updateAccount(daly, accountWs);
@@ -69,11 +71,13 @@ public final class TransactionPoster {
 
     // COBOL: CBTRN02C.cbl:467-544 (2700-UPDATE-TCATBAL, 2700-A, 2700-B)
     private void updateTcatbal(CobolRecord daly, CobolRecord xrefWs, CobolRecord tcatbalWs) {
+        io.paragraph("CBTRN02C", "2700-UPDATE-TCATBAL");
         String key = xrefWs.get("XREF-ACCT-ID") + daly.get("TRAN-TYPE-CD") + daly.get("TRAN-CAT-CD");
         Optional<CobolRecord> found = tcatbal.read(key);
         if (found.isEmpty()) {
             io.display("TCATBAL record not found for key : ", key, ".. Creating.");
             // 2700-A-CREATE-TCATBAL-REC: INITIALIZE (FILLER untouched), key fields, ADD amount, WRITE
+            io.paragraph("CBTRN02C", "2700-A-CREATE-TCATBAL-REC");
             tcatbalWs.initialize();
             tcatbalWs.setDecimal("TRANCAT-ACCT-ID", xrefWs.decimal("XREF-ACCT-ID"));
             tcatbalWs.set("TRANCAT-TYPE-CD", daly.get("TRAN-TYPE-CD"));
@@ -84,6 +88,7 @@ public final class TransactionPoster {
             }
         } else {
             // 2700-B-UPDATE-TCATBAL-REC: ADD amount, REWRITE
+            io.paragraph("CBTRN02C", "2700-B-UPDATE-TCATBAL-REC");
             tcatbalWs.moveFrom(found.get());
             tcatbalWs.add("TRAN-CAT-BAL", daly.decimal("TRAN-AMT"));
             tcatbal.rewrite(tcatbalWs);
@@ -92,6 +97,7 @@ public final class TransactionPoster {
 
     // COBOL: CBTRN02C.cbl:545-561 (2800-UPDATE-ACCOUNT-REC)
     private int updateAccount(CobolRecord daly, CobolRecord accountWs) {
+        io.paragraph("CBTRN02C", "2800-UPDATE-ACCOUNT-REC");
         BigDecimal amt = daly.decimal("TRAN-AMT");
         accountWs.add("ACCT-CURR-BAL", amt);                  // no ON SIZE ERROR: high-order digits drop (ADR-12)
         if (amt.signum() >= 0) {
@@ -104,6 +110,7 @@ public final class TransactionPoster {
 
     // COBOL: CBTRN02C.cbl:562-581 (2900-WRITE-TRANSACTION-FILE)
     private void writeTransaction(CobolRecord tran) {
+        io.paragraph("CBTRN02C", "2900-WRITE-TRANSACTION-FILE");
         if (!transact.write(tran)) {
             throw new TransactionWriteFailed("22");
         }

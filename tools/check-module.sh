@@ -56,6 +56,22 @@ check_module() {
     else
       fail "2 render-dependencies.py --check reports drift (run ./tools/render-dependencies.py $m)"
     fi
+    if [[ -f "$cdir/traceability.html" ]]; then
+      if ./tools/render-traceability.py "$m" --check >/dev/null 2>&1; then
+        pass "2 traceability.html / traceability.json in sync with the sources"
+        if [[ -f "$cdir/PARAGRAPHS.md" ]]; then
+          undesc=$(python3 -c "import json,sys; d=json.load(open('$cdir/traceability.json')); print(sum(1 for f in d['cobol'] for p in f['paragraphs'] if not p['what']))")
+          [[ "$undesc" == "0" ]] && pass "2 PARAGRAPHS.md explains every paragraph shown in the viewer" \
+                                || warn "2 PARAGRAPHS.md leaves $undesc paragraph(s) without a 'Qué hace' line"
+        else
+          warn "2 no PARAGRAPHS.md (the viewer shows code without business explanations)"
+        fi
+      else
+        fail "2 traceability viewer drifted (run ./tools/render-traceability.py $m)"
+      fi
+    else
+      warn "2 no traceability.html (run ./tools/render-traceability.py $m)"
+    fi
   else
     fail "2 $cdir/DEPENDENCIES.md missing"
   fi
@@ -90,6 +106,21 @@ check_module() {
     ./tools/gen-ksds-io.py "$m" --check >/dev/null 2>&1 && pass "4 (job) generated KSDS loaders in sync" || fail "4 (job) src/ksds/ out of date (run ./tools/gen-ksds-io.py $m)"
     local nrecipe=0; for d in "$cdir"/fixtures/*/; do [[ -f "$d/fixture.json" ]] && nrecipe=$((nrecipe+1)); done
     [[ "$nrecipe" -eq "$nfix" ]] && pass "4 (job) every fixture has a fixture.json recipe" || warn "4 (job) $nrecipe/$nfix fixtures have fixture.json"
+    if python3 -c "import json,sys; sys.exit(0 if json.load(open('$cdir/job.json')).get('trace') else 1)"; then
+      local notrace=""
+      for d in "$cdir"/fixtures/*/; do
+        local f; f="$(basename "$d")"
+        ls "golden-master/$m/$f/out/steps/"*.trace.txt >/dev/null 2>&1 || notrace="$notrace $f"
+      done
+      [[ -z "$notrace" ]] && pass "4 (job) paragraph traces captured for every fixture" || fail "4 (job) fixtures without out/steps/*.trace.txt:$notrace"
+      if ./tools/gen-coverage.py "$m" --check >/dev/null 2>&1; then
+        pass "4 (job) COVERAGE.md and README summary in sync with the traces"
+      else
+        fail "4 (job) coverage drifted (run ./tools/gen-coverage.py $m)"
+      fi
+      local unreached; unreached="$(grep -o 'Not reached by any fixture: .*' "$cdir/README.md" | head -1)"
+      [[ -n "$unreached" ]] && warn "4 (job) $unreached"
+    fi
   fi
 
   # 5. Golden master per fixture

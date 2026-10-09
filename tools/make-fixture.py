@@ -129,6 +129,25 @@ LAYOUTS: dict[str, list[tuple]] = {
         ("TRAN-CAT-TYPE-DESC", "X", 50),
         ("FILLER",             "X", 4),
     ],
+    # CBTRN02C REJECT-RECORD (DALYTRAN record + WS-VALIDATION-TRAILER), 430 bytes
+    "carddemo_reject": [
+        ("TRAN-ID",            "X", 16),
+        ("TRAN-TYPE-CD",       "X", 2),
+        ("TRAN-CAT-CD",        "9", 4),
+        ("TRAN-SOURCE",        "X", 10),
+        ("TRAN-DESC",          "X", 100),
+        ("TRAN-AMT",           "S", 11, 2),
+        ("TRAN-MERCHANT-ID",   "9", 9),
+        ("TRAN-MERCHANT-NAME", "X", 50),
+        ("TRAN-MERCHANT-CITY", "X", 50),
+        ("TRAN-MERCHANT-ZIP",  "X", 10),
+        ("TRAN-CARD-NUM",      "X", 16),
+        ("TRAN-ORIG-TS",       "X", 26),
+        ("TRAN-PROC-TS",       "X", 26),
+        ("FILLER",             "X", 20),
+        ("WS-VALIDATION-FAIL-REASON",      "9", 4),
+        ("WS-VALIDATION-FAIL-REASON-DESC", "X", 76),
+    ],
     # CBTRN03C WS-DATEPARM-RECORD read INTO from an 80-byte record
     "carddemo_dateparm": [
         ("WS-START-DATE", "X", 10),
@@ -138,6 +157,22 @@ LAYOUTS: dict[str, list[tuple]] = {
     ],
 }
 FIELDS = LAYOUTS["add_motor_policy"]  # back-compat default for existing callers
+
+# copybook name (as written in job.json datasets[].copybook) -> layout name
+LAYOUT_BY_COPYBOOK = {
+    "CVTRA05Y": "carddemo_tran", "CVTRA06Y": "carddemo_tran",
+    "CVACT01Y": "carddemo_account", "CVACT03Y": "carddemo_xref",
+    "CVTRA01Y": "carddemo_tcatbal", "CVTRA02Y": "carddemo_discgrp",
+    "CVTRA03Y": "carddemo_trantype", "CVTRA04Y": "carddemo_trancatg",
+}
+# datasets without a copybook but with a known inline layout, by manifest dataset name
+LAYOUT_BY_DATASET = {"DALYREJS": "carddemo_reject", "DATEPARM": "carddemo_dateparm"}
+
+
+def layout_for_dataset(name: str, ds: dict):
+    """Layout (field list) of a job.json dataset, or None when the record has no known layout."""
+    lname = LAYOUT_BY_COPYBOOK.get(ds.get("copybook") or "") or LAYOUT_BY_DATASET.get(name)
+    return LAYOUTS.get(lname) if lname else None
 
 # EBCDIC overpunch of the last digit (as it appears after EBCDIC→ASCII conversion)
 _POS = "{ABCDEFGHI"

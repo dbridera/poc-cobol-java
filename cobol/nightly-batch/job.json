@@ -1,11 +1,12 @@
 {
   "job": "NIGHTLY",
   "source": "AWS CardDemo app/jcl: POSTTRAN -> TRANBKP -> INTCALC -> COMBTRAN -> TRANREPT (see original/jcl/)",
+  "trace": true,
   "env": {
     "COB_CURRENT_DATE": "2022/07/18 00:00:00.00"
   },
   "build": {
-    "cobc_flags": ["-x", "-O", "-Wall", "-fsign=EBCDIC", "-fassign-clause=external", "-I", "copybooks"],
+    "cobc_flags": ["-x", "-O", "-Wall", "-ftrace", "-fsign=EBCDIC", "-fassign-clause=external", "-I", "copybooks"],
     "executables": {
       "CBTRN02C":      ["src/CBTRN02C.cbl", "src/CEE3ABD.cbl"],
       "INTCALC":       ["src/INTCALC.cbl", "src/CBACT04C.cbl", "src/CEE3ABD.cbl"],

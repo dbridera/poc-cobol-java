@@ -41,6 +41,8 @@ If the programs are run from JCL with more than one step, or share files between
 - Mainframe services the programs call but GnuCOBOL lacks (`CEE3ABD`, PARM via LINKAGE, IDCAMS REPRO, DFSORT) get tiny **added** programs, documented in README Provenance → Added, never edits to the business programs. KSDS loaders/unloaders are generated: `./tools/gen-ksds-io.py <module>` (`--check` is the drift gate).
 - Validate with `./tools/jobman.py validate <module>`; capture with `./tools/run-job.sh <module>` (`run-cobol.sh` dispatches to it).
 
+Set `"trace": true` and `-ftrace` so every run captures the paragraph trace; after the golden master exists run `./tools/gen-coverage.py <module>` — the coverage matrix is generated from the traces (never hand-written) and `./tools/render-traceability.py <module>` renders the COBOL ↔ Java viewer once Phase C exists.
+
 Record in the README a **spike log** (what GnuCOBOL does with each unusual construct, with pass/fail) and a **faithful-defects register** (real bugs in the source, cited by line, with the fixture that shows them). Rule 5: they are replicated, not fixed.
 
 ## 4. Control-flow map

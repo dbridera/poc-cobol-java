@@ -1,6 +1,6 @@
 === 09-INTCALC ===
-libcob: warning: implicit CLOSE of TRANSACT-FILE ('TRANSACT')
-libcob: warning: implicit CLOSE of ACCOUNT-FILE ('ACCTFILE')
-libcob: warning: implicit CLOSE of DISCGRP-FILE ('DISCGRP')
-libcob: warning: implicit CLOSE of XREF-FILE ('XREFFILE')
-libcob: warning: implicit CLOSE of TCATBAL-FILE ('TCATBALF')
+libcob: src/CEE3ABD.cbl:23: warning: implicit CLOSE of TRANSACT-FILE ('TRANSACT')
+libcob: src/CEE3ABD.cbl:23: warning: implicit CLOSE of ACCOUNT-FILE ('ACCTFILE')
+libcob: src/CEE3ABD.cbl:23: warning: implicit CLOSE of DISCGRP-FILE ('DISCGRP')
+libcob: src/CEE3ABD.cbl:23: warning: implicit CLOSE of XREF-FILE ('XREFFILE')
+libcob: src/CEE3ABD.cbl:23: warning: implicit CLOSE of TCATBAL-FILE ('TCATBALF')

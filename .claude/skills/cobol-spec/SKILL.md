@@ -32,6 +32,10 @@ For **job modules** (`job.json` present): §3 lists datasets with LRECL, key and
 - Every overflow trap (`ON SIZE ERROR`) must be listed with its reason string (verbatim from COBOL).
 - The output formats section is the BYTE-EXACT contract for `equivalence-validate`. If you handwave here, the diff will fail.
 
+## Paragraph guide (feeds the viewer)
+
+Alongside the spec, write `cobol/<module>/PARAGRAPHS.md`: a `## PROGRAM-ID — what the program does` heading per program (several ids separated by commas share one heading), a short business summary, and a table `| Párrafo | Qué hace | Spec |` with one row per paragraph (name exactly as in the COBOL, including compiler labels such as `L$0` when the trace shows them) and the spec section that holds the exact rule. Plain language for a banking analyst, no COBOL jargon; name the faithful defects (D1, D2, …) where they live. `./tools/render-traceability.py <module>` shows the lines under each paragraph and in the bridge bar; `check-module.sh` warns when a paragraph has none.
+
 ## SME review loop
 
 After producing the doc, have the SME review §2–§7. Apply corrections:

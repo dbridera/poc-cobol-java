@@ -33,7 +33,7 @@ For each fixture under `golden-master/<module>/<fixture>/`:
 
 Inputs (`requests.dat` and any other staged input) are NOT comparison targets — they're identical by construction.
 
-Every comparison is byte-exact. For a file that is not UTF-8 text, or whose record length is known (`job.json` datasets by file name, or `fixtures/<f>/compare.json` `{"lrecl": {...}}`), a mismatch is reported as a **binary report**: first differing offset, 1-based record and column, hex of both bytes, the surrounding record text, up to 5 sample records. Every fixture entry in the JSON carries a `summary` (files/records/bytes compared, bytes differing); `./tools/compare-outputs.py --summary` totals them per module for the demo proof.
+Every comparison is byte-exact. When the file's copybook layout is known (manifest `copybook` / dataset name → `tools/make-fixture.py` layouts, or `compare.json` `{"layouts": {"file": "layout"}}`), differing records are reported **field by field**: `record 1 (ACCT-ID=00000000001): ACCT-CURR-BAL cobol=201.75 java=201.76`. Paragraph traces (`out/steps/*.trace.txt`, job modules with `"trace": true`) are a channel of their own: a mismatch prints the last five common entries and `trace: first divergence at entry N: cobol [PROGRAM Paragraph X] vs java [PROGRAM Paragraph Y]` — go to that paragraph, not to the output file. For a file that is not UTF-8 text, or whose record length is known (`job.json` datasets by file name, or `fixtures/<f>/compare.json` `{"lrecl": {...}}`), a mismatch is reported as a **binary report**: first differing offset, 1-based record and column, hex of both bytes, the surrounding record text, up to 5 sample records. Every fixture entry in the JSON carries a `summary` (files/records/bytes compared, bytes differing); `./tools/compare-outputs.py --summary` totals them per module for the demo proof.
 
 ## Common diagnoses
 
@@ -50,6 +50,8 @@ Every comparison is byte-exact. For a file that is not UTF-8 text, or whose reco
 | Timestamps differ in the last digits | clock not pinned, or pinned without hundredths | `COB_CURRENT_DATE="YYYY/MM/DD HH:MM:SS.hh"` in `job.json` env, same value on the Java side |
 | Report amount `0.09` vs `.09`, or 15 spaces vs `.00` | edited-picture rules | every integer position is `Z`: zero integer part is suppressed, a zero value blanks the whole field |
 | Sorted output order differs on equal keys | DFSORT order unspecified | add the documented tie-break on a unique field (ADR-16) |
+| `trace: first divergence at entry N` | the Java entered a different paragraph (merged, skipped or extra PERFORM) or the same one a different number of times | compare with the COBOL source around that paragraph; `io.paragraph` calls must mirror every entry (ADR-17) |
+| field diff on one amount, one cent | rounding or truncation mode | glossary `numerics`: COMPUTE without ROUNDED truncates toward zero; ADD keeps low-order digits |
 | `run-log.txt` differs | step semantics drift | both sides must follow ADR-14: RC lines, `SKIPPED (COMPLETED IN RUN n)`, `NOT RUN (JOB FAILED)`, `ABEND AFTER X (injected)`, `END MAXRC` |
 
 ## Negative-control sanity check (do this once per module)
@@ -57,6 +59,8 @@ Every comparison is byte-exact. For a file that is not UTF-8 text, or whose reco
 To prove the harness has teeth, deliberately introduce a precision bug — e.g., change a BigDecimal multiplication to `double` or a rounding mode. The diff MUST fail at a named record/column. Revert the change. If the diff still passed despite the bug, the harness is not exercising that path; add a fixture that does. For modules with a faithful-defects register, run a second control: "fix" one defect and confirm the diff goes red (module 3: both controls recorded in `docs/demo/DEMO.md`). `./tools/demo-commands.sh negative-control` scripts the first one.
 
 ## Invariants between fixtures (job modules)
+
+Coverage is generated, not written: `./tools/gen-coverage.py <m>` rewrites `COVERAGE.md` from the traces (`--check` is the gate); the side-by-side viewer `./tools/render-traceability.py <m>` shows coverage and citations per paragraph (`--check` likewise).
 
 A restart fixture (`RESTART_EQUIVALENT_TO=<fixture>` in `fixture.env`) must produce outputs identical to its unbroken twin except `run-log.txt` and `steps/`, on **both** trees; `./tools/check-module.sh <module>` enforces it along with the other process-conformance checks (provenance, verbatim sources, spec sections, traceability, report freshness).
 

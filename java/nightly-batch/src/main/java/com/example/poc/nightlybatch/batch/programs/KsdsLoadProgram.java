@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * {@code LOAD-<DS>} — IDCAMS REPRO stand-in: sequential file → KSDS.
  */
-// COBOL: src/ksds/LOAD-ACCTFILE.cbl:34-67 (MAIN; every generated LOAD-*.cbl has the same shape)
+// COBOL: src/ksds/LOAD-ACCTFILE.cbl:34-67, src/ksds/LOAD-XREFFILE.cbl:34-67, src/ksds/LOAD-TCATBALF.cbl:34-67, src/ksds/LOAD-DISCGRP.cbl:34-67, src/ksds/LOAD-TRANTYPE.cbl:34-67, src/ksds/LOAD-TRANCATG.cbl:34-67, src/ksds/LOAD-TRANSACT.cbl:34-67 (MAIN of every generated loader)
 final class KsdsLoadProgram implements StepProgram {
     private final Programs programs;
     private final String name;
@@ -26,6 +26,8 @@ final class KsdsLoadProgram implements StepProgram {
 
     @Override
     public int run(JobRun run, JobManifest.Step step, StepIo io) throws Exception {
+        io.entry(name);
+        io.paragraph(name, "MAIN");
         KsdsTable ksds = programs.table(run, step, "KSDS");
         JobManifest.Dataset ds = run.ddDataset(step, "KSDS");
         List<String> records = FixedRecordFile.readAll(run.dd(step, "SEQIN"), ds.lrecl());

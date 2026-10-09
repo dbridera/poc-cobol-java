@@ -3,6 +3,7 @@ package com.example.poc.nightlybatch.service;
 import com.example.poc.nightlybatch.domain.CobolRecord;
 import com.example.poc.nightlybatch.io.FixedRecordFile;
 import com.example.poc.nightlybatch.io.PicEditor;
+import com.example.poc.nightlybatch.io.StepIo;
 import com.example.poc.nightlybatch.io.ZonedDecimal;
 
 import java.io.IOException;
@@ -21,6 +22,7 @@ public final class ReportWriter {
             + pad("Tran Category", 35) + pad("Tran Source", 14) + " " + pad("        Amount", 16);
 
     private final FixedRecordFile.Writer out;
+    private final StepIo io;
     private long lineCounter;                                              // WS-LINE-COUNTER 9(09) COMP-3
     private BigDecimal pageTotal = BigDecimal.ZERO;                        // WS-PAGE-TOTAL S9(09)V99
     private BigDecimal accountTotal = BigDecimal.ZERO;                     // WS-ACCOUNT-TOTAL S9(09)V99
@@ -29,8 +31,9 @@ public final class ReportWriter {
     private String reptStartDate = pad("", 10);                            // REPT-START-DATE
     private String reptEndDate = pad("", 10);                              // REPT-END-DATE
 
-    public ReportWriter(FixedRecordFile.Writer out) {
+    public ReportWriter(FixedRecordFile.Writer out, StepIo io) {
         this.out = out;
+        this.io = io;
     }
 
     public BigDecimal pageTotal() { return pageTotal; }
@@ -46,6 +49,7 @@ public final class ReportWriter {
     // COBOL: CBTRN03C.cbl:274-292
     public void writeTransactionReport(CobolRecord tran, CobolRecord xrefWs, CobolRecord trantypeWs, CobolRecord trancatgWs,
                                        String startDate, String endDate) throws IOException {
+        io.paragraph("CBTRN03C", "1100-WRITE-TRANSACTION-REPORT");
         if (firstTime) {
             firstTime = false;
             reptStartDate = startDate;
@@ -65,6 +69,7 @@ public final class ReportWriter {
     /** {@code 1110-WRITE-PAGE-TOTALS}. */
     // COBOL: CBTRN03C.cbl:293-305
     public void writePageTotals() throws IOException {
+        io.paragraph("CBTRN03C", "1110-WRITE-PAGE-TOTALS");
         writeLine(pad("Page Total", 11) + ".".repeat(86) + PicEditor.plusZzz(pageTotal));   // REPORT-PAGE-TOTALS
         grandTotal = add(grandTotal, pageTotal);
         pageTotal = BigDecimal.ZERO;
@@ -76,6 +81,7 @@ public final class ReportWriter {
     /** {@code 1120-WRITE-ACCOUNT-TOTALS}. */
     // COBOL: CBTRN03C.cbl:306-317
     public void writeAccountTotals() throws IOException {
+        io.paragraph("CBTRN03C", "1120-WRITE-ACCOUNT-TOTALS");
         writeLine(pad("Account Total", 13) + ".".repeat(84) + PicEditor.plusZzz(accountTotal));   // REPORT-ACCOUNT-TOTALS
         accountTotal = BigDecimal.ZERO;
         lineCounter++;
@@ -86,12 +92,14 @@ public final class ReportWriter {
     /** {@code 1110-WRITE-GRAND-TOTALS}. */
     // COBOL: CBTRN03C.cbl:318-323
     public void writeGrandTotals() throws IOException {
+        io.paragraph("CBTRN03C", "1110-WRITE-GRAND-TOTALS");
         writeLine(pad("Grand Total", 11) + ".".repeat(86) + PicEditor.plusZzz(grandTotal));     // REPORT-GRAND-TOTALS
     }
 
     /** {@code 1120-WRITE-HEADERS}: name header, blank line, column titles, dashes. */
     // COBOL: CBTRN03C.cbl:324-342
     private void writeHeaders() throws IOException {
+        io.paragraph("CBTRN03C", "1120-WRITE-HEADERS");
         writeLine(pad("DALYREPT", 38) + pad("Daily Transaction Report", 41) + pad("Date Range: ", 12)
                 + reptStartDate + " to " + reptEndDate);                                     // REPORT-NAME-HEADER
         lineCounter++;
@@ -106,6 +114,7 @@ public final class ReportWriter {
     /** {@code 1120-WRITE-DETAIL}: INITIALIZE the detail line (FILLER separators keep their VALUEs), then the MOVEs. */
     // COBOL: CBTRN03C.cbl:361-375, CVTRA07Y.cpy TRANSACTION-DETAIL-REPORT
     private void writeDetail(CobolRecord tran, CobolRecord xrefWs, CobolRecord trantypeWs, CobolRecord trancatgWs) throws IOException {
+        io.paragraph("CBTRN03C", "1120-WRITE-DETAIL");
         String line = pad(tran.get("TRAN-ID"), 16) + " "
                 + pad(xrefWs.get("XREF-ACCT-ID"), 11) + " "
                 + pad(tran.get("TRAN-TYPE-CD"), 2) + "-"
@@ -121,6 +130,7 @@ public final class ReportWriter {
     /** {@code 1111-WRITE-REPORT-REC}: MOVE to the 133-byte FD record, WRITE. */
     // COBOL: CBTRN03C.cbl:343-360
     private void writeLine(String text) throws IOException {
+        io.paragraph("CBTRN03C", "1111-WRITE-REPORT-REC");
         out.write(pad(text, LINE));
     }
 

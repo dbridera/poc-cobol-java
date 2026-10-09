@@ -38,6 +38,7 @@ public final class InterestCalculator {
      */
     // COBOL: CBACT04C.cbl:415-461
     public void lookupRate(String groupId, String typeCd, String catCd, CobolRecord discgrpWs) {
+        io.paragraph("CBACT04C", "1200-GET-INTEREST-RATE");
         Optional<CobolRecord> row = discgrp.read(groupId + typeCd + catCd);
         if (row.isPresent()) {
             discgrpWs.moveFrom(row.get());
@@ -45,6 +46,7 @@ public final class InterestCalculator {
         }
         io.display("DISCLOSURE GROUP RECORD MISSING");
         io.display("TRY WITH DEFAULT GROUP CODE");
+        io.paragraph("CBACT04C", "1200-A-GET-DEFAULT-INT-RATE");
         Optional<CobolRecord> dflt = discgrp.read(padRight("DEFAULT", 10) + typeCd + catCd);
         if (dflt.isPresent()) {
             discgrpWs.moveFrom(dflt.get());
@@ -90,6 +92,7 @@ public final class InterestCalculator {
     /** {@code 1050-UPDATE-ACCOUNT}: add the account's accumulated interest, reset the cycle totals, REWRITE. */
     // COBOL: CBACT04C.cbl:350-371
     public void updateAccount(CobolRecord accountWs, BigDecimal totalInterest) {
+        io.paragraph("CBACT04C", "1050-UPDATE-ACCOUNT");
         accountWs.add("ACCT-CURR-BAL", totalInterest);
         accountWs.setDecimal("ACCT-CURR-CYC-CREDIT", BigDecimal.ZERO);
         accountWs.setDecimal("ACCT-CURR-CYC-DEBIT", BigDecimal.ZERO);

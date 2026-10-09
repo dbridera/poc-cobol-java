@@ -230,6 +230,22 @@ Flat file by design — convert to `docs/decisions/` once entries exceed ~15.
 
 ---
 
+## ADR-17 — The paragraph trace is a diff channel and the source of the coverage matrix
+
+**Context.** Two things in module 3 were asserted by hand: the paragraph → fixture coverage matrix in the README (written by reading the source) and the claim that the Java "follows the same paragraphs". When a diff went red, the comparator pointed at a byte, not at the paragraph where the behaviour diverged. GnuCOBOL can emit one line per paragraph entered (`-ftrace`, `COB_SET_TRACE`, spike k) without touching the source.
+
+**Decision.** Job modules declare `"trace": true`. `tools/run-job.py` enables the GnuCOBOL trace per step and normalises it to `PROGRAM Paragraph NAME` lines in `out/steps/<nn>-<NAME>.trace.txt`; the Java side (`StepIo.entry/paragraph`) writes the same lines at every paragraph entry, including the ones GnuCOBOL generates (`L$0`, the sentence after the main `PERFORM`). `compare-outputs.py` diffs the traces as a channel of their own and names the **first divergent paragraph** with five lines of context; a trace mismatch is red like any other channel. `tools/gen-coverage.py` derives `COVERAGE.md` and the README summary from the golden-master traces; `check-module.sh` fails on drift.
+
+**Consequences.** Mirroring every paragraph entry is a translation discipline: a method that silently merges two paragraphs, or skips an `EXIT.` paragraph, is caught the first time the module runs. The coverage matrix is evidence, not prose; the four unreached paragraphs of module 3 are exactly the ones the hand-written matrix had marked ✘. Sabotage 2 (ADR-14 restart demo's sibling: "fixing" the unreachable `ELSE`) now reports `cobol 1000-TCATBALF-GET-NEXT vs java 1050-UPDATE-ACCOUNT` at trace entry 68 instead of a byte. Cost: ~60 one-line `io.paragraph(...)` calls in module 3; no runtime cost on the COBOL side without `COB_SET_TRACE`.
+
+**Alternatives considered.** Statement-level trace (`-ftraceall`) — rejected: statements have no Java twin, and the volume is unusable. Comparing traces as sets rather than sequences — rejected: order and repetition are the point (a control-break paragraph entered once too often is the bug). Trace only on the COBOL side for coverage — kept as a subset, but the Java twin is what turns "the same paragraphs" from a claim into a diff.
+
+**Evidence.** [cobol/nightly-batch/job.json](../../cobol/nightly-batch/job.json) (`trace`, `-ftrace`). [tools/run-job.py](../../tools/run-job.py) `normalise_trace`. [java/nightly-batch/.../io/StepIo.java](../../java/nightly-batch/src/main/java/com/example/poc/nightlybatch/io/StepIo.java). [tools/compare-outputs.py](../../tools/compare-outputs.py) `trace_report`. [cobol/nightly-batch/COVERAGE.md](../../cobol/nightly-batch/COVERAGE.md) (82/86). README spike k. [validation/reports/nightly-batch.json](../../validation/reports/nightly-batch.json) — `summary.trace_entries_compared` 5 743 on fixture 04, 0 differing.
+
+Addendum (2026-10-07): the viewer alone was not understandable to a non-COBOL reader ("code against code"). Phase B now also produces `cobol/<module>/PARAGRAPHS.md`, a plain-language "Qué hace" line per paragraph with its spec section; `render-traceability.py` shows it under each paragraph and in the bridge bar, and a click on a paragraph jumps straight to the Java that translates it. Evidence: [cobol/nightly-batch/PARAGRAPHS.md](../../cobol/nightly-batch/PARAGRAPHS.md) (86/86 paragraphs described).
+
+---
+
 ## How to add an ADR
 
 1. Append the next entry below with the same five-section shape.

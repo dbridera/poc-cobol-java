@@ -28,8 +28,13 @@ final class PostTranProgram implements StepProgram {
 
     @Override
     public int run(JobRun run, JobManifest.Step step, StepIo io) throws Exception {
+        io.entry("CBTRN02C");
         io.display("START OF EXECUTION OF PROGRAM CBTRN02C");
         // 0000-…-0500 opens — COBOL: CBTRN02C.cbl:195-200, 236-344
+        for (String open : new String[]{"0000-DALYTRAN-OPEN", "0100-TRANFILE-OPEN", "0200-XREFFILE-OPEN",
+                                        "0300-DALYREJS-OPEN", "0400-ACCTFILE-OPEN", "0500-TCATBALF-OPEN"}) {
+            io.paragraph("CBTRN02C", open);
+        }
         List<String> daily = FixedRecordFile.readAll(run.dd(step, "DALYTRAN"), Layouts.TRAN.lrecl());
         KsdsTable transact = programs.table(run, step, "TRANFILE");
         transact.truncate();                                               // OPEN OUTPUT TRANSACT-FILE
@@ -47,11 +52,12 @@ final class PostTranProgram implements StepProgram {
         long transactionCount = 0;                                        // WS-TRANSACTION-COUNT 9(09)
         long rejectCount = 0;                                             // WS-REJECT-COUNT 9(09)
 
-        TransactionValidator validator = new TransactionValidator(xref, accounts);
+        TransactionValidator validator = new TransactionValidator(xref, accounts, io);
         TransactionPoster poster = new TransactionPoster(tcatbal, accounts, transact, run.clock(), io);
 
         try (FixedRecordFile.Writer rejects = FixedRecordFile.openOutput(run.dd(step, "DALYREJS"), Layouts.REJECT.lrecl())) {
-            for (String raw : daily) {                                    // 1000-DALYTRAN-GET-NEXT until status 10
+            for (String raw : daily) {                                    // 1000-DALYTRAN-GET-NEXT until status 10 — COBOL: CBTRN02C.cbl:345-369
+                io.paragraph("CBTRN02C", "1000-DALYTRAN-GET-NEXT");
                 transactionCount++;
                 dalytran.moveFrom(CobolRecord.of(Layouts.TRAN, raw));     // READ … INTO DALYTRAN-RECORD
                 TransactionValidator.Result v = validator.validate(dalytran, xrefWs, accountWs);   // 1500-VALIDATE-TRAN
@@ -60,11 +66,12 @@ final class PostTranProgram implements StepProgram {
                         poster.post(dalytran, tran, xrefWs, accountWs, tcatbalWs);               // 2000-POST-TRANSACTION
                     } catch (TransactionPoster.TransactionWriteFailed e) {
                         io.display("ERROR WRITING TO TRANSACTION FILE");
-                        CobolRuntime.displayIoStatus(io, e.status);
-                        throw CobolRuntime.abend(io);
+                        CobolRuntime.displayIoStatus(io, "CBTRN02C", e.status);
+                        throw CobolRuntime.abend(io, "CBTRN02C");
                     }
                 } else {
                     rejectCount++;
+                    io.paragraph("CBTRN02C", "2500-WRITE-REJECT-REC");
                     // 2500-WRITE-REJECT-REC — COBOL: CBTRN02C.cbl:446-466
                     reject.set("REJECT-TRAN-DATA", dalytran.toString());
                     reject.setDecimal("WS-VALIDATION-FAIL-REASON", BigDecimal.valueOf(v.reason()));
@@ -73,7 +80,12 @@ final class PostTranProgram implements StepProgram {
                 }
             }
         }
-        // 9000-…-9500 closes — COBOL: CBTRN02C.cbl:221-226
+        io.paragraph("CBTRN02C", "1000-DALYTRAN-GET-NEXT");                 // the read that returns status 10
+        // 9000-…-9500 closes — COBOL: CBTRN02C.cbl:221-226, 582-691
+        for (String close : new String[]{"9000-DALYTRAN-CLOSE", "9100-TRANFILE-CLOSE", "9200-XREFFILE-CLOSE",
+                                         "9300-DALYREJS-CLOSE", "9400-ACCTFILE-CLOSE", "9500-TCATBALF-CLOSE"}) {
+            io.paragraph("CBTRN02C", close);
+        }
         io.display("TRANSACTIONS PROCESSED :", CobolDisplay.unsigned(transactionCount, 9));
         io.display("TRANSACTIONS REJECTED  :", CobolDisplay.unsigned(rejectCount, 9));
         int rc = rejectCount > 0 ? 4 : 0;                                 // MOVE 4 TO RETURN-CODE

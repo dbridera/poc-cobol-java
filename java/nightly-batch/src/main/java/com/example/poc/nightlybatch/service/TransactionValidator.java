@@ -2,6 +2,7 @@ package com.example.poc.nightlybatch.service;
 
 import com.example.poc.nightlybatch.domain.CobolRecord;
 import com.example.poc.nightlybatch.io.KsdsTable;
+import com.example.poc.nightlybatch.io.StepIo;
 import com.example.poc.nightlybatch.io.ZonedDecimal;
 
 import java.math.BigDecimal;
@@ -22,10 +23,12 @@ public final class TransactionValidator {
 
     private final KsdsTable xref;
     private final KsdsTable accounts;
+    private final StepIo io;
 
-    public TransactionValidator(KsdsTable xref, KsdsTable accounts) {
+    public TransactionValidator(KsdsTable xref, KsdsTable accounts, StepIo io) {
         this.xref = xref;
         this.accounts = accounts;
+        this.io = io;
     }
 
     /**
@@ -35,7 +38,9 @@ public final class TransactionValidator {
      */
     // COBOL: CBTRN02C.cbl:370-423
     public Result validate(CobolRecord daly, CobolRecord xrefWs, CobolRecord accountWs) {
+        io.paragraph("CBTRN02C", "1500-VALIDATE-TRAN");
         // 1500-A-LOOKUP-XREF — COBOL: CBTRN02C.cbl:380-392
+        io.paragraph("CBTRN02C", "1500-A-LOOKUP-XREF");
         Optional<CobolRecord> x = xref.read(daly.get("TRAN-CARD-NUM"));
         if (x.isEmpty()) {
             return new Result(100, "INVALID CARD NUMBER FOUND");
@@ -43,6 +48,7 @@ public final class TransactionValidator {
         xrefWs.moveFrom(x.get());
 
         // 1500-B-LOOKUP-ACCT — COBOL: CBTRN02C.cbl:393-423
+        io.paragraph("CBTRN02C", "1500-B-LOOKUP-ACCT");
         Optional<CobolRecord> a = accounts.read(xrefWs.get("XREF-ACCT-ID"));
         if (a.isEmpty()) {
             return new Result(101, "ACCOUNT RECORD NOT FOUND");

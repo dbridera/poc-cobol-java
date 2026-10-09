@@ -30,7 +30,7 @@ The contracts are explicit so a future engineer (or LLM session) knows what file
 | | |
 |---|---|
 | **Consumes** | `cobol/<module>/src/*.cbl`, `cobol/<module>/copybooks/*.cpy`, JCL/scripts if any, sample data |
-| **Produces** | `cobol/<module>/README.md` populated with sections 1–7 of the skill; `DEPENDENCIES.md`; `cobol/<module>/fixtures/<name>/spec.json` (or `fixture.json`) per fixture; for job modules also `job.json` and generated `src/ksds/` loaders |
+| **Produces** | `cobol/<module>/README.md` populated with sections 1–7 of the skill; `DEPENDENCIES.md`; `cobol/<module>/fixtures/<name>/spec.json` (or `fixture.json`) per fixture; for job modules also `job.json`, generated `src/ksds/` loaders, and after capture `COVERAGE.md` (from the paragraph traces) |
 | **Side effects** | After `tools/run-cobol.sh <module>`: `golden-master/<module>/<fixture>/{stdout.txt, exit_code, stderr.txt, out/...}` |
 | **Done when** | Every paragraph is named in the README's control-flow map, every PIC is in the data dictionary, ≥3 fixtures cover happy path + validation errors + numeric boundaries, golden master captures cleanly |
 | **Don't proceed if** | Any paragraph's purpose is "TBD" — get SME input first |
@@ -40,7 +40,7 @@ The contracts are explicit so a future engineer (or LLM session) knows what file
 | | |
 |---|---|
 | **Consumes** | Phase A outputs (`cobol/<m>/README.md`, golden master) and the COBOL source itself |
-| **Produces** | `specs/<module>.md` with the 11 sections specified in the skill |
+| **Produces** | `specs/<module>.md` with the 11 sections specified in the skill; `cobol/<module>/PARAGRAPHS.md` (one "Qué hace" line per paragraph with its spec section, shown by the viewer) |
 | **Done when** | SME has reviewed §2–§7; every `ROUNDED` clause has a documented mode; every `ON SIZE ERROR` has its reason string verbatim from COBOL |
 | **Don't proceed if** | Spec disagrees with golden master on any byte-format detail (PIC width, padding direction, trailing-space rules) |
 
@@ -50,7 +50,7 @@ The contracts are explicit so a future engineer (or LLM session) knows what file
 |---|---|
 | **Consumes** | `specs/<m>.md`, `golden-master/<m>/`, [docs/glossary.yaml](./glossary.yaml), [CLAUDE.md](../../CLAUDE.md) hard rules |
 | **Produces** | `java/<module>/` Spring Boot project with `pom.xml`, `src/main/java/com/example/poc/<module>/...`, `application.properties` with banner suppression |
-| **Done when** | `mvn -B test` is green AND `tools/run-java.sh <module>` succeeds AND every translated method has a `// COBOL: <file>.cbl:<startLine>-<endLine>` traceability comment (harness-infrastructure classes carry `// cobol-trace-exempt: <why>`) |
+| **Done when** | `mvn -B test` is green AND `tools/run-java.sh <module>` succeeds AND every translated method has a `// COBOL: <file>.cbl:<startLine>-<endLine>` traceability comment (harness-infrastructure classes carry `// cobol-trace-exempt: <why>`) AND, once the diff is green, `cobol/<m>/traceability.html` is rendered with every shown paragraph explained in `PARAGRAPHS.md` |
 | **Don't proceed if** | Any `BigDecimal` could be `double`/`float` — reject the translation regardless of test status (see [ADR-3](./DECISIONS.md#adr-3--bigdecimal-is-mandatory-for-every-cobol-numeric)) |
 
 `copybook-to-entity` is invoked *within* Phase C when the engineer encounters a copybook not already mapped. Its consumes/produces are local: copybook in, `domain/<X>Entity.java` or `domain/<X>Request.java` out, with `REDEFINES` mapped to a `sealed interface` (never a single nullable bag).
@@ -60,7 +60,7 @@ The contracts are explicit so a future engineer (or LLM session) knows what file
 | | |
 |---|---|
 | **Consumes** | Phase A's `golden-master/<m>/`, Phase C's Java build |
-| **Produces** | `validation/reports/<module>.json` (per-fixture diff results), `java-run/<m>/<fixture>/` artifacts |
+| **Produces** | `validation/reports/<module>.json` (per-fixture diff results with field-level and trace diagnostics), `java-run/<m>/<fixture>/` artifacts, `cobol/<m>/traceability.html` (COBOL ↔ Java viewer, `render-traceability.py`) |
 | **Done when** | All fixtures show `[OK ]`; report shows `"diffs": []` per fixture; negative-control test (deliberately break a `BigDecimal`, confirm diff fails) has run at least once; `./tools/check-module.sh <module>` is CONFORMANT (restart invariant included for job modules) |
 | **Don't proceed if** | Any diff fails — fix Java/spec/harness; **never** weaken the comparator |
 

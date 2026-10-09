@@ -1,0 +1,2433 @@
+{
+ "module": "nightly-batch",
+ "stats": {
+  "cobol_files": 26,
+  "java_files": 31,
+  "paragraphs": 86,
+  "cited": 86,
+  "covered": 82,
+  "links": 79,
+  "unresolved_links": 0,
+  "fixtures": [
+   "01-happy-small",
+   "02-rejects",
+   "03-numeric-boundaries",
+   "04-full-carddemo",
+   "05-restart",
+   "06-abend-discgrp"
+  ],
+  "described": 86,
+  "guide": true
+ },
+ "cobol": [
+  {
+   "path": "src/CBACT04C.cbl",
+   "paragraphs": [
+    {
+     "program": "CBACT04C",
+     "name": "0000-TCATBALF-OPEN",
+     "start": 234,
+     "end": 251,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/IntCalcProgram.java",
+       "line": 39,
+       "span_end": 43
+      }
+     ],
+     "covered": 6,
+     "what": "Abre los saldos por categoría para recorrerlos en orden de clave (cuenta, tipo, categoría).",
+     "spec": "§4.4"
+    },
+    {
+     "program": "CBACT04C",
+     "name": "0100-XREFFILE-OPEN",
+     "start": 252,
+     "end": 269,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/IntCalcProgram.java",
+       "line": 39,
+       "span_end": 43
+      }
+     ],
+     "covered": 6,
+     "what": "Abre la tabla de referencia cruzada; aquí se lee por la clave alternativa (número de cuenta) para obtener la tarjeta.",
+     "spec": "§4.4"
+    },
+    {
+     "program": "CBACT04C",
+     "name": "0200-DISCGRP-OPEN",
+     "start": 270,
+     "end": 288,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/IntCalcProgram.java",
+       "line": 39,
+       "span_end": 43
+      }
+     ],
+     "covered": 6,
+     "what": "Abre la tabla de tasas por grupo de divulgación (grupo + tipo + categoría → tasa anual).",
+     "spec": "§4.4"
+    },
+    {
+     "program": "CBACT04C",
+     "name": "0300-ACCTFILE-OPEN",
+     "start": 289,
+     "end": 306,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/IntCalcProgram.java",
+       "line": 39,
+       "span_end": 43
+      }
+     ],
+     "covered": 6,
+     "what": "Abre el archivo de cuentas en lectura y actualización.",
+     "spec": "§4.4"
+    },
+    {
+     "program": "CBACT04C",
+     "name": "0400-TRANFILE-OPEN",
+     "start": 307,
+     "end": 324,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/IntCalcProgram.java",
+       "line": 39,
+       "span_end": 43
+      }
+     ],
+     "covered": 6,
+     "what": "Abre el archivo de salida de transacciones de interés (secuencial).",
+     "spec": "§4.4"
+    },
+    {
+     "program": "CBACT04C",
+     "name": "1000-TCATBALF-GET-NEXT",
+     "start": 325,
+     "end": 349,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/IntCalcProgram.java",
+       "line": 65,
+       "span_end": 65
+      }
+     ],
+     "covered": 6,
+     "what": "Lee el siguiente saldo por categoría. Estado 10 = fin.",
+     "spec": "§4.4"
+    },
+    {
+     "program": "CBACT04C",
+     "name": "1050-UPDATE-ACCOUNT",
+     "start": 350,
+     "end": 371,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/service/InterestCalculator.java",
+       "line": 93,
+       "span_end": 103
+      }
+     ],
+     "covered": 5,
+     "what": "Suma el interés acumulado al saldo de la cuenta, pone en cero los acumulados de ciclo y reescribe la cuenta. Se ejecuta al cambiar de cuenta, nunca para la última (D1).",
+     "spec": "§4.4"
+    },
+    {
+     "program": "CBACT04C",
+     "name": "1100-GET-ACCT-DATA",
+     "start": 372,
+     "end": 392,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/IntCalcProgram.java",
+       "line": 78,
+       "span_end": 86
+      }
+     ],
+     "covered": 6,
+     "what": "Lee la cuenta del saldo en curso. Si no existe: mensaje y caída.",
+     "spec": "§4.4"
+    },
+    {
+     "program": "CBACT04C",
+     "name": "1110-GET-XREF-DATA",
+     "start": 393,
+     "end": 414,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/IntCalcProgram.java",
+       "line": 88,
+       "span_end": 96
+      }
+     ],
+     "covered": 6,
+     "what": "Busca por número de cuenta (clave alternativa) la tarjeta asociada, que irá en la transacción de interés.",
+     "spec": "§4.4"
+    },
+    {
+     "program": "CBACT04C",
+     "name": "1200-GET-INTEREST-RATE",
+     "start": 415,
+     "end": 442,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/IntCalcProgram.java",
+       "line": 99,
+       "span_end": 103
+      },
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/service/InterestCalculator.java",
+       "line": 39,
+       "span_end": 57
+      }
+     ],
+     "covered": 6,
+     "what": "Busca la tasa con (grupo de la cuenta, tipo, categoría). Si no está (estado 23) avisa y prueba con el grupo DEFAULT (1200-A).",
+     "spec": "§5.3"
+    },
+    {
+     "program": "CBACT04C",
+     "name": "1200-A-GET-DEFAULT-INT-RATE",
+     "start": 443,
+     "end": 461,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/IntCalcProgram.java",
+       "line": 99,
+       "span_end": 103
+      },
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/service/InterestCalculator.java",
+       "line": 39,
+       "span_end": 57
+      }
+     ],
+     "covered": 6,
+     "what": "Busca la tasa del grupo DEFAULT para ese tipo y categoría. Si tampoco está: mensaje de error, estado de archivo y caída (caso de prueba 06).",
+     "spec": "§5.3"
+    },
+    {
+     "program": "CBACT04C",
+     "name": "1300-COMPUTE-INTEREST",
+     "start": 462,
+     "end": 472,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/IntCalcProgram.java",
+       "line": 108,
+       "span_end": 112
+      },
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/service/InterestCalculator.java",
+       "line": 64,
+       "span_end": 67
+      }
+     ],
+     "covered": 6,
+     "what": "Interés del mes = saldo × tasa anual / 1200, sin redondeo: se trunca hacia cero al centavo (0.09575 → 0.09, −11.4875 → −11.48). Lo acumula para la cuenta y escribe la transacción (1300-B). Solo se ejecuta si la tasa no es cero.",
+     "spec": "§6.1"
+    },
+    {
+     "program": "CBACT04C",
+     "name": "1300-B-WRITE-TX",
+     "start": 473,
+     "end": 517,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/IntCalcProgram.java",
+       "line": 113,
+       "span_end": 118
+      },
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/service/InterestCalculator.java",
+       "line": 74,
+       "span_end": 90
+      }
+     ],
+     "covered": 6,
+     "what": "Arma la transacción de interés: id = fecha del PARM + correlativo, tipo 01, categoría 0005, origen \"System\", descripción \"Int. for a/c\" + cuenta, importe = interés, tarjeta de la cuenta, fecha/hora de proceso. La graba.",
+     "spec": "§4.4, §7.3"
+    },
+    {
+     "program": "CBACT04C",
+     "name": "1400-COMPUTE-FEES",
+     "start": 518,
+     "end": 521,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/IntCalcProgram.java",
+       "line": 119,
+       "span_end": 120
+      }
+     ],
+     "covered": 6,
+     "what": "Vacío en el programa original (\"a implementar\"). Se mantiene para conservar el orden de ejecución.",
+     "spec": "§4.4"
+    },
+    {
+     "program": "CBACT04C",
+     "name": "9000-TCATBALF-CLOSE",
+     "start": 522,
+     "end": 540,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/IntCalcProgram.java",
+       "line": 127,
+       "span_end": 131
+      }
+     ],
+     "covered": 5,
+     "what": "Cierra los saldos por categoría.",
+     "spec": "§4.4"
+    },
+    {
+     "program": "CBACT04C",
+     "name": "9100-XREFFILE-CLOSE",
+     "start": 541,
+     "end": 558,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/IntCalcProgram.java",
+       "line": 127,
+       "span_end": 131
+      }
+     ],
+     "covered": 5,
+     "what": "Cierra la referencia cruzada.",
+     "spec": "§4.4"
+    },
+    {
+     "program": "CBACT04C",
+     "name": "9200-DISCGRP-CLOSE",
+     "start": 559,
+     "end": 576,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/IntCalcProgram.java",
+       "line": 127,
+       "span_end": 131
+      }
+     ],
+     "covered": 5,
+     "what": "Cierra la tabla de tasas.",
+     "spec": "§4.4"
+    },
+    {
+     "program": "CBACT04C",
+     "name": "9300-ACCTFILE-CLOSE",
+     "start": 577,
+     "end": 594,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/IntCalcProgram.java",
+       "line": 127,
+       "span_end": 131
+      }
+     ],
+     "covered": 5,
+     "what": "Cierra las cuentas.",
+     "spec": "§4.4"
+    },
+    {
+     "program": "CBACT04C",
+     "name": "9400-TRANFILE-CLOSE",
+     "start": 595,
+     "end": 612,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/IntCalcProgram.java",
+       "line": 127,
+       "span_end": 131
+      }
+     ],
+     "covered": 5,
+     "what": "Cierra el archivo de transacciones de interés.",
+     "spec": "§4.4"
+    },
+    {
+     "program": "CBACT04C",
+     "name": "Z-GET-DB2-FORMAT-TIMESTAMP",
+     "start": 613,
+     "end": 627,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/service/CobolTimestamp.java",
+       "line": 17,
+       "span_end": 20
+      }
+     ],
+     "covered": 6,
+     "what": "Fecha y hora del sistema en formato DB2 (reloj fijado en el banco de pruebas).",
+     "spec": "§6.4"
+    },
+    {
+     "program": "CBACT04C",
+     "name": "9999-ABEND-PROGRAM",
+     "start": 628,
+     "end": 634,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/CobolRuntime.java",
+       "line": 24,
+       "span_end": 29
+      }
+     ],
+     "covered": 1,
+     "what": "\"ABENDING PROGRAM\" + llamada a CEE3ABD: el paso termina con código 12.",
+     "spec": "§4.4"
+    },
+    {
+     "program": "CBACT04C",
+     "name": "9910-DISPLAY-IO-STATUS",
+     "start": 635,
+     "end": 652,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/CobolRuntime.java",
+       "line": 17,
+       "span_end": 21
+      }
+     ],
+     "covered": 1,
+     "what": "Muestra el estado de archivo de la operación fallida.",
+     "spec": "§7.1"
+    }
+   ],
+   "programs": {
+    "CBACT04C": {
+     "title": "Cobrar el interés mensual (paso 2, INTCALC)",
+     "intro": "Recorre los saldos por cuenta y categoría en orden de cuenta. Para cada saldo busca la tasa anual del grupo de la cuenta (o la del grupo DEFAULT si no la hay), calcula el interés del mes truncado al centavo, lo acumula por cuenta y escribe una transacción de interés. Al cambiar de cuenta, suma el interés acumulado al saldo de la cuenta anterior y reinicia sus acumulados de ciclo. Por un error del programa original, la última cuenta nunca recibe esa actualización (defecto D1)."
+    }
+   }
+  },
+  {
+   "path": "src/CBSORT01.cbl",
+   "paragraphs": [],
+   "programs": {
+    "CBSORT01": {
+     "title": "Ordenar y unir las transacciones (paso 3, COMBTRAN; agregado)",
+     "intro": "Reemplaza el paso DFSORT de COMBTRAN.jcl: une el respaldo de las transacciones contabilizadas con las transacciones de interés, ordena por id de transacción y escribe el archivo que después recarga el maestro. No tiene párrafos con nombre."
+    }
+   }
+  },
+  {
+   "path": "src/CBSORT02.cbl",
+   "paragraphs": [
+    {
+     "program": "CBSORT02",
+     "name": "MAIN",
+     "start": 65,
+     "end": 92,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/CardSortProgram.java",
+       "line": 21,
+       "span_end": 53
+      }
+     ],
+     "covered": 5,
+     "what": "Lee el rango de fechas del archivo de parámetros, lanza el ordenamiento con SELECT-RECORDS como procedimiento de entrada y muestra cuántas transacciones seleccionó de cuántas leídas.",
+     "spec": "§4.6"
+    },
+    {
+     "program": "CBSORT02",
+     "name": "SELECT-RECORDS",
+     "start": 93,
+     "end": 114,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/CardSortProgram.java",
+       "line": 21,
+       "span_end": 53
+      }
+     ],
+     "covered": 5,
+     "what": "Lee las transacciones y entrega al ordenamiento solo las que tienen fecha de proceso dentro del rango.",
+     "spec": "§4.6"
+    }
+   ],
+   "programs": {
+    "CBSORT02": {
+     "title": "Seleccionar y ordenar para el reporte (paso 4, TRANREPT; agregado)",
+     "intro": "Reemplaza el paso DFSORT de TRANREPT.jcl: lee el rango de fechas, se queda con las transacciones cuya fecha de proceso está en el rango y las ordena por número de tarjeta (y, como desempate documentado, por id de transacción)."
+    }
+   }
+  },
+  {
+   "path": "src/CBTRN02C.cbl",
+   "paragraphs": [
+    {
+     "program": "CBTRN02C",
+     "name": "0000-DALYTRAN-OPEN",
+     "start": 236,
+     "end": 253,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/PostTranProgram.java",
+       "line": 33,
+       "span_end": 37
+      }
+     ],
+     "covered": 6,
+     "what": "Abre el archivo de transacciones del día (entrada). Si falla, muestra el estado del archivo y cae.",
+     "spec": "§4.2"
+    },
+    {
+     "program": "CBTRN02C",
+     "name": "0100-TRANFILE-OPEN",
+     "start": 254,
+     "end": 272,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/PostTranProgram.java",
+       "line": 33,
+       "span_end": 37
+      }
+     ],
+     "covered": 6,
+     "what": "Abre el maestro de transacciones para escribirlo desde cero (OPEN OUTPUT: el maestro de la noche se crea vacío).",
+     "spec": "§4.2, §8"
+    },
+    {
+     "program": "CBTRN02C",
+     "name": "0200-XREFFILE-OPEN",
+     "start": 273,
+     "end": 290,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/PostTranProgram.java",
+       "line": 33,
+       "span_end": 37
+      }
+     ],
+     "covered": 6,
+     "what": "Abre la tabla tarjeta → cliente/cuenta (solo lectura).",
+     "spec": "§4.2"
+    },
+    {
+     "program": "CBTRN02C",
+     "name": "0300-DALYREJS-OPEN",
+     "start": 291,
+     "end": 308,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/PostTranProgram.java",
+       "line": 33,
+       "span_end": 37
+      }
+     ],
+     "covered": 6,
+     "what": "Abre el archivo de rechazos para escribirlo desde cero.",
+     "spec": "§4.2"
+    },
+    {
+     "program": "CBTRN02C",
+     "name": "0400-ACCTFILE-OPEN",
+     "start": 309,
+     "end": 326,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/PostTranProgram.java",
+       "line": 33,
+       "span_end": 37
+      }
+     ],
+     "covered": 6,
+     "what": "Abre el archivo de cuentas en modo lectura y actualización (los saldos se reescriben en el lugar).",
+     "spec": "§4.2, §8"
+    },
+    {
+     "program": "CBTRN02C",
+     "name": "0500-TCATBALF-OPEN",
+     "start": 327,
+     "end": 344,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/PostTranProgram.java",
+       "line": 33,
+       "span_end": 37
+      }
+     ],
+     "covered": 6,
+     "what": "Abre el archivo de saldos por cuenta y categoría en modo lectura y actualización.",
+     "spec": "§4.2"
+    },
+    {
+     "program": "CBTRN02C",
+     "name": "1000-DALYTRAN-GET-NEXT",
+     "start": 345,
+     "end": 369,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/PostTranProgram.java",
+       "line": 59,
+       "span_end": 59
+      }
+     ],
+     "covered": 6,
+     "what": "Lee la siguiente transacción del día. Estado 10 = fin de archivo; cualquier otro error cae.",
+     "spec": "§4.2"
+    },
+    {
+     "program": "CBTRN02C",
+     "name": "1500-VALIDATE-TRAN",
+     "start": 370,
+     "end": 379,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/service/TransactionValidator.java",
+       "line": 39,
+       "span_end": 41
+      }
+     ],
+     "covered": 6,
+     "what": "Encadena las validaciones: primero la tarjeta (1500-A); si existe, la cuenta y sus reglas (1500-B). Un solo campo de motivo: la última validación que falla es la que queda.",
+     "spec": "§5"
+    },
+    {
+     "program": "CBTRN02C",
+     "name": "1500-A-LOOKUP-XREF",
+     "start": 380,
+     "end": 392,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/service/TransactionValidator.java",
+       "line": 39,
+       "span_end": 41
+      },
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/service/TransactionValidator.java",
+       "line": 42,
+       "span_end": 47
+      }
+     ],
+     "covered": 6,
+     "what": "Busca la tarjeta en la tabla de referencia cruzada. Si no está: motivo 100 \"INVALID CARD NUMBER FOUND\".",
+     "spec": "§5 regla 1"
+    },
+    {
+     "program": "CBTRN02C",
+     "name": "1500-B-LOOKUP-ACCT",
+     "start": 393,
+     "end": 423,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/service/TransactionValidator.java",
+       "line": 39,
+       "span_end": 41
+      },
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/service/TransactionValidator.java",
+       "line": 50,
+       "span_end": 55
+      }
+     ],
+     "covered": 6,
+     "what": "Busca la cuenta de esa tarjeta (si no está: motivo 101). Calcula el saldo temporal = crédito del ciclo − débito del ciclo (que se guarda negativo) + importe; si supera el límite: motivo 102. Si la fecha de vencimiento es anterior a la fecha de la transacción: motivo 103, que pisa al 102. El saldo temporal tiene un dígito menos que los acumulados y se trunca (defecto D6).",
+     "spec": "§5 reglas 2-4, §6.3"
+    },
+    {
+     "program": "CBTRN02C",
+     "name": "2000-POST-TRANSACTION",
+     "start": 424,
+     "end": 445,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/service/TransactionPoster.java",
+       "line": 49,
+       "span_end": 70
+      }
+     ],
+     "covered": 6,
+     "what": "Copia los campos de la transacción del día al registro del maestro, le pone la fecha/hora de proceso y ejecuta las tres actualizaciones: saldo por categoría, cuenta, maestro.",
+     "spec": "§4.2"
+    },
+    {
+     "program": "CBTRN02C",
+     "name": "2500-WRITE-REJECT-REC",
+     "start": 446,
+     "end": 466,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/PostTranProgram.java",
+       "line": 75,
+       "span_end": 79
+      }
+     ],
+     "covered": 6,
+     "what": "Escribe la transacción rechazada tal cual, más el motivo (4 dígitos) y su texto (76 caracteres).",
+     "spec": "§4.2, §7.3"
+    },
+    {
+     "program": "CBTRN02C",
+     "name": "2700-UPDATE-TCATBAL",
+     "start": 467,
+     "end": 502,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/service/TransactionPoster.java",
+       "line": 72,
+       "span_end": 96
+      }
+     ],
+     "covered": 6,
+     "what": "Busca el saldo por cuenta + tipo + categoría. Si no existe lo crea (2700-A, con mensaje \"Creating.\"); si existe lo actualiza (2700-B).",
+     "spec": "§4.2"
+    },
+    {
+     "program": "CBTRN02C",
+     "name": "2700-A-CREATE-TCATBAL-REC",
+     "start": 503,
+     "end": 525,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/service/TransactionPoster.java",
+       "line": 72,
+       "span_end": 96
+      }
+     ],
+     "covered": 5,
+     "what": "Arma un registro nuevo de saldo por categoría con el importe de la transacción y lo graba. El relleno (FILLER) conserva lo que había en memoria.",
+     "spec": "§4.2"
+    },
+    {
+     "program": "CBTRN02C",
+     "name": "2700-B-UPDATE-TCATBAL-REC",
+     "start": 526,
+     "end": 544,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/service/TransactionPoster.java",
+       "line": 72,
+       "span_end": 96
+      }
+     ],
+     "covered": 6,
+     "what": "Suma el importe al saldo por categoría y reescribe el registro.",
+     "spec": "§4.2"
+    },
+    {
+     "program": "CBTRN02C",
+     "name": "2800-UPDATE-ACCOUNT-REC",
+     "start": 545,
+     "end": 561,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/service/TransactionPoster.java",
+       "line": 98,
+       "span_end": 109
+      }
+     ],
+     "covered": 6,
+     "what": "Suma el importe al saldo de la cuenta; si es positivo lo acumula en crédito del ciclo, si es negativo en débito del ciclo (como número negativo). Reescribe la cuenta. Sin control de desborde: un saldo que no entra pierde los dígitos de la izquierda.",
+     "spec": "§4.2, §6.2, §6.3"
+    },
+    {
+     "program": "CBTRN02C",
+     "name": "2900-WRITE-TRANSACTION-FILE",
+     "start": 562,
+     "end": 581,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/service/TransactionPoster.java",
+       "line": 111,
+       "span_end": 117
+      }
+     ],
+     "covered": 6,
+     "what": "Graba la transacción en el maestro (clave: id de transacción). Un id repetido haría caer el programa.",
+     "spec": "§4.2"
+    },
+    {
+     "program": "CBTRN02C",
+     "name": "9000-DALYTRAN-CLOSE",
+     "start": 582,
+     "end": 599,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/PostTranProgram.java",
+       "line": 84,
+       "span_end": 88
+      }
+     ],
+     "covered": 6,
+     "what": "Cierra el archivo de transacciones del día.",
+     "spec": "§4.2"
+    },
+    {
+     "program": "CBTRN02C",
+     "name": "9100-TRANFILE-CLOSE",
+     "start": 600,
+     "end": 618,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/PostTranProgram.java",
+       "line": 84,
+       "span_end": 88
+      }
+     ],
+     "covered": 6,
+     "what": "Cierra el maestro de transacciones.",
+     "spec": "§4.2"
+    },
+    {
+     "program": "CBTRN02C",
+     "name": "9200-XREFFILE-CLOSE",
+     "start": 619,
+     "end": 636,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/PostTranProgram.java",
+       "line": 84,
+       "span_end": 88
+      }
+     ],
+     "covered": 6,
+     "what": "Cierra la tabla de referencia cruzada.",
+     "spec": "§4.2"
+    },
+    {
+     "program": "CBTRN02C",
+     "name": "9300-DALYREJS-CLOSE",
+     "start": 637,
+     "end": 654,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/PostTranProgram.java",
+       "line": 84,
+       "span_end": 88
+      }
+     ],
+     "covered": 6,
+     "what": "Cierra el archivo de rechazos (muestra el estado del archivo equivocado si falla, defecto D4).",
+     "spec": "§4.2"
+    },
+    {
+     "program": "CBTRN02C",
+     "name": "9400-ACCTFILE-CLOSE",
+     "start": 655,
+     "end": 673,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/PostTranProgram.java",
+       "line": 84,
+       "span_end": 88
+      }
+     ],
+     "covered": 6,
+     "what": "Cierra el archivo de cuentas.",
+     "spec": "§4.2"
+    },
+    {
+     "program": "CBTRN02C",
+     "name": "9500-TCATBALF-CLOSE",
+     "start": 674,
+     "end": 691,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/PostTranProgram.java",
+       "line": 84,
+       "span_end": 88
+      }
+     ],
+     "covered": 6,
+     "what": "Cierra el archivo de saldos por categoría.",
+     "spec": "§4.2"
+    },
+    {
+     "program": "CBTRN02C",
+     "name": "Z-GET-DB2-FORMAT-TIMESTAMP",
+     "start": 692,
+     "end": 706,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/service/CobolTimestamp.java",
+       "line": 17,
+       "span_end": 20
+      }
+     ],
+     "covered": 6,
+     "what": "Toma la fecha y hora del sistema y la escribe en el formato de DB2 (AAAA-MM-DD-hh.mm.ss.cc0000). En el banco de pruebas el reloj está fijado, por eso todas las transacciones llevan la misma hora.",
+     "spec": "§6.4"
+    },
+    {
+     "program": "CBTRN02C",
+     "name": "9999-ABEND-PROGRAM",
+     "start": 707,
+     "end": 713,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/CobolRuntime.java",
+       "line": 24,
+       "span_end": 29
+      }
+     ],
+     "covered": 0,
+     "what": "Muestra \"ABENDING PROGRAM\" y llama al servicio de caída del mainframe (CEE3ABD): el paso termina con código 12.",
+     "spec": "§4.2"
+    },
+    {
+     "program": "CBTRN02C",
+     "name": "9910-DISPLAY-IO-STATUS",
+     "start": 714,
+     "end": 731,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/CobolRuntime.java",
+       "line": 17,
+       "span_end": 21
+      }
+     ],
+     "covered": 0,
+     "what": "Muestra el estado de archivo de la última operación fallida (\"FILE STATUS IS: NNNN00xx\"). Solo se ejecuta en una caída.",
+     "spec": "§7.1"
+    }
+   ],
+   "programs": {
+    "CBTRN02C": {
+     "title": "Contabilizar las transacciones del día (paso 1, POSTTRAN)",
+     "intro": "Lee una por una las transacciones de tarjeta del día. Para cada una verifica que la tarjeta exista, que su cuenta exista, que no exceda el límite de crédito y que la tarjeta no esté vencida. Si pasa, la contabiliza: actualiza el saldo y los acumulados de ciclo de la cuenta, el saldo por categoría, y la guarda en el maestro de transacciones. Si no pasa, la escribe en el archivo de rechazos con un código de motivo. Termina con código 4 si hubo algún rechazo."
+    }
+   }
+  },
+  {
+   "path": "src/CBTRN03C.cbl",
+   "paragraphs": [
+    {
+     "program": "CBTRN03C",
+     "name": "0550-DATEPARM-READ",
+     "start": 220,
+     "end": 247,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/TranReptProgram.java",
+       "line": 50,
+       "span_end": 59
+      }
+     ],
+     "covered": 5,
+     "what": "Lee el rango de fechas y lo muestra (\"Reporting from … to …\").",
+     "spec": "§4.6"
+    },
+    {
+     "program": "CBTRN03C",
+     "name": "1000-TRANFILE-GET-NEXT",
+     "start": 248,
+     "end": 273,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/TranReptProgram.java",
+       "line": 60,
+       "span_end": 60
+      }
+     ],
+     "covered": 5,
+     "what": "Lee la siguiente transacción. Al fin de archivo el registro en memoria conserva la última leída, y la rama de fin de archivo la vuelve a sumar (D2).",
+     "spec": "§4.6"
+    },
+    {
+     "program": "CBTRN03C",
+     "name": "1100-WRITE-TRANSACTION-REPORT",
+     "start": 274,
+     "end": 292,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/service/ReportWriter.java",
+       "line": 49,
+       "span_end": 67
+      }
+     ],
+     "covered": 5,
+     "what": "Para cada transacción: si es la primera, escribe los encabezados; si el contador de líneas es múltiplo de 20, cierra la página (total de página + encabezados); suma el importe al total de página y al de cuenta; escribe la línea de detalle.",
+     "spec": "§7.4"
+    },
+    {
+     "program": "CBTRN03C",
+     "name": "1110-WRITE-PAGE-TOTALS",
+     "start": 293,
+     "end": 305,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/service/ReportWriter.java",
+       "line": 70,
+       "span_end": 79
+      }
+     ],
+     "covered": 5,
+     "what": "Escribe la línea \"Page Total\" con el total de página, lo pasa al total general, lo reinicia y escribe una línea de guiones.",
+     "spec": "§7.4"
+    },
+    {
+     "program": "CBTRN03C",
+     "name": "1120-WRITE-ACCOUNT-TOTALS",
+     "start": 306,
+     "end": 317,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/service/ReportWriter.java",
+       "line": 82,
+       "span_end": 90
+      }
+     ],
+     "covered": 5,
+     "what": "Escribe la línea \"Account Total\" de la tarjeta que termina, reinicia el total de cuenta y escribe una línea de guiones. No se escribe para la última tarjeta (D2).",
+     "spec": "§7.4"
+    },
+    {
+     "program": "CBTRN03C",
+     "name": "1110-WRITE-GRAND-TOTALS",
+     "start": 318,
+     "end": 323,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/service/ReportWriter.java",
+       "line": 93,
+       "span_end": 97
+      }
+     ],
+     "covered": 5,
+     "what": "Escribe la línea \"Grand Total\".",
+     "spec": "§7.4"
+    },
+    {
+     "program": "CBTRN03C",
+     "name": "1120-WRITE-HEADERS",
+     "start": 324,
+     "end": 342,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/service/ReportWriter.java",
+       "line": 100,
+       "span_end": 112
+      }
+     ],
+     "covered": 5,
+     "what": "Escribe las cuatro líneas de encabezado: nombre y rango de fechas, línea en blanco, títulos de columnas, guiones.",
+     "spec": "§7.4"
+    },
+    {
+     "program": "CBTRN03C",
+     "name": "1111-WRITE-REPORT-REC",
+     "start": 343,
+     "end": 360,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/service/ReportWriter.java",
+       "line": 131,
+       "span_end": 135
+      }
+     ],
+     "covered": 5,
+     "what": "Escribe una línea de 133 caracteres en el reporte; si falla, cae.",
+     "spec": "§7.4"
+    },
+    {
+     "program": "CBTRN03C",
+     "name": "1120-WRITE-DETAIL",
+     "start": 361,
+     "end": 375,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/service/ReportWriter.java",
+       "line": 115,
+       "span_end": 128
+      }
+     ],
+     "covered": 5,
+     "what": "Arma la línea de detalle: id, cuenta, tipo y su descripción (15 caracteres), categoría y su descripción (29), origen, importe editado con signo y separadores de miles.",
+     "spec": "§7.4"
+    },
+    {
+     "program": "CBTRN03C",
+     "name": "0000-TRANFILE-OPEN",
+     "start": 376,
+     "end": 393,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/TranReptProgram.java",
+       "line": 32,
+       "span_end": 36
+      }
+     ],
+     "covered": 5,
+     "what": "Abre el archivo de transacciones a reportar (secuencial, ya filtrado y ordenado por el paso anterior).",
+     "spec": "§4.6"
+    },
+    {
+     "program": "CBTRN03C",
+     "name": "0100-REPTFILE-OPEN",
+     "start": 394,
+     "end": 411,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/TranReptProgram.java",
+       "line": 32,
+       "span_end": 36
+      }
+     ],
+     "covered": 5,
+     "what": "Abre el archivo del reporte para escribirlo desde cero.",
+     "spec": "§4.6"
+    },
+    {
+     "program": "CBTRN03C",
+     "name": "0200-CARDXREF-OPEN",
+     "start": 412,
+     "end": 429,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/TranReptProgram.java",
+       "line": 32,
+       "span_end": 36
+      }
+     ],
+     "covered": 5,
+     "what": "Abre la referencia cruzada para obtener la cuenta de cada tarjeta.",
+     "spec": "§4.6"
+    },
+    {
+     "program": "CBTRN03C",
+     "name": "0300-TRANTYPE-OPEN",
+     "start": 430,
+     "end": 447,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/TranReptProgram.java",
+       "line": 32,
+       "span_end": 36
+      }
+     ],
+     "covered": 5,
+     "what": "Abre la tabla de tipos de transacción (código → descripción).",
+     "spec": "§4.6"
+    },
+    {
+     "program": "CBTRN03C",
+     "name": "0400-TRANCATG-OPEN",
+     "start": 448,
+     "end": 465,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/TranReptProgram.java",
+       "line": 32,
+       "span_end": 36
+      }
+     ],
+     "covered": 5,
+     "what": "Abre la tabla de categorías (tipo + categoría → descripción).",
+     "spec": "§4.6"
+    },
+    {
+     "program": "CBTRN03C",
+     "name": "0500-DATEPARM-OPEN",
+     "start": 466,
+     "end": 483,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/TranReptProgram.java",
+       "line": 32,
+       "span_end": 36
+      }
+     ],
+     "covered": 5,
+     "what": "Abre el archivo de parámetros con el rango de fechas.",
+     "spec": "§4.6"
+    },
+    {
+     "program": "CBTRN03C",
+     "name": "1500-A-LOOKUP-XREF",
+     "start": 484,
+     "end": 493,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/TranReptProgram.java",
+       "line": 71,
+       "span_end": 78
+      }
+     ],
+     "covered": 5,
+     "what": "Busca la cuenta de la tarjeta en curso; si la tarjeta no existe, cae.",
+     "spec": "§4.6"
+    },
+    {
+     "program": "CBTRN03C",
+     "name": "1500-B-LOOKUP-TRANTYPE",
+     "start": 494,
+     "end": 503,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/TranReptProgram.java",
+       "line": 81,
+       "span_end": 88
+      }
+     ],
+     "covered": 5,
+     "what": "Busca la descripción del tipo de transacción; si no existe, cae.",
+     "spec": "§4.6"
+    },
+    {
+     "program": "CBTRN03C",
+     "name": "1500-C-LOOKUP-TRANCATG",
+     "start": 504,
+     "end": 513,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/TranReptProgram.java",
+       "line": 90,
+       "span_end": 98
+      }
+     ],
+     "covered": 5,
+     "what": "Busca la descripción de la categoría; si no existe, cae.",
+     "spec": "§4.6"
+    },
+    {
+     "program": "CBTRN03C",
+     "name": "9000-TRANFILE-CLOSE",
+     "start": 514,
+     "end": 531,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/TranReptProgram.java",
+       "line": 114,
+       "span_end": 118
+      }
+     ],
+     "covered": 5,
+     "what": "Cierra el archivo de transacciones.",
+     "spec": "§4.6"
+    },
+    {
+     "program": "CBTRN03C",
+     "name": "9100-REPTFILE-CLOSE",
+     "start": 532,
+     "end": 550,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/TranReptProgram.java",
+       "line": 114,
+       "span_end": 118
+      }
+     ],
+     "covered": 5,
+     "what": "Cierra el reporte.",
+     "spec": "§4.6"
+    },
+    {
+     "program": "CBTRN03C",
+     "name": "9200-CARDXREF-CLOSE",
+     "start": 551,
+     "end": 568,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/TranReptProgram.java",
+       "line": 114,
+       "span_end": 118
+      }
+     ],
+     "covered": 5,
+     "what": "Cierra la referencia cruzada.",
+     "spec": "§4.6"
+    },
+    {
+     "program": "CBTRN03C",
+     "name": "9300-TRANTYPE-CLOSE",
+     "start": 569,
+     "end": 586,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/TranReptProgram.java",
+       "line": 114,
+       "span_end": 118
+      }
+     ],
+     "covered": 5,
+     "what": "Cierra la tabla de tipos.",
+     "spec": "§4.6"
+    },
+    {
+     "program": "CBTRN03C",
+     "name": "9400-TRANCATG-CLOSE",
+     "start": 587,
+     "end": 604,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/TranReptProgram.java",
+       "line": 114,
+       "span_end": 118
+      }
+     ],
+     "covered": 5,
+     "what": "Cierra la tabla de categorías.",
+     "spec": "§4.6"
+    },
+    {
+     "program": "CBTRN03C",
+     "name": "9500-DATEPARM-CLOSE",
+     "start": 605,
+     "end": 625,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/TranReptProgram.java",
+       "line": 114,
+       "span_end": 118
+      }
+     ],
+     "covered": 5,
+     "what": "Cierra el archivo de parámetros.",
+     "spec": "§4.6"
+    },
+    {
+     "program": "CBTRN03C",
+     "name": "9999-ABEND-PROGRAM",
+     "start": 626,
+     "end": 632,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/CobolRuntime.java",
+       "line": 24,
+       "span_end": 29
+      }
+     ],
+     "covered": 0,
+     "what": "\"ABENDING PROGRAM\" + llamada a CEE3ABD: código 12.",
+     "spec": "§4.6"
+    },
+    {
+     "program": "CBTRN03C",
+     "name": "9910-DISPLAY-IO-STATUS",
+     "start": 633,
+     "end": 649,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/CobolRuntime.java",
+       "line": 17,
+       "span_end": 21
+      }
+     ],
+     "covered": 0,
+     "what": "Muestra el estado de archivo de la operación fallida.",
+     "spec": "§7.1"
+    }
+   ],
+   "programs": {
+    "CBTRN03C": {
+     "title": "Imprimir el reporte diario de transacciones (paso 4, TRANREPT)",
+     "intro": "Recibe las transacciones del rango de fechas, ya ordenadas por tarjeta, y arma un reporte de 133 columnas: encabezado con el rango, una línea por transacción con las descripciones de tipo y categoría, total por cuenta cuando cambia la tarjeta, total por página cada 20 líneas y total general al final. Por un error del programa original, al llegar al fin de archivo vuelve a sumar el último importe: el total general queda inflado (defecto D2)."
+    }
+   }
+  },
+  {
+   "path": "src/CEE3ABD.cbl",
+   "paragraphs": [],
+   "programs": {
+    "CEE3ABD": {
+     "title": "Caída controlada (agregado, reemplaza un servicio del mainframe)",
+     "intro": "Reemplazo del servicio de Language Environment que termina un programa con un código de abend. Muestra \"CEE3ABD: USER ABEND U+000000999\" y detiene el paso con código 12. Lo llaman los tres programas de negocio desde su párrafo 9999-ABEND-PROGRAM."
+    }
+   }
+  },
+  {
+   "path": "src/INTCALC.cbl",
+   "paragraphs": [],
+   "programs": {
+    "INTCALC": {
+     "title": "Arranque del paso de intereses (agregado, no es de CardDemo)",
+     "intro": "En el mainframe el JCL le pasa al programa de intereses la fecha de proceso como PARM. GnuCOBOL no lo hace, así que este programa chico toma la fecha de la variable de entorno PARM, arma la misma estructura (largo + texto) y llama a CBACT04C sin modificarlo."
+    }
+   }
+  },
+  {
+   "path": "src/ksds/LOAD-ACCTFILE.cbl",
+   "paragraphs": [
+    {
+     "program": "LOAD-ACCTFILE",
+     "name": "MAIN",
+     "start": 34,
+     "end": 67,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/KsdsLoadProgram.java",
+       "line": 17,
+       "span_end": 50
+      }
+     ],
+     "covered": 6,
+     "what": "Abre la entrada secuencial y el archivo indexado (vacío), graba cada registro (una clave repetida cuenta como error, código 8) y muestra cuántos cargó.",
+     "spec": "§4.1"
+    }
+   ],
+   "programs": {
+    "LOAD-ACCTFILE": {
+     "title": "Cargar un archivo indexado (generados)",
+     "intro": "Reemplazan el utilitario IDCAMS REPRO del mainframe: leen un archivo secuencial de longitud fija y lo cargan en un archivo indexado (el análogo de VSAM) desde cero. Los genera `tools/gen-ksds-io.py` a partir de `job.json`."
+    }
+   }
+  },
+  {
+   "path": "src/ksds/LOAD-DISCGRP.cbl",
+   "paragraphs": [
+    {
+     "program": "LOAD-DISCGRP",
+     "name": "MAIN",
+     "start": 34,
+     "end": 67,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/KsdsLoadProgram.java",
+       "line": 17,
+       "span_end": 50
+      }
+     ],
+     "covered": 6,
+     "what": "Abre la entrada secuencial y el archivo indexado (vacío), graba cada registro (una clave repetida cuenta como error, código 8) y muestra cuántos cargó.",
+     "spec": "§4.1"
+    }
+   ],
+   "programs": {
+    "LOAD-DISCGRP": {
+     "title": "Cargar un archivo indexado (generados)",
+     "intro": "Reemplazan el utilitario IDCAMS REPRO del mainframe: leen un archivo secuencial de longitud fija y lo cargan en un archivo indexado (el análogo de VSAM) desde cero. Los genera `tools/gen-ksds-io.py` a partir de `job.json`."
+    }
+   }
+  },
+  {
+   "path": "src/ksds/LOAD-TCATBALF.cbl",
+   "paragraphs": [
+    {
+     "program": "LOAD-TCATBALF",
+     "name": "MAIN",
+     "start": 34,
+     "end": 67,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/KsdsLoadProgram.java",
+       "line": 17,
+       "span_end": 50
+      }
+     ],
+     "covered": 6,
+     "what": "Abre la entrada secuencial y el archivo indexado (vacío), graba cada registro (una clave repetida cuenta como error, código 8) y muestra cuántos cargó.",
+     "spec": "§4.1"
+    }
+   ],
+   "programs": {
+    "LOAD-TCATBALF": {
+     "title": "Cargar un archivo indexado (generados)",
+     "intro": "Reemplazan el utilitario IDCAMS REPRO del mainframe: leen un archivo secuencial de longitud fija y lo cargan en un archivo indexado (el análogo de VSAM) desde cero. Los genera `tools/gen-ksds-io.py` a partir de `job.json`."
+    }
+   }
+  },
+  {
+   "path": "src/ksds/LOAD-TRANCATG.cbl",
+   "paragraphs": [
+    {
+     "program": "LOAD-TRANCATG",
+     "name": "MAIN",
+     "start": 34,
+     "end": 67,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/KsdsLoadProgram.java",
+       "line": 17,
+       "span_end": 50
+      }
+     ],
+     "covered": 6,
+     "what": "Abre la entrada secuencial y el archivo indexado (vacío), graba cada registro (una clave repetida cuenta como error, código 8) y muestra cuántos cargó.",
+     "spec": "§4.1"
+    }
+   ],
+   "programs": {
+    "LOAD-TRANCATG": {
+     "title": "Cargar un archivo indexado (generados)",
+     "intro": "Reemplazan el utilitario IDCAMS REPRO del mainframe: leen un archivo secuencial de longitud fija y lo cargan en un archivo indexado (el análogo de VSAM) desde cero. Los genera `tools/gen-ksds-io.py` a partir de `job.json`."
+    }
+   }
+  },
+  {
+   "path": "src/ksds/LOAD-TRANSACT.cbl",
+   "paragraphs": [
+    {
+     "program": "LOAD-TRANSACT",
+     "name": "MAIN",
+     "start": 34,
+     "end": 67,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/KsdsLoadProgram.java",
+       "line": 17,
+       "span_end": 50
+      }
+     ],
+     "covered": 5,
+     "what": "Abre la entrada secuencial y el archivo indexado (vacío), graba cada registro (una clave repetida cuenta como error, código 8) y muestra cuántos cargó.",
+     "spec": "§4.1"
+    }
+   ],
+   "programs": {
+    "LOAD-TRANSACT": {
+     "title": "Cargar un archivo indexado (generados)",
+     "intro": "Reemplazan el utilitario IDCAMS REPRO del mainframe: leen un archivo secuencial de longitud fija y lo cargan en un archivo indexado (el análogo de VSAM) desde cero. Los genera `tools/gen-ksds-io.py` a partir de `job.json`."
+    }
+   }
+  },
+  {
+   "path": "src/ksds/LOAD-TRANTYPE.cbl",
+   "paragraphs": [
+    {
+     "program": "LOAD-TRANTYPE",
+     "name": "MAIN",
+     "start": 34,
+     "end": 67,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/KsdsLoadProgram.java",
+       "line": 17,
+       "span_end": 50
+      }
+     ],
+     "covered": 6,
+     "what": "Abre la entrada secuencial y el archivo indexado (vacío), graba cada registro (una clave repetida cuenta como error, código 8) y muestra cuántos cargó.",
+     "spec": "§4.1"
+    }
+   ],
+   "programs": {
+    "LOAD-TRANTYPE": {
+     "title": "Cargar un archivo indexado (generados)",
+     "intro": "Reemplazan el utilitario IDCAMS REPRO del mainframe: leen un archivo secuencial de longitud fija y lo cargan en un archivo indexado (el análogo de VSAM) desde cero. Los genera `tools/gen-ksds-io.py` a partir de `job.json`."
+    }
+   }
+  },
+  {
+   "path": "src/ksds/LOAD-XREFFILE.cbl",
+   "paragraphs": [
+    {
+     "program": "LOAD-XREFFILE",
+     "name": "MAIN",
+     "start": 39,
+     "end": 72,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/KsdsLoadProgram.java",
+       "line": 17,
+       "span_end": 50
+      }
+     ],
+     "covered": 6,
+     "what": "Abre la entrada secuencial y el archivo indexado (vacío), graba cada registro (una clave repetida cuenta como error, código 8) y muestra cuántos cargó.",
+     "spec": "§4.1"
+    }
+   ],
+   "programs": {
+    "LOAD-XREFFILE": {
+     "title": "Cargar un archivo indexado (generados)",
+     "intro": "Reemplazan el utilitario IDCAMS REPRO del mainframe: leen un archivo secuencial de longitud fija y lo cargan en un archivo indexado (el análogo de VSAM) desde cero. Los genera `tools/gen-ksds-io.py` a partir de `job.json`."
+    }
+   }
+  },
+  {
+   "path": "src/ksds/UNLD-ACCTFILE.cbl",
+   "paragraphs": [
+    {
+     "program": "UNLD-ACCTFILE",
+     "name": "MAIN",
+     "start": 33,
+     "end": 59,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/KsdsUnloadProgram.java",
+       "line": 15,
+       "span_end": 39
+      }
+     ],
+     "covered": 6,
+     "what": "Lee el archivo indexado de principio a fin en orden de clave, escribe cada registro y muestra cuántos descargó.",
+     "spec": "§4.3, §4.7"
+    }
+   ],
+   "programs": {
+    "UNLD-ACCTFILE": {
+     "title": "Descargar un archivo indexado (generados)",
+     "intro": "El REPRO inverso: recorren el archivo indexado en orden de clave y lo escriben en un archivo secuencial. Así los archivos que el job actualiza en el lugar (cuentas, saldos por categoría) se pueden comparar byte a byte, y así se hace el respaldo del maestro entre pasos."
+    }
+   }
+  },
+  {
+   "path": "src/ksds/UNLD-TCATBALF.cbl",
+   "paragraphs": [
+    {
+     "program": "UNLD-TCATBALF",
+     "name": "MAIN",
+     "start": 33,
+     "end": 59,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/KsdsUnloadProgram.java",
+       "line": 15,
+       "span_end": 39
+      }
+     ],
+     "covered": 6,
+     "what": "Lee el archivo indexado de principio a fin en orden de clave, escribe cada registro y muestra cuántos descargó.",
+     "spec": "§4.3, §4.7"
+    }
+   ],
+   "programs": {
+    "UNLD-TCATBALF": {
+     "title": "Descargar un archivo indexado (generados)",
+     "intro": "El REPRO inverso: recorren el archivo indexado en orden de clave y lo escriben en un archivo secuencial. Así los archivos que el job actualiza en el lugar (cuentas, saldos por categoría) se pueden comparar byte a byte, y así se hace el respaldo del maestro entre pasos."
+    }
+   }
+  },
+  {
+   "path": "src/ksds/UNLD-TRANSACT.cbl",
+   "paragraphs": [
+    {
+     "program": "UNLD-TRANSACT",
+     "name": "MAIN",
+     "start": 33,
+     "end": 59,
+     "cited_by": [
+      {
+       "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/KsdsUnloadProgram.java",
+       "line": 15,
+       "span_end": 39
+      }
+     ],
+     "covered": 6,
+     "what": "Lee el archivo indexado de principio a fin en orden de clave, escribe cada registro y muestra cuántos descargó.",
+     "spec": "§4.3, §4.7"
+    }
+   ],
+   "programs": {
+    "UNLD-TRANSACT": {
+     "title": "Descargar un archivo indexado (generados)",
+     "intro": "El REPRO inverso: recorren el archivo indexado en orden de clave y lo escriben en un archivo secuencial. Así los archivos que el job actualiza en el lugar (cuentas, saldos por categoría) se pueden comparar byte a byte, y así se hace el respaldo del maestro entre pasos."
+    }
+   }
+  },
+  {
+   "path": "copybooks/CVACT01Y.cpy",
+   "paragraphs": [],
+   "programs": {}
+  },
+  {
+   "path": "copybooks/CVACT03Y.cpy",
+   "paragraphs": [],
+   "programs": {}
+  },
+  {
+   "path": "copybooks/CVTRA01Y.cpy",
+   "paragraphs": [],
+   "programs": {}
+  },
+  {
+   "path": "copybooks/CVTRA02Y.cpy",
+   "paragraphs": [],
+   "programs": {}
+  },
+  {
+   "path": "copybooks/CVTRA03Y.cpy",
+   "paragraphs": [],
+   "programs": {}
+  },
+  {
+   "path": "copybooks/CVTRA04Y.cpy",
+   "paragraphs": [],
+   "programs": {}
+  },
+  {
+   "path": "copybooks/CVTRA05Y.cpy",
+   "paragraphs": [],
+   "programs": {}
+  },
+  {
+   "path": "copybooks/CVTRA06Y.cpy",
+   "paragraphs": [],
+   "programs": {}
+  },
+  {
+   "path": "copybooks/CVTRA07Y.cpy",
+   "paragraphs": [],
+   "programs": {}
+  }
+ ],
+ "java": [
+  {
+   "path": "src/main/java/com/example/poc/nightlybatch/NightlyBatchApplication.java",
+   "links": []
+  },
+  {
+   "path": "src/main/java/com/example/poc/nightlybatch/batch/AbendException.java",
+   "links": [
+    {
+     "line": 7,
+     "span_end": 19,
+     "cobol": "src/CEE3ABD.cbl",
+     "start": 17,
+     "end": 25,
+     "resolved": true
+    }
+   ]
+  },
+  {
+   "path": "src/main/java/com/example/poc/nightlybatch/batch/JobManifest.java",
+   "links": []
+  },
+  {
+   "path": "src/main/java/com/example/poc/nightlybatch/batch/JobRun.java",
+   "links": []
+  },
+  {
+   "path": "src/main/java/com/example/poc/nightlybatch/batch/JobStateDao.java",
+   "links": []
+  },
+  {
+   "path": "src/main/java/com/example/poc/nightlybatch/batch/NightlyJobConfig.java",
+   "links": [
+    {
+     "line": 79,
+     "span_end": 82,
+     "cobol": "src/CEE3ABD.cbl",
+     "start": 23,
+     "end": 25,
+     "resolved": true
+    }
+   ]
+  },
+  {
+   "path": "src/main/java/com/example/poc/nightlybatch/batch/RunLogListener.java",
+   "links": []
+  },
+  {
+   "path": "src/main/java/com/example/poc/nightlybatch/batch/StepProgram.java",
+   "links": []
+  },
+  {
+   "path": "src/main/java/com/example/poc/nightlybatch/batch/programs/CardSortProgram.java",
+   "links": [
+    {
+     "line": 21,
+     "span_end": 53,
+     "cobol": "src/CBSORT02.cbl",
+     "start": 66,
+     "end": 117,
+     "resolved": true
+    }
+   ]
+  },
+  {
+   "path": "src/main/java/com/example/poc/nightlybatch/batch/programs/CobolRuntime.java",
+   "links": [
+    {
+     "line": 17,
+     "span_end": 21,
+     "cobol": "src/CBTRN02C.cbl",
+     "start": 714,
+     "end": 727,
+     "resolved": true
+    },
+    {
+     "line": 17,
+     "span_end": 21,
+     "cobol": "src/CBACT04C.cbl",
+     "start": 635,
+     "end": 648,
+     "resolved": true
+    },
+    {
+     "line": 17,
+     "span_end": 21,
+     "cobol": "src/CBTRN03C.cbl",
+     "start": 633,
+     "end": 646,
+     "resolved": true
+    },
+    {
+     "line": 24,
+     "span_end": 29,
+     "cobol": "src/CBTRN02C.cbl",
+     "start": 707,
+     "end": 712,
+     "resolved": true
+    },
+    {
+     "line": 24,
+     "span_end": 29,
+     "cobol": "src/CBACT04C.cbl",
+     "start": 628,
+     "end": 633,
+     "resolved": true
+    },
+    {
+     "line": 24,
+     "span_end": 29,
+     "cobol": "src/CBTRN03C.cbl",
+     "start": 626,
+     "end": 631,
+     "resolved": true
+    }
+   ]
+  },
+  {
+   "path": "src/main/java/com/example/poc/nightlybatch/batch/programs/IntCalcProgram.java",
+   "links": [
+    {
+     "line": 23,
+     "span_end": 38,
+     "cobol": "src/INTCALC.cbl",
+     "start": 17,
+     "end": 32,
+     "resolved": true
+    },
+    {
+     "line": 39,
+     "span_end": 43,
+     "cobol": "src/CBACT04C.cbl",
+     "start": 182,
+     "end": 186,
+     "resolved": true
+    },
+    {
+     "line": 39,
+     "span_end": 43,
+     "cobol": "src/CBACT04C.cbl",
+     "start": 234,
+     "end": 324,
+     "resolved": true
+    },
+    {
+     "line": 50,
+     "span_end": 64,
+     "cobol": "src/CBACT04C.cbl",
+     "start": 95,
+     "end": 174,
+     "resolved": true
+    },
+    {
+     "line": 65,
+     "span_end": 65,
+     "cobol": "src/CBACT04C.cbl",
+     "start": 325,
+     "end": 349,
+     "resolved": true
+    },
+    {
+     "line": 78,
+     "span_end": 86,
+     "cobol": "src/CBACT04C.cbl",
+     "start": 372,
+     "end": 392,
+     "resolved": true
+    },
+    {
+     "line": 88,
+     "span_end": 96,
+     "cobol": "src/CBACT04C.cbl",
+     "start": 393,
+     "end": 414,
+     "resolved": true
+    },
+    {
+     "line": 99,
+     "span_end": 103,
+     "cobol": "src/CBACT04C.cbl",
+     "start": 207,
+     "end": 212,
+     "resolved": true
+    },
+    {
+     "line": 99,
+     "span_end": 103,
+     "cobol": "src/CBACT04C.cbl",
+     "start": 415,
+     "end": 461,
+     "resolved": true
+    },
+    {
+     "line": 108,
+     "span_end": 112,
+     "cobol": "src/CBACT04C.cbl",
+     "start": 462,
+     "end": 472,
+     "resolved": true
+    },
+    {
+     "line": 113,
+     "span_end": 118,
+     "cobol": "src/CBACT04C.cbl",
+     "start": 473,
+     "end": 517,
+     "resolved": true
+    },
+    {
+     "line": 119,
+     "span_end": 120,
+     "cobol": "src/CBACT04C.cbl",
+     "start": 518,
+     "end": 521,
+     "resolved": true
+    },
+    {
+     "line": 123,
+     "span_end": 126,
+     "cobol": "src/CBACT04C.cbl",
+     "start": 219,
+     "end": 221,
+     "resolved": true
+    },
+    {
+     "line": 127,
+     "span_end": 131,
+     "cobol": "src/CBACT04C.cbl",
+     "start": 226,
+     "end": 230,
+     "resolved": true
+    },
+    {
+     "line": 127,
+     "span_end": 131,
+     "cobol": "src/CBACT04C.cbl",
+     "start": 522,
+     "end": 612,
+     "resolved": true
+    }
+   ]
+  },
+  {
+   "path": "src/main/java/com/example/poc/nightlybatch/batch/programs/KsdsLoadProgram.java",
+   "links": [
+    {
+     "line": 17,
+     "span_end": 50,
+     "cobol": "src/ksds/LOAD-ACCTFILE.cbl",
+     "start": 34,
+     "end": 67,
+     "resolved": true
+    },
+    {
+     "line": 17,
+     "span_end": 50,
+     "cobol": "src/ksds/LOAD-XREFFILE.cbl",
+     "start": 34,
+     "end": 67,
+     "resolved": true
+    },
+    {
+     "line": 17,
+     "span_end": 50,
+     "cobol": "src/ksds/LOAD-TCATBALF.cbl",
+     "start": 34,
+     "end": 67,
+     "resolved": true
+    },
+    {
+     "line": 17,
+     "span_end": 50,
+     "cobol": "src/ksds/LOAD-DISCGRP.cbl",
+     "start": 34,
+     "end": 67,
+     "resolved": true
+    },
+    {
+     "line": 17,
+     "span_end": 50,
+     "cobol": "src/ksds/LOAD-TRANTYPE.cbl",
+     "start": 34,
+     "end": 67,
+     "resolved": true
+    },
+    {
+     "line": 17,
+     "span_end": 50,
+     "cobol": "src/ksds/LOAD-TRANCATG.cbl",
+     "start": 34,
+     "end": 67,
+     "resolved": true
+    },
+    {
+     "line": 17,
+     "span_end": 50,
+     "cobol": "src/ksds/LOAD-TRANSACT.cbl",
+     "start": 34,
+     "end": 67,
+     "resolved": true
+    }
+   ]
+  },
+  {
+   "path": "src/main/java/com/example/poc/nightlybatch/batch/programs/KsdsUnloadProgram.java",
+   "links": [
+    {
+     "line": 15,
+     "span_end": 39,
+     "cobol": "src/ksds/UNLD-TRANSACT.cbl",
+     "start": 33,
+     "end": 59,
+     "resolved": true
+    },
+    {
+     "line": 15,
+     "span_end": 39,
+     "cobol": "src/ksds/UNLD-ACCTFILE.cbl",
+     "start": 33,
+     "end": 59,
+     "resolved": true
+    },
+    {
+     "line": 15,
+     "span_end": 39,
+     "cobol": "src/ksds/UNLD-TCATBALF.cbl",
+     "start": 33,
+     "end": 59,
+     "resolved": true
+    }
+   ]
+  },
+  {
+   "path": "src/main/java/com/example/poc/nightlybatch/batch/programs/MergeSortProgram.java",
+   "links": [
+    {
+     "line": 18,
+     "span_end": 33,
+     "cobol": "src/CBSORT01.cbl",
+     "start": 36,
+     "end": 45,
+     "resolved": true
+    }
+   ]
+  },
+  {
+   "path": "src/main/java/com/example/poc/nightlybatch/batch/programs/PostTranProgram.java",
+   "links": [
+    {
+     "line": 21,
+     "span_end": 32,
+     "cobol": "src/CBTRN02C.cbl",
+     "start": 193,
+     "end": 234,
+     "resolved": true
+    },
+    {
+     "line": 33,
+     "span_end": 37,
+     "cobol": "src/CBTRN02C.cbl",
+     "start": 195,
+     "end": 200,
+     "resolved": true
+    },
+    {
+     "line": 33,
+     "span_end": 37,
+     "cobol": "src/CBTRN02C.cbl",
+     "start": 236,
+     "end": 344,
+     "resolved": true
+    },
+    {
+     "line": 45,
+     "span_end": 58,
+     "cobol": "src/CBTRN02C.cbl",
+     "start": 100,
+     "end": 192,
+     "resolved": true
+    },
+    {
+     "line": 59,
+     "span_end": 59,
+     "cobol": "src/CBTRN02C.cbl",
+     "start": 345,
+     "end": 369,
+     "resolved": true
+    },
+    {
+     "line": 75,
+     "span_end": 79,
+     "cobol": "src/CBTRN02C.cbl",
+     "start": 446,
+     "end": 466,
+     "resolved": true
+    },
+    {
+     "line": 84,
+     "span_end": 88,
+     "cobol": "src/CBTRN02C.cbl",
+     "start": 221,
+     "end": 226,
+     "resolved": true
+    },
+    {
+     "line": 84,
+     "span_end": 88,
+     "cobol": "src/CBTRN02C.cbl",
+     "start": 582,
+     "end": 691,
+     "resolved": true
+    }
+   ]
+  },
+  {
+   "path": "src/main/java/com/example/poc/nightlybatch/batch/programs/Programs.java",
+   "links": []
+  },
+  {
+   "path": "src/main/java/com/example/poc/nightlybatch/batch/programs/TranReptProgram.java",
+   "links": [
+    {
+     "line": 20,
+     "span_end": 31,
+     "cobol": "src/CBTRN03C.cbl",
+     "start": 157,
+     "end": 218,
+     "resolved": true
+    },
+    {
+     "line": 32,
+     "span_end": 36,
+     "cobol": "src/CBTRN03C.cbl",
+     "start": 159,
+     "end": 164,
+     "resolved": true
+    },
+    {
+     "line": 32,
+     "span_end": 36,
+     "cobol": "src/CBTRN03C.cbl",
+     "start": 376,
+     "end": 483,
+     "resolved": true
+    },
+    {
+     "line": 42,
+     "span_end": 48,
+     "cobol": "src/CBTRN03C.cbl",
+     "start": 93,
+     "end": 155,
+     "resolved": true
+    },
+    {
+     "line": 50,
+     "span_end": 59,
+     "cobol": "src/CBTRN03C.cbl",
+     "start": 220,
+     "end": 246,
+     "resolved": true
+    },
+    {
+     "line": 60,
+     "span_end": 60,
+     "cobol": "src/CBTRN03C.cbl",
+     "start": 248,
+     "end": 272,
+     "resolved": true
+    },
+    {
+     "line": 71,
+     "span_end": 78,
+     "cobol": "src/CBTRN03C.cbl",
+     "start": 484,
+     "end": 492,
+     "resolved": true
+    },
+    {
+     "line": 81,
+     "span_end": 88,
+     "cobol": "src/CBTRN03C.cbl",
+     "start": 494,
+     "end": 502,
+     "resolved": true
+    },
+    {
+     "line": 90,
+     "span_end": 98,
+     "cobol": "src/CBTRN03C.cbl",
+     "start": 504,
+     "end": 512,
+     "resolved": true
+    },
+    {
+     "line": 103,
+     "span_end": 109,
+     "cobol": "src/CBTRN03C.cbl",
+     "start": 197,
+     "end": 204,
+     "resolved": true
+    },
+    {
+     "line": 112,
+     "span_end": 113,
+     "cobol": "src/CBTRN03C.cbl",
+     "start": 166,
+     "end": 209,
+     "resolved": true
+    },
+    {
+     "line": 114,
+     "span_end": 118,
+     "cobol": "src/CBTRN03C.cbl",
+     "start": 211,
+     "end": 216,
+     "resolved": true
+    },
+    {
+     "line": 114,
+     "span_end": 118,
+     "cobol": "src/CBTRN03C.cbl",
+     "start": 514,
+     "end": 625,
+     "resolved": true
+    }
+   ]
+  },
+  {
+   "path": "src/main/java/com/example/poc/nightlybatch/domain/CobolRecord.java",
+   "links": []
+  },
+  {
+   "path": "src/main/java/com/example/poc/nightlybatch/domain/Layout.java",
+   "links": []
+  },
+  {
+   "path": "src/main/java/com/example/poc/nightlybatch/domain/Layouts.java",
+   "links": [
+    {
+     "line": 62,
+     "span_end": 67,
+     "cobol": "src/CBTRN03C.cbl",
+     "start": 123,
+     "end": 126,
+     "resolved": true
+    },
+    {
+     "line": 68,
+     "span_end": 82,
+     "cobol": "src/CBTRN02C.cbl",
+     "start": 176,
+     "end": 182,
+     "resolved": true
+    }
+   ]
+  },
+  {
+   "path": "src/main/java/com/example/poc/nightlybatch/io/CobolDisplay.java",
+   "links": []
+  },
+  {
+   "path": "src/main/java/com/example/poc/nightlybatch/io/FixedRecordFile.java",
+   "links": []
+  },
+  {
+   "path": "src/main/java/com/example/poc/nightlybatch/io/KsdsTable.java",
+   "links": []
+  },
+  {
+   "path": "src/main/java/com/example/poc/nightlybatch/io/PicEditor.java",
+   "links": []
+  },
+  {
+   "path": "src/main/java/com/example/poc/nightlybatch/io/StepIo.java",
+   "links": []
+  },
+  {
+   "path": "src/main/java/com/example/poc/nightlybatch/io/ZonedDecimal.java",
+   "links": []
+  },
+  {
+   "path": "src/main/java/com/example/poc/nightlybatch/service/CobolTimestamp.java",
+   "links": [
+    {
+     "line": 17,
+     "span_end": 20,
+     "cobol": "src/CBTRN02C.cbl",
+     "start": 692,
+     "end": 706,
+     "resolved": true
+    },
+    {
+     "line": 17,
+     "span_end": 20,
+     "cobol": "src/CBACT04C.cbl",
+     "start": 613,
+     "end": 627,
+     "resolved": true
+    }
+   ]
+  },
+  {
+   "path": "src/main/java/com/example/poc/nightlybatch/service/InterestCalculator.java",
+   "links": [
+    {
+     "line": 39,
+     "span_end": 57,
+     "cobol": "src/CBACT04C.cbl",
+     "start": 415,
+     "end": 461,
+     "resolved": true
+    },
+    {
+     "line": 64,
+     "span_end": 67,
+     "cobol": "src/CBACT04C.cbl",
+     "start": 462,
+     "end": 467,
+     "resolved": true
+    },
+    {
+     "line": 74,
+     "span_end": 90,
+     "cobol": "src/CBACT04C.cbl",
+     "start": 473,
+     "end": 498,
+     "resolved": true
+    },
+    {
+     "line": 93,
+     "span_end": 103,
+     "cobol": "src/CBACT04C.cbl",
+     "start": 350,
+     "end": 371,
+     "resolved": true
+    }
+   ]
+  },
+  {
+   "path": "src/main/java/com/example/poc/nightlybatch/service/ReportWriter.java",
+   "links": [
+    {
+     "line": 42,
+     "span_end": 46,
+     "cobol": "src/CBTRN03C.cbl",
+     "start": 200,
+     "end": 202,
+     "resolved": true
+    },
+    {
+     "line": 49,
+     "span_end": 67,
+     "cobol": "src/CBTRN03C.cbl",
+     "start": 274,
+     "end": 292,
+     "resolved": true
+    },
+    {
+     "line": 70,
+     "span_end": 79,
+     "cobol": "src/CBTRN03C.cbl",
+     "start": 293,
+     "end": 305,
+     "resolved": true
+    },
+    {
+     "line": 82,
+     "span_end": 90,
+     "cobol": "src/CBTRN03C.cbl",
+     "start": 306,
+     "end": 317,
+     "resolved": true
+    },
+    {
+     "line": 93,
+     "span_end": 97,
+     "cobol": "src/CBTRN03C.cbl",
+     "start": 318,
+     "end": 323,
+     "resolved": true
+    },
+    {
+     "line": 100,
+     "span_end": 112,
+     "cobol": "src/CBTRN03C.cbl",
+     "start": 324,
+     "end": 342,
+     "resolved": true
+    },
+    {
+     "line": 115,
+     "span_end": 128,
+     "cobol": "src/CBTRN03C.cbl",
+     "start": 361,
+     "end": 375,
+     "resolved": true
+    },
+    {
+     "line": 131,
+     "span_end": 135,
+     "cobol": "src/CBTRN03C.cbl",
+     "start": 343,
+     "end": 360,
+     "resolved": true
+    }
+   ]
+  },
+  {
+   "path": "src/main/java/com/example/poc/nightlybatch/service/TransactionPoster.java",
+   "links": [
+    {
+     "line": 49,
+     "span_end": 70,
+     "cobol": "src/CBTRN02C.cbl",
+     "start": 424,
+     "end": 445,
+     "resolved": true
+    },
+    {
+     "line": 72,
+     "span_end": 96,
+     "cobol": "src/CBTRN02C.cbl",
+     "start": 467,
+     "end": 544,
+     "resolved": true
+    },
+    {
+     "line": 98,
+     "span_end": 109,
+     "cobol": "src/CBTRN02C.cbl",
+     "start": 545,
+     "end": 561,
+     "resolved": true
+    },
+    {
+     "line": 111,
+     "span_end": 117,
+     "cobol": "src/CBTRN02C.cbl",
+     "start": 562,
+     "end": 581,
+     "resolved": true
+    }
+   ]
+  },
+  {
+   "path": "src/main/java/com/example/poc/nightlybatch/service/TransactionValidator.java",
+   "links": [
+    {
+     "line": 39,
+     "span_end": 41,
+     "cobol": "src/CBTRN02C.cbl",
+     "start": 370,
+     "end": 423,
+     "resolved": true
+    },
+    {
+     "line": 42,
+     "span_end": 47,
+     "cobol": "src/CBTRN02C.cbl",
+     "start": 380,
+     "end": 392,
+     "resolved": true
+    },
+    {
+     "line": 50,
+     "span_end": 55,
+     "cobol": "src/CBTRN02C.cbl",
+     "start": 393,
+     "end": 423,
+     "resolved": true
+    }
+   ]
+  }
+ ]
+}
