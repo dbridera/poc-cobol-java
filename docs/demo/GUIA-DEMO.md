@@ -27,7 +27,7 @@ Checklist de escena:
 - Si la red es dudosa, probar antes `./tools/demo-commands.sh agentic-eval --replay`: reproduce la grabación y no necesita red.
 - Cerrar todo lo demás. Notificaciones apagadas.
 
-Todos los comandos del recorrido llevan `--step`: el script explica, espera Enter, corre el comando, lista los artefactos y vuelve a esperar. El ritmo lo manejás vos con Enter. En las listas de artefactos, un número abre el ítem: los archivos (COBOL, Java, spec, salidas, informe) en VS Code, los html en el navegador, y los ítems marcados "(carpeta)" en Finder. En la terminal de VS Code los paths se muestran sin adorno y Cmd+clic los abre en el editor; en Terminal.app o iTerm2 son links y Cmd+clic los abre con la aplicación por defecto, así que ahí conviene usar el número. Enter solo sigue.
+Todos los comandos del recorrido llevan `--step`: el script explica, espera Enter, corre el comando, lista los artefactos y vuelve a esperar. El ritmo lo manejás vos con Enter. En las listas de artefactos, un número abre el ítem: los archivos (COBOL, Java, spec, salidas, informe) en VS Code, los html en el navegador, y los ítems marcados "(carpeta)" en Finder. En la terminal de VS Code los paths se muestran sin adorno y Cmd+clic los abre en el editor, lo cual es lo que querés para COBOL, Java, spec e informes, pero no para los html: VS Code los abriría como texto, así que los html se abren siempre con el número (van a Chrome o Safari) o con `viewer`. En Terminal.app o iTerm2 los paths son links y Cmd+clic los abre con la aplicación por defecto, así que ahí conviene usar el número para todo. Enter solo sigue.
 
 ---
 

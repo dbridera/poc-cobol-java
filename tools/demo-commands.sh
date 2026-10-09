@@ -175,6 +175,8 @@ links() {
     label="${it%%|*}"; path="${it#*|}"
     [[ -e "$path" ]] || continue
     paths+=("$path"); n=$((n+1))
+    # in the VS Code terminal a click opens any path in the editor, html included: say that the number goes to the browser
+    if [[ "$path" == *.html && "${TERM_PROGRAM:-}" == "vscode" ]]; then label="$label  ($(T "number $n → browser; a click would open it in VS Code" "número $n → navegador; el clic lo abriría en VS Code"))"; fi
     printf '    %s%2d%s  %s  %s%s%s\n' "$BOLD" "$n" "$RESET" "$(link "$path")" "$DIM" "$label" "$RESET"
   done
   [[ $n -eq 0 ]] && return 0
