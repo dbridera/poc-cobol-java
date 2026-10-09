@@ -24,7 +24,8 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/addmotorpolicy/batch/BatchRunner.java",
-       "line": 31
+       "line": 31,
+       "span_end": 167
       }
      ],
      "covered": null,
@@ -39,7 +40,8 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/addmotorpolicy/batch/BatchRunner.java",
-       "line": 31
+       "line": 31,
+       "span_end": 167
       }
      ],
      "covered": null,
@@ -54,7 +56,8 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/addmotorpolicy/batch/BatchRunner.java",
-       "line": 31
+       "line": 31,
+       "span_end": 167
       }
      ],
      "covered": null,
@@ -69,11 +72,13 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/addmotorpolicy/batch/BatchRunner.java",
-       "line": 31
+       "line": 31,
+       "span_end": 167
       },
       {
        "java": "src/main/java/com/example/poc/addmotorpolicy/service/RequestValidator.java",
-       "line": 15
+       "line": 15,
+       "span_end": 53
       }
      ],
      "covered": null,
@@ -88,7 +93,8 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/addmotorpolicy/service/RequestValidator.java",
-       "line": 15
+       "line": 15,
+       "span_end": 53
       }
      ],
      "covered": null,
@@ -103,11 +109,13 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/addmotorpolicy/service/MotorPremiumCalculator.java",
-       "line": 24
+       "line": 24,
+       "span_end": 54
       },
       {
        "java": "src/main/java/com/example/poc/addmotorpolicy/service/PremiumOverflowException.java",
-       "line": 8
+       "line": 8,
+       "span_end": 13
       }
      ],
      "covered": null,
@@ -122,11 +130,13 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/addmotorpolicy/service/MotorPremiumCalculator.java",
-       "line": 24
+       "line": 24,
+       "span_end": 54
       },
       {
        "java": "src/main/java/com/example/poc/addmotorpolicy/service/PremiumOverflowException.java",
-       "line": 8
+       "line": 8,
+       "span_end": 13
       }
      ],
      "covered": null,
@@ -207,6 +217,7 @@
    "links": [
     {
      "line": 31,
+     "span_end": 167,
      "cobol": "src/ADDMPOL.cbl",
      "start": 158,
      "end": 198,
@@ -219,6 +230,7 @@
    "links": [
     {
      "line": 24,
+     "span_end": 118,
      "cobol": "src/ADDMPOL.cbl",
      "start": 44,
      "end": 95,
@@ -231,6 +243,7 @@
    "links": [
     {
      "line": 14,
+     "span_end": 78,
      "cobol": "src/ADDMPOL.cbl",
      "start": 75,
      "end": 86,
@@ -247,6 +260,7 @@
    "links": [
     {
      "line": 14,
+     "span_end": 68,
      "cobol": "src/ADDMPOL.cbl",
      "start": 60,
      "end": 72,
@@ -259,6 +273,7 @@
    "links": [
     {
      "line": 24,
+     "span_end": 54,
      "cobol": "src/ADDMPOL.cbl",
      "start": 232,
      "end": 264,
@@ -271,6 +286,7 @@
    "links": [
     {
      "line": 8,
+     "span_end": 13,
      "cobol": "src/ADDMPOL.cbl",
      "start": 232,
      "end": 264,
@@ -283,6 +299,7 @@
    "links": [
     {
      "line": 15,
+     "span_end": 53,
      "cobol": "src/ADDMPOL.cbl",
      "start": 199,
      "end": 225,

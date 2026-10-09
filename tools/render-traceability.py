@@ -112,6 +112,41 @@ def parse_guide(module: str) -> dict:
     return guide
 
 
+def citation_span(lines: list[str], ln_no: int) -> int:
+    """Last line (1-based) of the Java block a `// COBOL:` citation on line ln_no refers to.
+    An inline citation (code before the comment) covers that line only. A standalone comment
+    covers the code that follows it: from the next code line, while lines are blank, comments,
+    or indented at least as deep as that first code line, stopping before the next citation
+    or at a line shallower than the block; a closing brace at the block's own depth ends the
+    block and is included. Capped at 150 lines."""
+    stripped = lines[ln_no - 1].lstrip()
+    if not stripped.startswith(("//", "*", "/*")):
+        return ln_no                                            # inline citation: that line only
+    i = ln_no                                                   # 0-based index of the line after the comment
+    while i < len(lines) and (not lines[i].strip() or lines[i].lstrip().startswith(("//", "*", "/*"))):
+        if "COBOL:" in lines[i]:
+            return ln_no
+        i += 1
+    if i >= len(lines):
+        return ln_no
+    base = len(lines[i]) - len(lines[i].lstrip())
+    end = i + 1
+    j = i + 1
+    while j < len(lines) and j - i < 150:
+        t = lines[j]
+        if "COBOL:" in t:
+            break
+        if t.strip():
+            ind = len(t) - len(t.lstrip())
+            if ind < base:
+                break
+            end = j + 1
+            if ind == base and t.strip().startswith("}"):
+                break
+        j += 1
+    return end
+
+
 def relpath(p: Path, base: Path) -> str:
     try:
         return str(p.relative_to(base))
@@ -178,6 +213,7 @@ def build_index(module: str) -> dict:
         lines = jp.read_text(encoding="utf-8").splitlines()
         links = []
         for ln_no, text in enumerate(lines, start=1):
+            span_end = citation_span(lines, ln_no) if "COBOL:" in text else ln_no
             for mt in CITE_RE.finditer(text):
                 fname = mt.group(1)
                 refs = [(fname, int(mt.group(2)), int(mt.group(3) or mt.group(2)))]
@@ -188,13 +224,13 @@ def build_index(module: str) -> dict:
                     target = by_base.get(Path(fname).name.lower())
                     if target is None:
                         unresolved += 1
-                        links.append({"line": ln_no, "cobol": fname, "start": start, "end": end, "resolved": False})
+                        links.append({"line": ln_no, "span_end": span_end, "cobol": fname, "start": start, "end": end, "resolved": False})
                         continue
                     trel = relpath(target, base)
-                    links.append({"line": ln_no, "cobol": trel, "start": start, "end": end, "resolved": True})
+                    links.append({"line": ln_no, "span_end": span_end, "cobol": trel, "start": start, "end": end, "resolved": True})
                     for para in paragraphs_by_file.get(trel, []):
                         if para["start"] <= end and start <= para["end"]:
-                            para["cited_by"].append({"java": rel, "line": ln_no})
+                            para["cited_by"].append({"java": rel, "line": ln_no, "span_end": span_end})
         jfiles.append({"path": rel, "lines": lines, "links": links})
 
     cf = []

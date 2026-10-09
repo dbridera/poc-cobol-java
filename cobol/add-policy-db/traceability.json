@@ -24,7 +24,8 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/addpolicydb/batch/BatchRunner.java",
-       "line": 31
+       "line": 31,
+       "span_end": 64
       }
      ],
      "covered": null,
@@ -90,7 +91,8 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/addpolicydb/service/PolicyInsertService.java",
-       "line": 42
+       "line": 42,
+       "span_end": 54
       }
      ],
      "covered": null,
@@ -166,6 +168,7 @@
    "links": [
     {
      "line": 31,
+     "span_end": 64,
      "cobol": "src/ADDPOLDB.cbl",
      "start": 71,
      "end": 117,
@@ -178,6 +181,7 @@
    "links": [
     {
      "line": 27,
+     "span_end": 54,
      "cobol": "src/ADDPOLDB.cbl",
      "start": 33,
      "end": 44,
@@ -198,6 +202,7 @@
    "links": [
     {
      "line": 42,
+     "span_end": 54,
      "cobol": "../genapp-source/lgapdb01.cbl",
      "start": 261,
      "end": 322,

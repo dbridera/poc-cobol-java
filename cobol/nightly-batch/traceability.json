@@ -31,7 +31,8 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/IntCalcProgram.java",
-       "line": 39
+       "line": 39,
+       "span_end": 43
       }
      ],
      "covered": 6,
@@ -46,7 +47,8 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/IntCalcProgram.java",
-       "line": 39
+       "line": 39,
+       "span_end": 43
       }
      ],
      "covered": 6,
@@ -61,7 +63,8 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/IntCalcProgram.java",
-       "line": 39
+       "line": 39,
+       "span_end": 43
       }
      ],
      "covered": 6,
@@ -76,7 +79,8 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/IntCalcProgram.java",
-       "line": 39
+       "line": 39,
+       "span_end": 43
       }
      ],
      "covered": 6,
@@ -91,7 +95,8 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/IntCalcProgram.java",
-       "line": 39
+       "line": 39,
+       "span_end": 43
       }
      ],
      "covered": 6,
@@ -106,7 +111,8 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/IntCalcProgram.java",
-       "line": 65
+       "line": 65,
+       "span_end": 65
       }
      ],
      "covered": 6,
@@ -121,7 +127,8 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/nightlybatch/service/InterestCalculator.java",
-       "line": 93
+       "line": 93,
+       "span_end": 103
       }
      ],
      "covered": 5,
@@ -136,7 +143,8 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/IntCalcProgram.java",
-       "line": 78
+       "line": 78,
+       "span_end": 86
       }
      ],
      "covered": 6,
@@ -151,7 +159,8 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/IntCalcProgram.java",
-       "line": 88
+       "line": 88,
+       "span_end": 96
       }
      ],
      "covered": 6,
@@ -166,11 +175,13 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/IntCalcProgram.java",
-       "line": 99
+       "line": 99,
+       "span_end": 103
       },
       {
        "java": "src/main/java/com/example/poc/nightlybatch/service/InterestCalculator.java",
-       "line": 39
+       "line": 39,
+       "span_end": 57
       }
      ],
      "covered": 6,
@@ -185,11 +196,13 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/IntCalcProgram.java",
-       "line": 99
+       "line": 99,
+       "span_end": 103
       },
       {
        "java": "src/main/java/com/example/poc/nightlybatch/service/InterestCalculator.java",
-       "line": 39
+       "line": 39,
+       "span_end": 57
       }
      ],
      "covered": 6,
@@ -204,11 +217,13 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/IntCalcProgram.java",
-       "line": 108
+       "line": 108,
+       "span_end": 112
       },
       {
        "java": "src/main/java/com/example/poc/nightlybatch/service/InterestCalculator.java",
-       "line": 64
+       "line": 64,
+       "span_end": 67
       }
      ],
      "covered": 6,
@@ -223,11 +238,13 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/IntCalcProgram.java",
-       "line": 113
+       "line": 113,
+       "span_end": 118
       },
       {
        "java": "src/main/java/com/example/poc/nightlybatch/service/InterestCalculator.java",
-       "line": 74
+       "line": 74,
+       "span_end": 90
       }
      ],
      "covered": 6,
@@ -242,7 +259,8 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/IntCalcProgram.java",
-       "line": 119
+       "line": 119,
+       "span_end": 120
       }
      ],
      "covered": 6,
@@ -257,7 +275,8 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/IntCalcProgram.java",
-       "line": 127
+       "line": 127,
+       "span_end": 131
       }
      ],
      "covered": 5,
@@ -272,7 +291,8 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/IntCalcProgram.java",
-       "line": 127
+       "line": 127,
+       "span_end": 131
       }
      ],
      "covered": 5,
@@ -287,7 +307,8 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/IntCalcProgram.java",
-       "line": 127
+       "line": 127,
+       "span_end": 131
       }
      ],
      "covered": 5,
@@ -302,7 +323,8 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/IntCalcProgram.java",
-       "line": 127
+       "line": 127,
+       "span_end": 131
       }
      ],
      "covered": 5,
@@ -317,7 +339,8 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/IntCalcProgram.java",
-       "line": 127
+       "line": 127,
+       "span_end": 131
       }
      ],
      "covered": 5,
@@ -332,7 +355,8 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/nightlybatch/service/CobolTimestamp.java",
-       "line": 17
+       "line": 17,
+       "span_end": 20
       }
      ],
      "covered": 6,
@@ -347,7 +371,8 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/CobolRuntime.java",
-       "line": 24
+       "line": 24,
+       "span_end": 29
       }
      ],
      "covered": 1,
@@ -362,7 +387,8 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/CobolRuntime.java",
-       "line": 17
+       "line": 17,
+       "span_end": 21
       }
      ],
      "covered": 1,
@@ -398,7 +424,8 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/CardSortProgram.java",
-       "line": 21
+       "line": 21,
+       "span_end": 53
       }
      ],
      "covered": 5,
@@ -413,7 +440,8 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/CardSortProgram.java",
-       "line": 21
+       "line": 21,
+       "span_end": 53
       }
      ],
      "covered": 5,
@@ -439,7 +467,8 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/PostTranProgram.java",
-       "line": 33
+       "line": 33,
+       "span_end": 37
       }
      ],
      "covered": 6,
@@ -454,7 +483,8 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/PostTranProgram.java",
-       "line": 33
+       "line": 33,
+       "span_end": 37
       }
      ],
      "covered": 6,
@@ -469,7 +499,8 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/PostTranProgram.java",
-       "line": 33
+       "line": 33,
+       "span_end": 37
       }
      ],
      "covered": 6,
@@ -484,7 +515,8 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/PostTranProgram.java",
-       "line": 33
+       "line": 33,
+       "span_end": 37
       }
      ],
      "covered": 6,
@@ -499,7 +531,8 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/PostTranProgram.java",
-       "line": 33
+       "line": 33,
+       "span_end": 37
       }
      ],
      "covered": 6,
@@ -514,7 +547,8 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/PostTranProgram.java",
-       "line": 33
+       "line": 33,
+       "span_end": 37
       }
      ],
      "covered": 6,
@@ -529,7 +563,8 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/PostTranProgram.java",
-       "line": 59
+       "line": 59,
+       "span_end": 59
       }
      ],
      "covered": 6,
@@ -544,7 +579,8 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/nightlybatch/service/TransactionValidator.java",
-       "line": 39
+       "line": 39,
+       "span_end": 41
       }
      ],
      "covered": 6,
@@ -559,11 +595,13 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/nightlybatch/service/TransactionValidator.java",
-       "line": 39
+       "line": 39,
+       "span_end": 41
       },
       {
        "java": "src/main/java/com/example/poc/nightlybatch/service/TransactionValidator.java",
-       "line": 42
+       "line": 42,
+       "span_end": 47
       }
      ],
      "covered": 6,
@@ -578,11 +616,13 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/nightlybatch/service/TransactionValidator.java",
-       "line": 39
+       "line": 39,
+       "span_end": 41
       },
       {
        "java": "src/main/java/com/example/poc/nightlybatch/service/TransactionValidator.java",
-       "line": 50
+       "line": 50,
+       "span_end": 55
       }
      ],
      "covered": 6,
@@ -597,7 +637,8 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/nightlybatch/service/TransactionPoster.java",
-       "line": 49
+       "line": 49,
+       "span_end": 70
       }
      ],
      "covered": 6,
@@ -612,7 +653,8 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/PostTranProgram.java",
-       "line": 75
+       "line": 75,
+       "span_end": 79
       }
      ],
      "covered": 6,
@@ -627,7 +669,8 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/nightlybatch/service/TransactionPoster.java",
-       "line": 72
+       "line": 72,
+       "span_end": 96
       }
      ],
      "covered": 6,
@@ -642,7 +685,8 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/nightlybatch/service/TransactionPoster.java",
-       "line": 72
+       "line": 72,
+       "span_end": 96
       }
      ],
      "covered": 5,
@@ -657,7 +701,8 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/nightlybatch/service/TransactionPoster.java",
-       "line": 72
+       "line": 72,
+       "span_end": 96
       }
      ],
      "covered": 6,
@@ -672,7 +717,8 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/nightlybatch/service/TransactionPoster.java",
-       "line": 98
+       "line": 98,
+       "span_end": 109
       }
      ],
      "covered": 6,
@@ -687,7 +733,8 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/nightlybatch/service/TransactionPoster.java",
-       "line": 111
+       "line": 111,
+       "span_end": 117
       }
      ],
      "covered": 6,
@@ -702,7 +749,8 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/PostTranProgram.java",
-       "line": 84
+       "line": 84,
+       "span_end": 88
       }
      ],
      "covered": 6,
@@ -717,7 +765,8 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/PostTranProgram.java",
-       "line": 84
+       "line": 84,
+       "span_end": 88
       }
      ],
      "covered": 6,
@@ -732,7 +781,8 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/PostTranProgram.java",
-       "line": 84
+       "line": 84,
+       "span_end": 88
       }
      ],
      "covered": 6,
@@ -747,7 +797,8 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/PostTranProgram.java",
-       "line": 84
+       "line": 84,
+       "span_end": 88
       }
      ],
      "covered": 6,
@@ -762,7 +813,8 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/PostTranProgram.java",
-       "line": 84
+       "line": 84,
+       "span_end": 88
       }
      ],
      "covered": 6,
@@ -777,7 +829,8 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/PostTranProgram.java",
-       "line": 84
+       "line": 84,
+       "span_end": 88
       }
      ],
      "covered": 6,
@@ -792,7 +845,8 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/nightlybatch/service/CobolTimestamp.java",
-       "line": 17
+       "line": 17,
+       "span_end": 20
       }
      ],
      "covered": 6,
@@ -807,7 +861,8 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/CobolRuntime.java",
-       "line": 24
+       "line": 24,
+       "span_end": 29
       }
      ],
      "covered": 0,
@@ -822,7 +877,8 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/CobolRuntime.java",
-       "line": 17
+       "line": 17,
+       "span_end": 21
       }
      ],
      "covered": 0,
@@ -848,7 +904,8 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/TranReptProgram.java",
-       "line": 50
+       "line": 50,
+       "span_end": 59
       }
      ],
      "covered": 5,
@@ -863,7 +920,8 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/TranReptProgram.java",
-       "line": 60
+       "line": 60,
+       "span_end": 60
       }
      ],
      "covered": 5,
@@ -878,7 +936,8 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/nightlybatch/service/ReportWriter.java",
-       "line": 49
+       "line": 49,
+       "span_end": 67
       }
      ],
      "covered": 5,
@@ -893,7 +952,8 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/nightlybatch/service/ReportWriter.java",
-       "line": 70
+       "line": 70,
+       "span_end": 79
       }
      ],
      "covered": 5,
@@ -908,7 +968,8 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/nightlybatch/service/ReportWriter.java",
-       "line": 82
+       "line": 82,
+       "span_end": 90
       }
      ],
      "covered": 5,
@@ -923,7 +984,8 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/nightlybatch/service/ReportWriter.java",
-       "line": 93
+       "line": 93,
+       "span_end": 97
       }
      ],
      "covered": 5,
@@ -938,7 +1000,8 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/nightlybatch/service/ReportWriter.java",
-       "line": 100
+       "line": 100,
+       "span_end": 112
       }
      ],
      "covered": 5,
@@ -953,7 +1016,8 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/nightlybatch/service/ReportWriter.java",
-       "line": 131
+       "line": 131,
+       "span_end": 135
       }
      ],
      "covered": 5,
@@ -968,7 +1032,8 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/nightlybatch/service/ReportWriter.java",
-       "line": 115
+       "line": 115,
+       "span_end": 128
       }
      ],
      "covered": 5,
@@ -983,7 +1048,8 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/TranReptProgram.java",
-       "line": 32
+       "line": 32,
+       "span_end": 36
       }
      ],
      "covered": 5,
@@ -998,7 +1064,8 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/TranReptProgram.java",
-       "line": 32
+       "line": 32,
+       "span_end": 36
       }
      ],
      "covered": 5,
@@ -1013,7 +1080,8 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/TranReptProgram.java",
-       "line": 32
+       "line": 32,
+       "span_end": 36
       }
      ],
      "covered": 5,
@@ -1028,7 +1096,8 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/TranReptProgram.java",
-       "line": 32
+       "line": 32,
+       "span_end": 36
       }
      ],
      "covered": 5,
@@ -1043,7 +1112,8 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/TranReptProgram.java",
-       "line": 32
+       "line": 32,
+       "span_end": 36
       }
      ],
      "covered": 5,
@@ -1058,7 +1128,8 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/TranReptProgram.java",
-       "line": 32
+       "line": 32,
+       "span_end": 36
       }
      ],
      "covered": 5,
@@ -1073,7 +1144,8 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/TranReptProgram.java",
-       "line": 71
+       "line": 71,
+       "span_end": 78
       }
      ],
      "covered": 5,
@@ -1088,7 +1160,8 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/TranReptProgram.java",
-       "line": 81
+       "line": 81,
+       "span_end": 88
       }
      ],
      "covered": 5,
@@ -1103,7 +1176,8 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/TranReptProgram.java",
-       "line": 90
+       "line": 90,
+       "span_end": 98
       }
      ],
      "covered": 5,
@@ -1118,7 +1192,8 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/TranReptProgram.java",
-       "line": 114
+       "line": 114,
+       "span_end": 118
       }
      ],
      "covered": 5,
@@ -1133,7 +1208,8 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/TranReptProgram.java",
-       "line": 114
+       "line": 114,
+       "span_end": 118
       }
      ],
      "covered": 5,
@@ -1148,7 +1224,8 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/TranReptProgram.java",
-       "line": 114
+       "line": 114,
+       "span_end": 118
       }
      ],
      "covered": 5,
@@ -1163,7 +1240,8 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/TranReptProgram.java",
-       "line": 114
+       "line": 114,
+       "span_end": 118
       }
      ],
      "covered": 5,
@@ -1178,7 +1256,8 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/TranReptProgram.java",
-       "line": 114
+       "line": 114,
+       "span_end": 118
       }
      ],
      "covered": 5,
@@ -1193,7 +1272,8 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/TranReptProgram.java",
-       "line": 114
+       "line": 114,
+       "span_end": 118
       }
      ],
      "covered": 5,
@@ -1208,7 +1288,8 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/CobolRuntime.java",
-       "line": 24
+       "line": 24,
+       "span_end": 29
       }
      ],
      "covered": 0,
@@ -1223,7 +1304,8 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/CobolRuntime.java",
-       "line": 17
+       "line": 17,
+       "span_end": 21
       }
      ],
      "covered": 0,
@@ -1269,7 +1351,8 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/KsdsLoadProgram.java",
-       "line": 17
+       "line": 17,
+       "span_end": 50
       }
      ],
      "covered": 6,
@@ -1295,7 +1378,8 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/KsdsLoadProgram.java",
-       "line": 17
+       "line": 17,
+       "span_end": 50
       }
      ],
      "covered": 6,
@@ -1321,7 +1405,8 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/KsdsLoadProgram.java",
-       "line": 17
+       "line": 17,
+       "span_end": 50
       }
      ],
      "covered": 6,
@@ -1347,7 +1432,8 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/KsdsLoadProgram.java",
-       "line": 17
+       "line": 17,
+       "span_end": 50
       }
      ],
      "covered": 6,
@@ -1373,7 +1459,8 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/KsdsLoadProgram.java",
-       "line": 17
+       "line": 17,
+       "span_end": 50
       }
      ],
      "covered": 5,
@@ -1399,7 +1486,8 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/KsdsLoadProgram.java",
-       "line": 17
+       "line": 17,
+       "span_end": 50
       }
      ],
      "covered": 6,
@@ -1425,7 +1513,8 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/KsdsLoadProgram.java",
-       "line": 17
+       "line": 17,
+       "span_end": 50
       }
      ],
      "covered": 6,
@@ -1451,7 +1540,8 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/KsdsUnloadProgram.java",
-       "line": 15
+       "line": 15,
+       "span_end": 39
       }
      ],
      "covered": 6,
@@ -1477,7 +1567,8 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/KsdsUnloadProgram.java",
-       "line": 15
+       "line": 15,
+       "span_end": 39
       }
      ],
      "covered": 6,
@@ -1503,7 +1594,8 @@
      "cited_by": [
       {
        "java": "src/main/java/com/example/poc/nightlybatch/batch/programs/KsdsUnloadProgram.java",
-       "line": 15
+       "line": 15,
+       "span_end": 39
       }
      ],
      "covered": 6,
@@ -1574,6 +1666,7 @@
    "links": [
     {
      "line": 7,
+     "span_end": 19,
      "cobol": "src/CEE3ABD.cbl",
      "start": 17,
      "end": 25,
@@ -1598,6 +1691,7 @@
    "links": [
     {
      "line": 79,
+     "span_end": 82,
      "cobol": "src/CEE3ABD.cbl",
      "start": 23,
      "end": 25,
@@ -1618,6 +1712,7 @@
    "links": [
     {
      "line": 21,
+     "span_end": 53,
      "cobol": "src/CBSORT02.cbl",
      "start": 66,
      "end": 117,
@@ -1630,6 +1725,7 @@
    "links": [
     {
      "line": 17,
+     "span_end": 21,
      "cobol": "src/CBTRN02C.cbl",
      "start": 714,
      "end": 727,
@@ -1637,6 +1733,7 @@
     },
     {
      "line": 17,
+     "span_end": 21,
      "cobol": "src/CBACT04C.cbl",
      "start": 635,
      "end": 648,
@@ -1644,6 +1741,7 @@
     },
     {
      "line": 17,
+     "span_end": 21,
      "cobol": "src/CBTRN03C.cbl",
      "start": 633,
      "end": 646,
@@ -1651,6 +1749,7 @@
     },
     {
      "line": 24,
+     "span_end": 29,
      "cobol": "src/CBTRN02C.cbl",
      "start": 707,
      "end": 712,
@@ -1658,6 +1757,7 @@
     },
     {
      "line": 24,
+     "span_end": 29,
      "cobol": "src/CBACT04C.cbl",
      "start": 628,
      "end": 633,
@@ -1665,6 +1765,7 @@
     },
     {
      "line": 24,
+     "span_end": 29,
      "cobol": "src/CBTRN03C.cbl",
      "start": 626,
      "end": 631,
@@ -1677,6 +1778,7 @@
    "links": [
     {
      "line": 23,
+     "span_end": 38,
      "cobol": "src/INTCALC.cbl",
      "start": 17,
      "end": 32,
@@ -1684,6 +1786,7 @@
     },
     {
      "line": 39,
+     "span_end": 43,
      "cobol": "src/CBACT04C.cbl",
      "start": 182,
      "end": 186,
@@ -1691,6 +1794,7 @@
     },
     {
      "line": 39,
+     "span_end": 43,
      "cobol": "src/CBACT04C.cbl",
      "start": 234,
      "end": 324,
@@ -1698,6 +1802,7 @@
     },
     {
      "line": 50,
+     "span_end": 64,
      "cobol": "src/CBACT04C.cbl",
      "start": 95,
      "end": 174,
@@ -1705,6 +1810,7 @@
     },
     {
      "line": 65,
+     "span_end": 65,
      "cobol": "src/CBACT04C.cbl",
      "start": 325,
      "end": 349,
@@ -1712,6 +1818,7 @@
     },
     {
      "line": 78,
+     "span_end": 86,
      "cobol": "src/CBACT04C.cbl",
      "start": 372,
      "end": 392,
@@ -1719,6 +1826,7 @@
     },
     {
      "line": 88,
+     "span_end": 96,
      "cobol": "src/CBACT04C.cbl",
      "start": 393,
      "end": 414,
@@ -1726,6 +1834,7 @@
     },
     {
      "line": 99,
+     "span_end": 103,
      "cobol": "src/CBACT04C.cbl",
      "start": 207,
      "end": 212,
@@ -1733,6 +1842,7 @@
     },
     {
      "line": 99,
+     "span_end": 103,
      "cobol": "src/CBACT04C.cbl",
      "start": 415,
      "end": 461,
@@ -1740,6 +1850,7 @@
     },
     {
      "line": 108,
+     "span_end": 112,
      "cobol": "src/CBACT04C.cbl",
      "start": 462,
      "end": 472,
@@ -1747,6 +1858,7 @@
     },
     {
      "line": 113,
+     "span_end": 118,
      "cobol": "src/CBACT04C.cbl",
      "start": 473,
      "end": 517,
@@ -1754,6 +1866,7 @@
     },
     {
      "line": 119,
+     "span_end": 120,
      "cobol": "src/CBACT04C.cbl",
      "start": 518,
      "end": 521,
@@ -1761,6 +1874,7 @@
     },
     {
      "line": 123,
+     "span_end": 126,
      "cobol": "src/CBACT04C.cbl",
      "start": 219,
      "end": 221,
@@ -1768,6 +1882,7 @@
     },
     {
      "line": 127,
+     "span_end": 131,
      "cobol": "src/CBACT04C.cbl",
      "start": 226,
      "end": 230,
@@ -1775,6 +1890,7 @@
     },
     {
      "line": 127,
+     "span_end": 131,
      "cobol": "src/CBACT04C.cbl",
      "start": 522,
      "end": 612,
@@ -1787,6 +1903,7 @@
    "links": [
     {
      "line": 17,
+     "span_end": 50,
      "cobol": "src/ksds/LOAD-ACCTFILE.cbl",
      "start": 34,
      "end": 67,
@@ -1794,6 +1911,7 @@
     },
     {
      "line": 17,
+     "span_end": 50,
      "cobol": "src/ksds/LOAD-XREFFILE.cbl",
      "start": 34,
      "end": 67,
@@ -1801,6 +1919,7 @@
     },
     {
      "line": 17,
+     "span_end": 50,
      "cobol": "src/ksds/LOAD-TCATBALF.cbl",
      "start": 34,
      "end": 67,
@@ -1808,6 +1927,7 @@
     },
     {
      "line": 17,
+     "span_end": 50,
      "cobol": "src/ksds/LOAD-DISCGRP.cbl",
      "start": 34,
      "end": 67,
@@ -1815,6 +1935,7 @@
     },
     {
      "line": 17,
+     "span_end": 50,
      "cobol": "src/ksds/LOAD-TRANTYPE.cbl",
      "start": 34,
      "end": 67,
@@ -1822,6 +1943,7 @@
     },
     {
      "line": 17,
+     "span_end": 50,
      "cobol": "src/ksds/LOAD-TRANCATG.cbl",
      "start": 34,
      "end": 67,
@@ -1829,6 +1951,7 @@
     },
     {
      "line": 17,
+     "span_end": 50,
      "cobol": "src/ksds/LOAD-TRANSACT.cbl",
      "start": 34,
      "end": 67,
@@ -1841,6 +1964,7 @@
    "links": [
     {
      "line": 15,
+     "span_end": 39,
      "cobol": "src/ksds/UNLD-TRANSACT.cbl",
      "start": 33,
      "end": 59,
@@ -1848,6 +1972,7 @@
     },
     {
      "line": 15,
+     "span_end": 39,
      "cobol": "src/ksds/UNLD-ACCTFILE.cbl",
      "start": 33,
      "end": 59,
@@ -1855,6 +1980,7 @@
     },
     {
      "line": 15,
+     "span_end": 39,
      "cobol": "src/ksds/UNLD-TCATBALF.cbl",
      "start": 33,
      "end": 59,
@@ -1867,6 +1993,7 @@
    "links": [
     {
      "line": 18,
+     "span_end": 33,
      "cobol": "src/CBSORT01.cbl",
      "start": 36,
      "end": 45,
@@ -1879,6 +2006,7 @@
    "links": [
     {
      "line": 21,
+     "span_end": 32,
      "cobol": "src/CBTRN02C.cbl",
      "start": 193,
      "end": 234,
@@ -1886,6 +2014,7 @@
     },
     {
      "line": 33,
+     "span_end": 37,
      "cobol": "src/CBTRN02C.cbl",
      "start": 195,
      "end": 200,
@@ -1893,6 +2022,7 @@
     },
     {
      "line": 33,
+     "span_end": 37,
      "cobol": "src/CBTRN02C.cbl",
      "start": 236,
      "end": 344,
@@ -1900,6 +2030,7 @@
     },
     {
      "line": 45,
+     "span_end": 58,
      "cobol": "src/CBTRN02C.cbl",
      "start": 100,
      "end": 192,
@@ -1907,6 +2038,7 @@
     },
     {
      "line": 59,
+     "span_end": 59,
      "cobol": "src/CBTRN02C.cbl",
      "start": 345,
      "end": 369,
@@ -1914,6 +2046,7 @@
     },
     {
      "line": 75,
+     "span_end": 79,
      "cobol": "src/CBTRN02C.cbl",
      "start": 446,
      "end": 466,
@@ -1921,6 +2054,7 @@
     },
     {
      "line": 84,
+     "span_end": 88,
      "cobol": "src/CBTRN02C.cbl",
      "start": 221,
      "end": 226,
@@ -1928,6 +2062,7 @@
     },
     {
      "line": 84,
+     "span_end": 88,
      "cobol": "src/CBTRN02C.cbl",
      "start": 582,
      "end": 691,
@@ -1944,6 +2079,7 @@
    "links": [
     {
      "line": 20,
+     "span_end": 31,
      "cobol": "src/CBTRN03C.cbl",
      "start": 157,
      "end": 218,
@@ -1951,6 +2087,7 @@
     },
     {
      "line": 32,
+     "span_end": 36,
      "cobol": "src/CBTRN03C.cbl",
      "start": 159,
      "end": 164,
@@ -1958,6 +2095,7 @@
     },
     {
      "line": 32,
+     "span_end": 36,
      "cobol": "src/CBTRN03C.cbl",
      "start": 376,
      "end": 483,
@@ -1965,6 +2103,7 @@
     },
     {
      "line": 42,
+     "span_end": 48,
      "cobol": "src/CBTRN03C.cbl",
      "start": 93,
      "end": 155,
@@ -1972,6 +2111,7 @@
     },
     {
      "line": 50,
+     "span_end": 59,
      "cobol": "src/CBTRN03C.cbl",
      "start": 220,
      "end": 246,
@@ -1979,6 +2119,7 @@
     },
     {
      "line": 60,
+     "span_end": 60,
      "cobol": "src/CBTRN03C.cbl",
      "start": 248,
      "end": 272,
@@ -1986,6 +2127,7 @@
     },
     {
      "line": 71,
+     "span_end": 78,
      "cobol": "src/CBTRN03C.cbl",
      "start": 484,
      "end": 492,
@@ -1993,6 +2135,7 @@
     },
     {
      "line": 81,
+     "span_end": 88,
      "cobol": "src/CBTRN03C.cbl",
      "start": 494,
      "end": 502,
@@ -2000,6 +2143,7 @@
     },
     {
      "line": 90,
+     "span_end": 98,
      "cobol": "src/CBTRN03C.cbl",
      "start": 504,
      "end": 512,
@@ -2007,6 +2151,7 @@
     },
     {
      "line": 103,
+     "span_end": 109,
      "cobol": "src/CBTRN03C.cbl",
      "start": 197,
      "end": 204,
@@ -2014,6 +2159,7 @@
     },
     {
      "line": 112,
+     "span_end": 113,
      "cobol": "src/CBTRN03C.cbl",
      "start": 166,
      "end": 209,
@@ -2021,6 +2167,7 @@
     },
     {
      "line": 114,
+     "span_end": 118,
      "cobol": "src/CBTRN03C.cbl",
      "start": 211,
      "end": 216,
@@ -2028,6 +2175,7 @@
     },
     {
      "line": 114,
+     "span_end": 118,
      "cobol": "src/CBTRN03C.cbl",
      "start": 514,
      "end": 625,
@@ -2048,6 +2196,7 @@
    "links": [
     {
      "line": 62,
+     "span_end": 67,
      "cobol": "src/CBTRN03C.cbl",
      "start": 123,
      "end": 126,
@@ -2055,6 +2204,7 @@
     },
     {
      "line": 68,
+     "span_end": 82,
      "cobol": "src/CBTRN02C.cbl",
      "start": 176,
      "end": 182,
@@ -2091,6 +2241,7 @@
    "links": [
     {
      "line": 17,
+     "span_end": 20,
      "cobol": "src/CBTRN02C.cbl",
      "start": 692,
      "end": 706,
@@ -2098,6 +2249,7 @@
     },
     {
      "line": 17,
+     "span_end": 20,
      "cobol": "src/CBACT04C.cbl",
      "start": 613,
      "end": 627,
@@ -2110,6 +2262,7 @@
    "links": [
     {
      "line": 39,
+     "span_end": 57,
      "cobol": "src/CBACT04C.cbl",
      "start": 415,
      "end": 461,
@@ -2117,6 +2270,7 @@
     },
     {
      "line": 64,
+     "span_end": 67,
      "cobol": "src/CBACT04C.cbl",
      "start": 462,
      "end": 467,
@@ -2124,6 +2278,7 @@
     },
     {
      "line": 74,
+     "span_end": 90,
      "cobol": "src/CBACT04C.cbl",
      "start": 473,
      "end": 498,
@@ -2131,6 +2286,7 @@
     },
     {
      "line": 93,
+     "span_end": 103,
      "cobol": "src/CBACT04C.cbl",
      "start": 350,
      "end": 371,
@@ -2143,6 +2299,7 @@
    "links": [
     {
      "line": 42,
+     "span_end": 46,
      "cobol": "src/CBTRN03C.cbl",
      "start": 200,
      "end": 202,
@@ -2150,6 +2307,7 @@
     },
     {
      "line": 49,
+     "span_end": 67,
      "cobol": "src/CBTRN03C.cbl",
      "start": 274,
      "end": 292,
@@ -2157,6 +2315,7 @@
     },
     {
      "line": 70,
+     "span_end": 79,
      "cobol": "src/CBTRN03C.cbl",
      "start": 293,
      "end": 305,
@@ -2164,6 +2323,7 @@
     },
     {
      "line": 82,
+     "span_end": 90,
      "cobol": "src/CBTRN03C.cbl",
      "start": 306,
      "end": 317,
@@ -2171,6 +2331,7 @@
     },
     {
      "line": 93,
+     "span_end": 97,
      "cobol": "src/CBTRN03C.cbl",
      "start": 318,
      "end": 323,
@@ -2178,6 +2339,7 @@
     },
     {
      "line": 100,
+     "span_end": 112,
      "cobol": "src/CBTRN03C.cbl",
      "start": 324,
      "end": 342,
@@ -2185,6 +2347,7 @@
     },
     {
      "line": 115,
+     "span_end": 128,
      "cobol": "src/CBTRN03C.cbl",
      "start": 361,
      "end": 375,
@@ -2192,6 +2355,7 @@
     },
     {
      "line": 131,
+     "span_end": 135,
      "cobol": "src/CBTRN03C.cbl",
      "start": 343,
      "end": 360,
@@ -2204,6 +2368,7 @@
    "links": [
     {
      "line": 49,
+     "span_end": 70,
      "cobol": "src/CBTRN02C.cbl",
      "start": 424,
      "end": 445,
@@ -2211,6 +2376,7 @@
     },
     {
      "line": 72,
+     "span_end": 96,
      "cobol": "src/CBTRN02C.cbl",
      "start": 467,
      "end": 544,
@@ -2218,6 +2384,7 @@
     },
     {
      "line": 98,
+     "span_end": 109,
      "cobol": "src/CBTRN02C.cbl",
      "start": 545,
      "end": 561,
@@ -2225,6 +2392,7 @@
     },
     {
      "line": 111,
+     "span_end": 117,
      "cobol": "src/CBTRN02C.cbl",
      "start": 562,
      "end": 581,
@@ -2237,6 +2405,7 @@
    "links": [
     {
      "line": 39,
+     "span_end": 41,
      "cobol": "src/CBTRN02C.cbl",
      "start": 370,
      "end": 423,
@@ -2244,6 +2413,7 @@
     },
     {
      "line": 42,
+     "span_end": 47,
      "cobol": "src/CBTRN02C.cbl",
      "start": 380,
      "end": 392,
@@ -2251,6 +2421,7 @@
     },
     {
      "line": 50,
+     "span_end": 55,
      "cobol": "src/CBTRN02C.cbl",
      "start": 393,
      "end": 423,

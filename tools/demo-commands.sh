@@ -150,11 +150,16 @@ link() {
   else printf '\e]8;;file://%s\e\\%s\e]8;;\e\\' "$REPO_ROOT/$1" "$1"; fi
 }
 
+# open_html <path>: in a browser, explicitly (the default app for .html may be an editor)
+open_html() {
+  open -b com.google.Chrome "$1" 2>/dev/null || open -b com.apple.Safari "$1" 2>/dev/null || open "$1"
+}
+
 # open_path <path>: html in the browser, folders in Finder, everything else in VS Code
 # (`code` CLI when on the PATH, else the app by bundle id, so it works without the shell command installed)
 open_path() {
   local p="$1"
-  if [[ "$p" == *.html ]]; then open "$p"
+  if [[ "$p" == *.html ]]; then open_html "$p"
   elif [[ -d "$p" ]]; then open "$p"
   elif command -v code >/dev/null 2>&1; then code -r -g "$p"
   elif open -b com.microsoft.VSCode "$p" 2>/dev/null; then :
@@ -555,7 +560,7 @@ PY
   fi
   echo "    $([[ "$n_desc" -gt 0 ]] && echo 4 || echo 3). $(T 'Click a COBOL: citation in the Java: the left pane jumps to those lines.' 'Clic en una cita COBOL: del Java: el panel izquierdo salta a esas líneas.')$([[ "$n_fix" -gt 0 ]] && echo " $(T 'The badges say in how many test cases the paragraph ran.' 'Las etiquetas dicen en cuántos casos de prueba se ejecutó el párrafo.')")"
   echo "  ${DIM}$(T "This module: $n_par paragraphs, $n_cit cited by the Java, $n_desc with a 'Qué hace' line$([[ "$n_fix" -gt 0 ]] && echo ", coverage from $n_fix test cases" || echo ", no paragraph coverage (no trace channel)")." "Este módulo: $n_par párrafos, $n_cit citados por el Java, $n_desc con línea 'Qué hace'$([[ "$n_fix" -gt 0 ]] && echo ", cobertura de $n_fix casos de prueba" || echo ", sin cobertura por párrafo (sin canal de traza)").")${RESET}"
-  if [[ "$(uname)" == "Darwin" ]]; then open "$f" 2>/dev/null || true; fi
+  if [[ "$(uname)" == "Darwin" ]]; then open_html "$f" || true; fi
   pause
 }
 

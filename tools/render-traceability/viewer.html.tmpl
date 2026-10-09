@@ -78,8 +78,8 @@
 </header>
 <div id="help">
   <ol>
-    <li><b>Del Java al COBOL:</b> en el panel derecho, clic en un <u style="color:var(--link)">COBOL: archivo:líneas</u>. El panel izquierdo salta y pinta de amarillo esas líneas. El Java no se mueve: la línea que tocaste queda marcada en azul.</li>
-    <li><b>Del COBOL al Java:</b> en el panel izquierdo, clic en una fila azul (un párrafo). El panel derecho salta solo al Java que lo traduce y lo marca en azul. Si lo traducen varios lugares, la barra del medio los lista: clic en otro para verlo.</li>
+    <li><b>Del Java al COBOL:</b> en el panel derecho, clic en un <u style="color:var(--link)">COBOL: archivo:líneas</u>. El panel izquierdo salta y pinta de amarillo esas líneas. El Java no se mueve: la cita queda marcada en azul y el bloque que traduce, en amarillo.</li>
+    <li><b>Del COBOL al Java:</b> en el panel izquierdo, clic en una fila azul (un párrafo). El panel derecho salta solo al Java que lo traduce: la cita en azul, el bloque traducido en amarillo. Si lo traducen varios lugares, la barra del medio los lista: clic en otro para verlo.</li>
     <li><b>Qué hace cada parte:</b> cada programa empieza con un resumen de negocio y cada párrafo lleva debajo una línea "Qué hace" con la sección de la especificación (viene de <code>PARAGRAPHS.md</code>). Al hacer clic en una cita del Java, la barra del medio también explica el párrafo citado.</li>
     <li><b>Etiquetas de cada párrafo:</b> <span class="badge b-ok">6/6 fixtures</span> en cuántos casos de prueba se ejecutó · <span class="badge b-ok">2 Java citations</span> cuántas veces lo cita el Java · <span class="badge b-warn">not cited by Java</span> ningún Java lo cita · <span class="badge b-bad">0/6 fixtures</span> ningún caso lo ejecuta.</li>
   </ol>
@@ -130,7 +130,7 @@
   });
   $('bridge').addEventListener('click', e => {
     const a = e.target.closest('a[data-java]');
-    if (a) { $('bridge').querySelectorAll('a').forEach(x => x.classList.toggle('active', x === a)); jumpJava(a.dataset.java, +a.dataset.line); }
+    if (a) { $('bridge').querySelectorAll('a').forEach(x => x.classList.toggle('active', x === a)); jumpJava(a.dataset.java, +a.dataset.line, +a.dataset.end); }
   });
   let javaLinksAt = {};
 
@@ -190,7 +190,7 @@
     clearMarks($('cobolCode'), ['hl', 'hl2', 'sel']);
     for (let n = p.start; n <= p.end; n++) { const el = document.getElementById(`c-${cobolIdx}-${n}`); if (el) el.classList.add('hl'); }
     document.getElementById(`c-${cobolIdx}-${p.start}`).classList.add('sel');
-    const cites = p.cited_by.map((c, k) => `<a class="${k ? '' : 'active'}" data-java="${c.java}" data-line="${c.line}">${short(c.java)}:${c.line}</a>`).join(' · ');
+    const cites = p.cited_by.map((c, k) => `<a class="${k ? '' : 'active'}" data-java="${c.java}" data-line="${c.line}" data-end="${c.span_end || c.line}">${short(c.java)}:${c.line}</a>`).join(' · ');
     const n = p.cited_by.length;
     setBridge(`<span>COBOL</span> <b>${p.program} ${p.name}</b> <span class="arrow">(líneas ${p.start}-${p.end}${nFix ? `, ejecutado en ${p.covered}/${nFix} casos` : ''})</span>`
       + ` <span class="arrow">→ Java:</span> ${cites || '<span class="badge b-warn">ningún Java lo cita</span>'}`
@@ -198,8 +198,8 @@
       p.what ? `<b>Qué hace:</b> ${esc(p.what)}${p.spec ? ` <span class="arrow">(spec ${esc(p.spec)})</span>` : ''}` : '');
     // the Java pane jumps to the first citation right away; the other citations stay marked in the same file
     if (n) {
-      jumpJava(p.cited_by[0].java, p.cited_by[0].line);
-      p.cited_by.slice(1).filter(c => c.java === data.java[javaIdx].path).forEach(c => { const el = document.getElementById(`j-${javaIdx}-${c.line}`); if (el) el.classList.add('hl'); });
+      jumpJava(p.cited_by[0].java, p.cited_by[0].line, p.cited_by[0].span_end);
+      p.cited_by.slice(1).filter(c => c.java === data.java[javaIdx].path).forEach(c => paintJava(javaIdx, c.line, c.span_end, 'hl'));
     } else {
       clearMarks($('javaCode'), ['hl', 'hl2', 'sel']);
     }
@@ -225,7 +225,8 @@
   }
 
   function citeClicked(f, line, links) {
-    clearMarks($('javaCode'), ['sel']);
+    clearMarks($('javaCode'), ['sel', 'hl', 'hl2']);
+    paintJava(javaIdx, line, (links[0] && links[0].span_end) || line, 'hl2');
     document.getElementById(`j-${javaIdx}-${line}`).classList.add('sel');
     const ok = links.filter(l => l.resolved);
     if (!ok.length) { setBridge(`<span class="badge b-warn">la cita no apunta a un archivo de este módulo</span>`); return; }
@@ -253,12 +254,18 @@
     scrollPane(code, document.getElementById(`c-${i}-${ranges[0].start}`));
   }
 
-  function jumpJava(path, line) {
+  // paint lines from..to of Java file i with a class (the block a citation translates)
+  function paintJava(i, from, to, cls) {
+    for (let n = from; n <= (to || from); n++) { const el = document.getElementById(`j-${i}-${n}`); if (el) el.classList.add(cls); }
+  }
+
+  function jumpJava(path, line, spanEnd) {
     const i = data.java.findIndex(f => f.path === path);
     if (i < 0) return;
     if (i !== javaIdx) renderJava(i);
     const code = $('javaCode');
     clearMarks(code, ['hl', 'hl2', 'sel']);
+    paintJava(i, line, spanEnd, 'hl2');
     const el = document.getElementById(`j-${i}-${line}`);
     if (el) { el.classList.add('sel'); scrollPane(code, el); flash(el); }
   }
