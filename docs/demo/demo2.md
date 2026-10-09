@@ -11,6 +11,7 @@ Guion (storyline) para el deck HTML de la demo a gerentes y gerentes técnicos d
 | **Menos técnico, más explicativo**: el estilo vuelve al del primer deck (cards por módulo, una idea por slide, menos tablas densas). Cada término técnico aparece una vez y explicado en pocas palabras. Sin "SME" (es "analista del banco"), sin "fixture" (es "caso de prueba"), sin "golden master" sin explicar (es "la salida de referencia del COBOL"), sin "conformant" (es "cumple el proceso"). | La versión anterior era más técnica y explicaba peor. El público son gerentes y gerentes técnicos de banca. |
 | **El cierre nocturno entra como cuarta card** en la slide de cobertura del mainframe (junto a VSAM, DB2 y CICS) y conserva su slide propia (acto 3). El convertidor CCI (módulo 2) no forma parte de este deck. | La slide "tres módulos, tres validaciones" del primer deck era la mejor para explicar el ecosistema; ahora son cuatro aristas del mainframe. |
 | **Dos slides recuperadas del primer deck** porque explicaban mejor los artefactos: "El loop. Versionado en markdown." (slide 5, oscura: los cinco pasos del loop y los archivos markdown del harness) y "Cada fase produce un artefacto auditable." (slide 6: cinco cards A–E con fragmentos reales del módulo 1B). La segunda reemplaza la tabla de "Cinco fases, cinco artefactos"; el deck pasa de 13 a 14 slides. | El usuario juzgó que esas dos slides del primer deck explicaban mejor qué queda en el repositorio y cómo se genera el Java. |
+| **La slide 14 pasa de "alcance y próximos pasos" a una conclusión** con tres columnas: Claude Code (el agente), las skills (el harness que recuerda) y los agentic evals (la prueba), con hechos del repositorio y el cierre "El harness acelera. La persona decide. Los evals demuestran." Los próximos pasos quedan en una línea de las notas. | El cierre anterior era débil: una lista de hecho/pendiente no muestra la fuerza de las tres piezas. |
 | Cada programa COBOL se explica primero por **lo que hace para el negocio** y después por la arista técnica que cubre. | Que quede claro por qué cada programa es un caso de uso real y no un ejemplo de juguete. |
 
 Reglas del guion:
@@ -427,35 +428,25 @@ Recorrido sugerido para 12-15 minutos: `module-0 --step` (rápido, muestra el pa
 
 ---
 
-## Slide 14 — Alcance y próximos pasos
+## Slide 14 — Conclusión
 
-**Eyebrow:** Qué está hecho y qué falta
+**Eyebrow:** Conclusión
 
-**Título:** Correctitud primero. Lo que sigue, con la misma red de seguridad.
+**Título:** Un agente que escribe, un harness que recuerda, evals que demuestran.
 
-**Mensaje clave:** La prueba de concepto demuestra equivalencia verificable en cuatro aristas del mainframe; lo que sigue es validar en el entorno real y medir rendimiento, con el mismo contrato.
+**Mensaje clave:** Tres cosas hacen posible la migración verificable: el agente que escribe bajo reglas, las skills que guardan cada lección, y los agentic evals que demuestran la equivalencia byte a byte.
 
-**Cuerpo:**
+**Cuerpo (slide oscura, tres columnas):**
 
-**Hecho**
+| | 01 · Claude Code — el agente | 02 · Las skills — el harness que recuerda | 03 · Los agentic evals — la prueba |
+|---|---|---|---|
+| Afirmación | Lee el COBOL, lee las reglas del harness y escribe el Java bajo esas reglas. | Cada lección queda escrita; el módulo siguiente arranca sabiéndola. | Un agente corre los dos lados y compara byte a byte todos los canales. |
+| Cómo | Corre subagentes (el validador de solo lectura) y se ejecuta sin intervención desde un script. Sin API keys: sobre la suscripción. | Una skill por fase (analizar, especificar, traducir, validar), reglas en markdown versionado, un glosario COBOL → Java y 17 decisiones registradas (ADR). | Un sabotaje de un centavo o de un párrafo se detecta y se nombra: cuenta, campo, los dos valores, el párrafo. Una persona lee el informe y aprueba. |
+| Hechos | Cuatro módulos traducidos así en esta presentación; cinco en el repositorio. Incluido un cierre nocturno real: tres programas de un core de tarjetas, sin tocar una línea. | El redondeo que Java supone mal (ADR-4), la inserción que no debe sobreescribir una clave repetida (ADR-9), la traza de párrafos como canal de comparación (ADR-17). El mismo checklist de proceso, 12 controles, pasa en los cinco módulos del repositorio. | **0 bytes distintos** · 12 casos de prueba · 4.914 registros · 1,37 MB comparados |
 
-- 4 módulos · 12 casos de prueba · 4.914 registros y 1,37 MB comparados · 0 bytes distintos
-- Pruebas de sabotaje: dos, en el cierre nocturno, documentadas y revertidas
-- Checklist de proceso: 12 controles · 4 de 4 módulos cumplen
-- Diferencias reportadas por campo y por párrafo; matriz de cobertura generada desde la ejecución real (82 de 86 párrafos del cierre nocturno)
-- Visor lado a lado COBOL ↔ Java por módulo, con "qué hace" por párrafo
-- Dos defectos de legado detectados, reproducidos y preguntados al banco
+> El harness acelera. La persona decide. Los evals demuestran.
 
-**Pendiente**
-
-- Validar contra el mainframe real (hoy el COBOL corre en un compilador abierto, GnuCOBOL, en x86)
-- Una corrida completa con entrada 100 % EBCDIC
-- Pantallas interactivas (CICS online), IMS, MQ, cursores en batch
-- Rendimiento con una línea base del mainframe
-
-**La pregunta difícil: "¿y el rendimiento?"**
-
-> Correctitud primero. Esta prueba de concepto demuestra correctitud, no rendimiento. Toda optimización posterior (particionar, paralelizar, cambiar el motor de base de datos) se hace con la misma red de seguridad: los agentic evals tienen que seguir en verde. GnuCOBOL en x86 no es una línea base válida del mainframe; medir rendimiento requiere la corrida original en z/OS.
+Cifras: las de los cuatro módulos de esta presentación, para que cierren con la slide 1 ("4 módulos · 12 casos de prueba") y la slide 13 ("12 / 12"). Con el módulo 2 (convertidor CCI) el repositorio suma 15 casos, 4.932 registros y 1,37 MB.
 
 **Notas para el presentador:**
-Cerrar con la división de trabajo una vez más: lo que el harness aceleró (lectura, especificación, traducción, comparación) y lo que las personas decidieron (casos de prueba, reglas, qué hacer con cada rojo, qué hacer con los defectos). Sobre el pendiente más importante, la validación contra el mainframe real: la salida de referencia se produjo con un compilador abierto; una migración real tiene que correr el COBOL en el mainframe al menos una vez y confirmar que la referencia es la misma. Sobre rendimiento: no esquivar la pregunta, dar la respuesta tal como está en la slide. Propuesta de siguiente paso: elegir un programa del banco (no una muestra pública), correrlo en su mainframe para capturar la referencia, y repetir las cinco fases con el analista del banco en la fase B.
+Cerrar con los tres pilares en voz alta, uno por uno, sin volver a la tecnología. Uno, el agente: Claude Code leyó el COBOL, leyó las reglas y escribió el Java; no de memoria, bajo reglas escritas, con un validador aparte que no puede tocar lo que verifica. Dos, las skills: el harness recuerda. Cada lección de un módulo quedó en markdown versionado (glosario, ADR, skill) y el siguiente módulo arrancó sabiéndola; por eso el mismo checklist pasa en todos los módulos, sin depender de quién los hizo. Tres, los agentic evals: no pedimos confianza. Corrimos los dos lados y comparamos cada byte; cuando rompimos el Java a propósito, el informe nombró la cuenta, el campo y el párrafo. Una persona aprobó cada resultado. La frase final, tal cual: "El harness acelera. La persona decide. Los evals demuestran." Si preguntan qué sigue: más módulos con la misma red; el rendimiento no está medido.
