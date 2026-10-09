@@ -78,7 +78,8 @@ Total: unos 40 minutos. Si hay que recortar, se cae primero `conformance` (decir
 [OK ] add-motor-policy/03-numeric-boundaries   (files 5 · records 18 · bytes 1250 · differing 0)
 ```
 
-7. Bloque `RESULTADO — Módulo 0 (VSAM): 3 / 3 casos de prueba idénticos byte a byte ✅`, con los canales comparados y el hallazgo: "el ROUNDED del COBOL redondea HALF_UP, no HALF_EVEN como Java por defecto (ADR-4)".
+7. Se abre solo el visor COBOL ↔ Java del módulo en el navegador. En el módulo 0 no hace falta detenerse: un clic en un párrafo para mostrar que el Java salta, y volver. Enter.
+8. Bloque `RESULTADO — Módulo 0 (VSAM): 3 / 3 casos de prueba idénticos byte a byte ✅`, con los canales comparados y el hallazgo: "el ROUNDED del COBOL redondea HALF_UP, no HALF_EVEN como Java por defecto (ADR-4)".
 
 **Qué decir sobre el hallazgo.** "Este módulo nos enseñó que el redondeo por defecto de Java no es el del COBOL. Salió rojo, se corrigió, y la regla quedó escrita en una decisión de arquitectura para que ningún módulo siguiente la repita."
 

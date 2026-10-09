@@ -306,6 +306,7 @@ module-0() {
   run ./tools/compare-outputs.py add-motor-policy
 
   links_for add-motor-policy D
+  [[ $QUIET -eq 0 ]] && viewer add-motor-policy || true
   result_summary "0" "$(T 'Module 0 (VSAM)' 'Módulo 0 (VSAM)')" "3" "3" \
     "stdout · exit_code · policy.dat · motor.dat · error.log" \
     "$(T 'COBOL ROUNDED defaults to HALF_UP, not HALF_EVEN (ADR-4)' 'el ROUNDED del COBOL redondea HALF_UP, no HALF_EVEN como Java por defecto (ADR-4)')"
@@ -337,6 +338,7 @@ module-1b() {
   run ./tools/compare-outputs.py add-policy-db
 
   links_for add-policy-db D
+  [[ $QUIET -eq 0 ]] && viewer add-policy-db || true
   result_summary "1B" "$(T 'Module 1B (DB2)' 'Módulo 1B (DB2)')" "2" "2" \
     "stdout · exit_code · policy.csv" \
     "$(T 'JpaRepository.save is MERGE not INSERT — use em.persist+flush (ADR-9)' 'el save de JPA es MERGE, no INSERT: una clave repetida no fallaría; se usa persist + flush (ADR-9)')"
@@ -368,6 +370,7 @@ module-1a() {
   run ./tools/compare-outputs.py add-policy-facade
 
   links_for add-policy-facade D
+  [[ $QUIET -eq 0 ]] && viewer add-policy-facade || true
   result_summary "1A" "$(T 'Module 1A (CICS LINK)' 'Módulo 1A (CICS LINK)')" "1" "1" \
     "stdout · exit_code · policy.csv" \
     "$(T 'EXEC CICS LINK → same-JVM Spring DI for this PoC scope (ADR-10)' 'EXEC CICS LINK → servicios Spring en la misma JVM para este alcance (ADR-10)')"
@@ -399,6 +402,7 @@ module-2() {
   run ./tools/compare-outputs.py cci-account-converter
 
   links_for cci-account-converter D
+  [[ $QUIET -eq 0 ]] && viewer cci-account-converter || true
   result_summary "2" "$(T 'Module 2 (real BCP package)' 'Módulo 2 (paquete BCP real)')" "3" "3" \
     "stdout · exit_code" \
     "$(T 'Integer division uses RoundingMode.DOWN, not HALF_UP (ADR-11) + PIC narrow-store truncation as algorithm (ADR-12)' 'la división entera trunca, no redondea (ADR-11); el truncado al guardar en un PIC chico es parte del algoritmo (ADR-12)')"
@@ -658,6 +662,7 @@ usage: $0 {preflight|module-0|module-1b|module-1a|module-2|module-3|negative-con
   agentic-eval      the equivalence-validator agent validates a module headless (claude -p), rendered live; --replay plays the recording
   viewer            open the COBOL ↔ Java side-by-side viewer of a module in the browser
   deps              open the COBOL dependency graph of a module in the browser (module-N opens it after phase A)
+                    (module-N opens the viewer after phase D as well)
   explore           list every artifact of a module as clickable links; a number opens it (viewer, spec, report, outputs…)
   conformance       tools/check-module.sh --all (same five phases, same tooling, every module)
   proof             validation/reports/*.json + cross-module summary (computed)
