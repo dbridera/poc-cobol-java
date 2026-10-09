@@ -16,6 +16,7 @@
 #   ./tools/demo-commands.sh negative-control  # two sabotages in module 3 (a rounding mode; "fixing" a legacy bug): field-level red diff + divergent paragraph, revert
 #   ./tools/demo-commands.sh agentic-eval [module]  # the equivalence-validator AGENT runs the validation headless (claude -p); --replay plays the recorded transcript
 #   ./tools/demo-commands.sh viewer [module]    # open the COBOL ↔ Java side-by-side viewer in the browser
+#   ./tools/demo-commands.sh deps [module]      # open the COBOL dependency graph in the browser (each module-N does it after phase A)
 #   ./tools/demo-commands.sh explore [module]   # every artifact of a module as clickable links; type a number to open one
 #   ./tools/demo-commands.sh conformance  # tools/check-module.sh --all: every module went through the same 5 phases
 #   ./tools/demo-commands.sh proof        # validation/reports/*.json + cross-module summary (computed, not hard-coded)
@@ -289,6 +290,7 @@ module-0() {
   run ./tools/run-cobol.sh add-motor-policy
 
   links_for add-motor-policy A
+  [[ $QUIET -eq 0 ]] && deps add-motor-policy || true
   phase "C" "$(T 'Exercise the previously-translated Java' 'Correr el Java ya traducido')" \
     "$(T 'build + run Spring Boot 3 / Java 21 / BigDecimal translation' 'compilar y correr la traducción: Spring Boot 3, Java 21, BigDecimal')" \
     "$(T 'prove the Java behaves the same as the COBOL we just captured' 'el Java ya está escrito y revisado; nada se traduce en vivo')" \
@@ -319,6 +321,7 @@ module-1b() {
   run ./tools/run-cobol-db.sh add-policy-db
 
   links_for add-policy-db A
+  [[ $QUIET -eq 0 ]] && deps add-policy-db || true
   phase "C" "$(T 'Exercise the Java translation (Spring + JPA + H2)' 'Correr la traducción Java (Spring + JPA + H2)')" \
     "$(T 'EntityManager.persist + flush inside @Transactional(REQUIRES_NEW)' 'inserción explícita con transacción propia por solicitud')" \
     "$(T 'JPA against H2; one tx per request — matches CICS pattern' 'una transacción por solicitud, como en CICS')" \
@@ -349,6 +352,7 @@ module-1a() {
   run ./tools/run-cobol-db.sh add-policy-facade
 
   links_for add-policy-facade A
+  [[ $QUIET -eq 0 ]] && deps add-policy-facade || true
   phase "C" "$(T 'Exercise the Java service chain' 'Correr la cadena de servicios Java')" \
     "PolicyFacadeService → PolicyInsertService" \
     "$(T 'CICS LINK collapses to Spring DI; @Transactional sits on the inner service' 'el CICS LINK se vuelve inyección de dependencias; la transacción vive en el servicio interno')" \
@@ -379,6 +383,7 @@ module-2() {
   run ./tools/run-cobol.sh cci-account-converter
 
   links_for cci-account-converter A
+  [[ $QUIET -eq 0 ]] && deps cci-account-converter || true
   phase "C" "$(T 'Exercise the Java translation' 'Correr la traducción Java')" \
     "$(T 'Spring Boot 3 + Java 21 + BigDecimal everywhere (loop indices and digit accumulators too)' 'Spring Boot 3 + Java 21 + BigDecimal en todo, incluso índices y acumuladores de dígitos')" \
     "$(T 'check digits use RoundingMode.DOWN for integer division and .remainder(TEN) for PIC 9(01) truncation' 'la división entera trunca (DOWN) y el PIC 9(01) se queda con el último dígito')" \
@@ -409,6 +414,7 @@ module-3() {
   run ./tools/run-job.sh nightly-batch
 
   links_for nightly-batch A
+  [[ $QUIET -eq 0 ]] && deps nightly-batch || true
   phase "C" "$(T 'Exercise the Spring Batch translation' 'Correr la traducción a Spring Batch')" \
     "$(T 'the same job.json drives one Spring Batch Step per JCL step; KSDS files are H2 tables via JDBC; BigDecimal with DOWN where COBOL truncates' 'el mismo job.json maneja un paso Spring Batch por paso JCL; los archivos indexados son tablas H2; BigDecimal truncando donde el COBOL trunca')" \
     "$(T 'restart = JobRepository skipping COMPLETED steps across two JVM runs; abend = RC 12 and NOT RUN steps, capture unloads still run' 'reanudar = saltar los pasos ya completados en una segunda corrida; caída = código 12 y pasos NOT RUN, las capturas igual corren')" \
@@ -538,6 +544,17 @@ agentic-eval() {
   echo "${GREEN}${BOLD}  $(T 'The agent ran both sides and compared them; a person reads the report and signs the green.' 'El agente corrió los dos lados y los comparó; una persona lee el informe y firma el verde.')${RESET}"
 }
 
+# deps <module>: open the COBOL dependency graph (programs, copybooks, files, job steps) in the browser
+deps() {
+  local m="${1:-nightly-batch}" f="cobol/${1:-nightly-batch}/dependency-graph.html"
+  [[ -f "$f" ]] || { echo "${RED}$(T 'no dependency graph for' 'no hay grafo de dependencias para') $m ($(T 'run' 'correr') ./tools/render-dependencies.py $m)${RESET}"; return 1; }
+  echo
+  echo "${CYAN}${BOLD}  $(T 'COBOL DEPENDENCY GRAPH' 'GRAFO DE DEPENDENCIAS DEL COBOL') — $(link "$f")${RESET}"
+  echo "${DIM}  $(T 'Programs, copybooks, files and job steps of the module, and who calls whom; generated from DEPENDENCIES.md.' 'Programas, copybooks, archivos y pasos del trabajo, y quién llama a quién; generado desde DEPENDENCIES.md.')${RESET}"
+  if [[ "$(uname)" == "Darwin" ]]; then open_html "$f" || true; fi
+  pause
+}
+
 # viewer <module>: open the COBOL ↔ Java side-by-side viewer and say what to do with it on stage
 viewer() {
   local m="${1:-nightly-batch}" f="cobol/${1:-nightly-batch}/traceability.html"
@@ -622,12 +639,13 @@ case "${1:-}" in
   agentic-eval) agentic-eval "${2:-nightly-batch}" ;;
   explore)   explore "${2:-nightly-batch}" ;;
   viewer)    viewer "${2:-nightly-batch}" ;;
+  deps)      deps "${2:-nightly-batch}" ;;
   conformance) conformance ;;
   proof)     proof ;;
   all)       module-0; module-1b; module-1a; module-2; module-3; conformance; proof ;;
   *)
     cat >&2 <<EOF
-usage: $0 {preflight|module-0|module-1b|module-1a|module-2|module-3|negative-control|agentic-eval [module]|explore [module]|viewer [module]|conformance|proof|all} [--step] [--en] [--quiet] [--replay]
+usage: $0 {preflight|module-0|module-1b|module-1a|module-2|module-3|negative-control|agentic-eval [module]|explore [module]|viewer [module]|deps [module]|conformance|proof|all} [--step] [--en] [--quiet] [--replay]
 
   preflight         run ~30 min before demo: toolchain check + clean state + warm-up
   module-0          VSAM / file access (add-motor-policy)                 — 3 fixtures
@@ -638,6 +656,7 @@ usage: $0 {preflight|module-0|module-1b|module-1a|module-2|module-3|negative-con
   negative-control  two sabotages in module 3 → field-level red diff (one cent) and a divergent paragraph → revert
   agentic-eval      the equivalence-validator agent validates a module headless (claude -p), rendered live; --replay plays the recording
   viewer            open the COBOL ↔ Java side-by-side viewer of a module in the browser
+  deps              open the COBOL dependency graph of a module in the browser (module-N opens it after phase A)
   explore           list every artifact of a module as clickable links; a number opens it (viewer, spec, report, outputs…)
   conformance       tools/check-module.sh --all (same five phases, same tooling, every module)
   proof             validation/reports/*.json + cross-module summary (computed)

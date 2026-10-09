@@ -67,7 +67,7 @@ Total: unos 40 minutos. Si hay que recortar, se cae primero `conformance` (decir
 
 1. Cabecera: `MÓDULO 0 — Archivos VSAM: alta de pólizas en lote` y la pregunta del banco: "¿cómo manejan los archivos VSAM?". Enter.
 2. `FASE A — Capturar la salida de referencia del COBOL`. Decir: "corremos el COBOL original, sin tocar, con tres casos de prueba; cada byte que produce es el contrato". Enter. Aparecen tres líneas `captured: golden-master/add-motor-policy/...`.
-3. Lista de artefactos de la fase A. Opcional: abrir el 1 (el programa COBOL principal, se abre en el editor) y cerrarlo enseguida: "este es el programa tal cual, no lo tocamos". Enter.
+3. Lista de artefactos de la fase A. Opcional: abrir el 1 (el programa COBOL principal, se abre en el editor) y cerrarlo enseguida: "este es el programa tal cual, no lo tocamos". Enter. Se abre solo en el navegador el grafo de dependencias del COBOL (programas, copybooks, archivos): una mirada de cinco segundos, "esto es lo que el harness entendió del módulo antes de traducir". Enter.
 4. `FASE C — Correr el Java ya traducido`. Decir: "nada se traduce ahora; esto compila y corre lo que ya está escrito". Enter. Aparece `==> building add-motor-policy` y tres `captured: java-run/...`. La compilación tarda unos 20 segundos; es el único silencio del bloque.
 5. Artefactos de la fase C. Vale la pena abrir el 1 (la clase Java con más citas al COBOL, se abre en el editor) y mostrar un comentario `// COBOL: ADDMPOL.cbl:...`: "cada método dice qué líneas del COBOL traduce". Enter.
 6. `FASE D — Agentic eval: comparación byte a byte (el contrato)`. Enter. Tres líneas verdes:
@@ -94,7 +94,7 @@ Total: unos 40 minutos. Si hay que recortar, se cae primero `conformance` (decir
 
 1. Cabecera `MÓDULO 3 — Cierre nocturno: trabajo JCL de 4 pasos (AWS CardDemo)`. Enter.
 2. `FASE A — Capturar el trabajo COBOL, paso a paso`. Decir: "16 pasos contando cargas y capturas, 6 casos de prueba; uno de ellos se mata después del paso 2 y se reanuda". Enter. Corre unos 40 segundos; se ven `==> fixture ...` y `captured: ... (exit_code=4)` para cinco casos y `(exit_code=12)` para el sexto, la caída. Decir: "4 es 'hubo rechazos', 12 es 'caída', igual que en el mainframe".
-3. Artefactos de A. Sugerido: abrir `job.json` (el manifiesto que hace de JCL) o la especificación; los números cambian según el módulo, guiarse por el nombre. Enter.
+3. Artefactos de A. Sugerido: abrir `job.json` (el manifiesto que hace de JCL) o la especificación; los números cambian según el módulo, guiarse por el nombre. Enter. Se abre solo el grafo de dependencias: aquí vale la pena detenerse, porque muestra los 16 pasos del trabajo, los 24 archivos y qué programa lee y escribe cada uno. Enter.
 4. `FASE C — Correr la traducción a Spring Batch`. Enter. Un paso Spring Batch por paso JCL; 40 a 60 segundos. Mismos `captured:` y mismos códigos de salida.
 5. `FASE D — Agentic eval: hasta 60 archivos por caso, byte a byte`. Enter. Seis líneas verdes; señalar la cuarta:
 
@@ -232,6 +232,7 @@ Nota: el deck cuenta 12 casos y 4.914 registros porque deja afuera el módulo 2 
 ```bash
 ./tools/demo-commands.sh explore nightly-batch   # los 15 artefactos del módulo, numerados; un número los abre
 ./tools/demo-commands.sh viewer nightly-batch    # abre el visor en el navegador
+./tools/demo-commands.sh deps nightly-batch      # abre el grafo de dependencias del COBOL en el navegador
 ```
 
 Útiles cuando preguntan "¿y la especificación?", "¿y el grafo de dependencias?", "¿dónde están los casos de prueba?".
