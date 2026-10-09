@@ -195,6 +195,7 @@ links() {
 
 # links_for <module> <A|C|D|all>: the artifacts a phase leaves behind, in the order the story needs them
 links_for() {
+  [[ $QUIET -eq 1 ]] && return 0
   local m="$1" ph="$2" first_gm first_jr main_cbl main_java; local -a items=()
   first_gm="$(ls -d golden-master/$m/*/ 2>/dev/null | head -1)"; first_gm="${first_gm%/}"
   first_jr="$(ls -d java-run/$m/*/ 2>/dev/null | head -1)"; first_jr="${first_jr%/}"
